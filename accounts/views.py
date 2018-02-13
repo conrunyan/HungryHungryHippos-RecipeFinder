@@ -6,3 +6,6 @@ def login(request):
 
 def register(request):
     return HttpResponse('This is the register view.')
+
+def logout(request):
+    return HttpResponse('This is the logout view.')
