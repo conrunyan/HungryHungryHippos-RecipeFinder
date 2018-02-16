@@ -98,6 +98,6 @@ class RecipeAppIndexTest(TestCase):
 
     def test_response_status_ok(self):
         """Check if the server response is 200."""
-        response = self.client.get(reverse('index'))
+        response = self.client.get(reverse('recipe:index'))
 
         self.assertEquals(response.status_code, 200)
