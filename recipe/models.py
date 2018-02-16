@@ -12,7 +12,7 @@ class Group(models.Model):
     categorized by these groups.
     """
 
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
@@ -29,7 +29,7 @@ class Ingredient(models.Model):
     """
 
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
@@ -83,6 +83,10 @@ through='RecipeIngredient')
     def __str__(self):
         """Return a string to identify the object in the admin app."""
         return self.title
+
+    def get_ingredients(self):
+        """Return a queryset of the ingredients in this recipe."""
+        return self.ingredients.all()
 
 
 class RecipeIngredient(models.Model):
