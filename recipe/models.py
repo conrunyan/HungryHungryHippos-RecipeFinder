@@ -88,6 +88,10 @@ through='RecipeIngredient')
         """Return a queryset of the ingredients in this recipe."""
         return self.ingredients.all()
 
+    def get_appliances(self):
+        """Return a queryset of the appliances required by this recipe."""
+        return self.appliances.all()
+
 
 class RecipeIngredient(models.Model):
     """This class is used in the relationship between recipes and ingredients.
