@@ -2,6 +2,8 @@
 
 from django.test import TestCase
 from django.db.utils import IntegrityError
+from django.urls import reverse
+from django.test import Client
 
 from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance
 
@@ -85,3 +87,17 @@ class RecipeModelTest(TestCase):
         recipe.appliances.add(a1, a3)
 
         self.assertEquals(list(recipe.get_appliances()), [a1, a3])
+
+
+class RecipeAppIndexTest(TestCase):
+    """Test the recipe app index page."""
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_response_status_ok(self):
+        """Check if the server response is 200."""
+        response = self.client.get(reverse('index'))
+
+        self.assertEquals(response.status_code, 200)
