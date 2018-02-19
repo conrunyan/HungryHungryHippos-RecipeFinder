@@ -102,7 +102,7 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     amount = models.CharField(max_length=10)
-    unit = models.CharField(max_length=10, null=True, blank=True)
+    unit = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
