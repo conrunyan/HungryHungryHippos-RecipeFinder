@@ -17,10 +17,9 @@ def register(request):
 				user = User.objects.create_user(form.cleaned_data['user_name'], form.cleaned_data['email'], form.cleaned_data['password'])
 				message = 'Account creaded successfully'
 			else:
-				message = request, 'Passwords did not match'
-			return HttpResponse(message)
-	else: 
-		form = CreateUserForm();
+				form.add_error('password_verify', 'Passwords did not match')
+	else:
+		form = CreateUserForm()
 	
 	context = {'form' : form}
 	return HttpResponse(render(request, 'accounts/register.html', context))
