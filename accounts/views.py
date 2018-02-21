@@ -31,13 +31,10 @@ def register(request):
 
 	else:
 		form = CreateUserForm()
-	
+
 	context = {'form' : form}
 	return HttpResponse(render(request, 'accounts/register.html', context))
 
 def logout(request):
 	context = { }
 	return HttpResponse(render(request, 'accounts/logout.html', context))
-
-
-

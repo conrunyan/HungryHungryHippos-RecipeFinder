@@ -11,18 +11,42 @@
     <!--Navbar-->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <a class="navbar-brand" href="#">Hungry Hungry Hippos</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav ml-auto">
           <!--TODO: Use JavaScript to reset what is active-->
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'login' %}">Login <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Create Account</a>
-          </li>
+          {% if user.is_authenticated %}
+          <!--User view-->
+            <li class="nav-item">
+              <span class="nav-link">{{ user.get_username }}</span>
+            </li>
+            <li class="nav-item active">
+              <!--TODO: replace # with correct links once they are up and running-->
+              <a class="nav-link" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Settings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Favorites</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Add Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">View Recipes</a>
+            </li>
+          {% else %}
+          <!--Guest view-->
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}">Create Account</a>
+            </li>
+          {% endif %}
         </ul>
       </div>
     </nav>
