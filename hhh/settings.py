@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Email backend definition
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -32,6 +34,7 @@ ALLOWED_HOSTS = ["hhhippo.tk", "test.hhhippo.tk", "localhost", "76.27.107.186"]
 
 INSTALLED_APPS = [
     'recipe.apps.RecipeConfig',
+    'emailauth.apps.EmailauthConfig',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
