@@ -1,6 +1,10 @@
-<h1> Registery was sucessful </h1>
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1> Account Created Sucessfully </h1>
 
 <p> User name: {{ user_name }} </p>
 <p> Email: {{ email }} </p>
 
-<a href="/"> Home Page </a>
+{% endblock %}

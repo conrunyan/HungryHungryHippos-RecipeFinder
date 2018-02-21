@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 from .forms import CreateUserForm
 
-def login(request):
+def login_view(request):
 	context = { }
 	return HttpResponse(render(request, 'accounts/login.html', context))
 
-def register(request):
+def register_view(request):
 	if request.method == 'POST':
 		form = CreateUserForm(request.POST)
 
@@ -27,7 +28,14 @@ def register(request):
 			if(form.is_valid()):
 				User.objects.create_user(user_name, email, password)
 				success_context = { 'user_name' : user_name, 'email' : email}
-				return HttpResponse(render(request, 'accounts/register_successful.html', success_context))
+				user = authenticate(request, username=user_name, password=password)
+				if user is not None:
+					login(request, user)
+				else:
+					form.add_error(None, 'Failed to create account')
+					context = {'form' : form}
+					return HttpResponse(render(request, 'accounts/register.html', context))
+				return render(request, 'accounts/register_successful.html', success_context)
 
 	else:
 		form = CreateUserForm()
@@ -35,6 +43,6 @@ def register(request):
 	context = {'form' : form}
 	return HttpResponse(render(request, 'accounts/register.html', context))
 
-def logout(request):
+def logout_view(request):
 	context = { }
 	return HttpResponse(render(request, 'accounts/logout.html', context))
