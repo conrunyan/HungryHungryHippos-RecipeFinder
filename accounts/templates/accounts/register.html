@@ -2,19 +2,19 @@
 
 {% block content %}
 
-<h1>Create account</h1>
+<h1 class="text-center m-5">Create account</h1>
 
 <!-- Refer to https://docs.djangoproject.com/en/1.11/topics/forms/
 			  https://docs.djangoproject.com/en/1.11/ref/forms/api/ -->
 
 <ul>
 	{% for error in form.non_field_errors %}
-		<li><strong>{{ error|escape }}</strong></li>
+		<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
 	{% endfor %}
 
 	{% for field in form %}
 		{% for error in field.errors %}
-			<li><strong>{{ error|escape }}</strong></li>
+			<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
 		{% endfor %}
 	{% endfor %}
 </ul>
@@ -26,7 +26,9 @@
 			{{ field }}
 		</p>
 	{% endfor %}
-	<button type="submit" class="btn btn-dark">Submit</button>
+	<div class="text-center m-5">
+		<button type="submit" class="btn btn-dark">Submit</button>
+	</div>
 </form>
 
 {% endblock %}
