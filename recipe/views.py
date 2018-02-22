@@ -2,4 +2,5 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
-    return HttpResponse('This is the index view.')
+	context = { }
+	return HttpResponse(render(request, 'recipe/index.html', context))
