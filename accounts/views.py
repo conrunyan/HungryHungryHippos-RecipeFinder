@@ -3,10 +3,27 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import CreateUserForm
+from .forms import CreateUserForm, LoginForm
 
 def login_view(request):
-	context = { }
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+
+		if form.is_valid():
+			user_name = form.cleaned_data['user_name']
+			password = form.cleaned_data['password']
+
+			user = authenticate(request, username=user_name, password=password)
+			if user is not None:
+				login(request, user)
+				return redirect('index')
+			else:
+				form.add_error(None, 'Invalid Username/Password')
+
+	else:
+		form = LoginForm()
+
+	context = {'form' : form}
 	return HttpResponse(render(request, 'accounts/login.html', context))
 
 def register_view(request):
