@@ -26,3 +26,8 @@ class LogoutFunctionalityTest(TestCase):
         self.assertTrue(user.is_authenticated())
         response = self.client.get(reverse('logout'))
         self.assertFalse(response.user.is_authenticated())
+
+    def test_logging_out_user_returns_good_status_code(self):
+        """What a user logs out, the response should return a good status code."""
+        response = self.client.get(reverse('logout'))
+        self.assertEqual(response.status_code, 302)
