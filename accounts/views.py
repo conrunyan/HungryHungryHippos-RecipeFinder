@@ -1,12 +1,29 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
-from .forms import CreateUserForm
+from .forms import CreateUserForm, LoginForm
 
 def login_view(request):
-	context = { }
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+
+		if form.is_valid():
+			user_name = form.cleaned_data['user_name']
+			password = form.cleaned_data['password']
+
+			user = authenticate(request, username=user_name, password=password)
+			if user is not None:
+				login(request, user)
+				return redirect('recipe:index')
+			else:
+				form.add_error(None, 'Invalid Username/Password')
+
+	else:
+		form = LoginForm()
+
+	context = {'form' : form}
 	return HttpResponse(render(request, 'accounts/login.html', context))
 
 def register_view(request):
@@ -37,5 +54,7 @@ def register_view(request):
 	return HttpResponse(render(request, 'accounts/register.html', context))
 
 def logout_view(request):
-	context = { }
-	return HttpResponse(render(request, 'accounts/logout.html', context))
+	logout(request)
+	response = redirect('recipe:index')
+	response.user = request.user
+	return response
