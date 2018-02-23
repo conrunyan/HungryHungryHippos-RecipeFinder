@@ -62,6 +62,6 @@ def register_view(request):
 
 def logout_view(request):
 	logout(request)
-	response = redirect('index')
+	response = redirect('recipe:index')
 	response.user = request.user
 	return response
