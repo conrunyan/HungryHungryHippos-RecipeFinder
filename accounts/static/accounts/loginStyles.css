@@ -1,9 +1,11 @@
 html {
+    /* prevents overscroll */
     overflow: hidden;
     height: 100%;
 }
 
 body {
+    /* prevents overscroll */
     height: 100%;
     overflow: auto;
 }
