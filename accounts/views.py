@@ -36,23 +36,16 @@ def register_view(request):
 			password = form.cleaned_data['password']
 			password_verify = form.cleaned_data['password_verify']
 
-			if(password != password_verify):
-				form.add_error('password_verify', 'Passwords did not match')
-
-			if(User.objects.filter(username=user_name)):
-				form.add_error('user_name', 'That user already exists!')
-
-			if(form.is_valid()):
-				User.objects.create_user(user_name, email, password)
-				success_context = { 'user_name' : user_name, 'email' : email}
-				user = authenticate(request, username=user_name, password=password)
-				if user is not None:
-					login(request, user)
-				else:
-					form.add_error(None, 'Failed to create account')
-					context = {'form' : form}
-					return HttpResponse(render(request, 'accounts/register.html', context))
-				return render(request, 'accounts/register_successful.html', success_context)
+			User.objects.create_user(user_name, email, password)
+			success_context = { 'user_name' : user_name, 'email' : email}
+			user = authenticate(request, username=user_name, password=password)
+			if user is not None:
+				login(request, user)
+			else:
+				form.add_error(None, 'Failed to create account')
+				context = {'form' : form}
+				return HttpResponse(render(request, 'accounts/register.html', context))
+			return render(request, 'accounts/register_successful.html', success_context)
 
 	else:
 		form = CreateUserForm()
