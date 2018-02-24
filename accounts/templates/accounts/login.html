@@ -1,8 +1,33 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'accounts/loginStyles.css' %}" />
+{% endblock %}
 
-<h1> Login </h1>
-<p> This is the login view </p>
+{% block content %}
+<!--Refer to http://www.techinfected.net/2016/11/style-django-forms-with-bootstrap.html-->
+
+<h1 class="text-center m-5"> Login </h1>
+  {% for error in form.non_field_errors %}
+    <div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+  {% endfor %}
+
+  {% for field in form %}
+    {% for error in field.errors %}
+      <div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+    {% endfor %}
+  {% endfor %}
+
+<form method="post" class="form-signin">
+  {% csrf_token %}
+  {% for field in form %}
+    <p>
+      {{ field }}
+    </p>
+  {% endfor %}
+  <button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Login</button>
+
+</form>
 
 {% endblock %}
