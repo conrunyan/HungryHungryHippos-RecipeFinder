@@ -10,7 +10,7 @@ from django.core.mail import EmailMessage
 # Create your views here.
 
 
-def emailAuthPage(render):
+def emailAuthPage(request):
     return HttpResponse('Your account has been successfully activated! Thanks for joining!')
 
 
@@ -46,6 +46,9 @@ def validateEmail(email_addr):
 def activateUser(request):
     '''Function activates a user, upon usage of link sent to user email.
     '''
+    if request.method == 'GET':
+        id = request.GET['id']
+    pass
 
 
 def makeUserAuthLink(usr_email):
@@ -54,8 +57,8 @@ def makeUserAuthLink(usr_email):
     Will be used as the url/authentication key for a given user.
     '''
     cwd = os.getcwd()
-    auth_url = 'hhhippo.tk/emailauth/activate/'
-    test_url = '10.10.10.102:8000/emailauth/activate/'
+    auth_url = 'hhhippo.tk/emailauth/activate/id='
+    test_url = '10.10.10.102:8000/emailauth/activate/id='
 
     # check whether in staging, prod, or testing branch
     if re.search(r'.*staging.*', cwd) is None:
