@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from .forms import CreateUserForm, LoginForm
+from emailauth.views import sendAuthEmail
 
 def login_view(request):
 	if request.method == 'POST':
@@ -45,6 +46,8 @@ def register_view(request):
 				form.add_error(None, 'Failed to create account')
 				context = {'form' : form}
 				return HttpResponse(render(request, 'accounts/register.html', context))
+			# adding authentication email step call
+			sendAuthEmail(email)
 			return render(request, 'accounts/register_successful.html', success_context)
 
 	else:
