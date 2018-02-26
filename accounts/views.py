@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from ..emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
 from emailauth.views import sendAuthEmail
@@ -38,7 +39,12 @@ def register_view(request):
 			password_verify = form.cleaned_data['password_verify']
 
 			User.objects.create_user(user_name, email, password)
-			success_context = { 'user_name' : user_name, 'email' : email}
+            # adding creation of email_authentication/user relationship step
+            usr_id = User.objects.get(email=email).id
+			# TODO: add EmailAuth creation step, called from models.py
+            EA_models.makeEmailAuth(usr_id, False)
+
+            success_context = { 'user_name' : user_name, 'email' : email}
 			user = authenticate(request, username=user_name, password=password)
 			if user is not None:
 				login(request, user)
