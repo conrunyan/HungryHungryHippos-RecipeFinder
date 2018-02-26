@@ -23,4 +23,4 @@ def makeEmailAuth(user, is_auth):
     auth_id = makeUserAuthLink(email)
     EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id=auth_id)
     ea = EmailAuth.objects.get(usr_id=user)
-    print 'Email Auth model created', str(ea)
+    print('Email Auth model created', str(ea))
