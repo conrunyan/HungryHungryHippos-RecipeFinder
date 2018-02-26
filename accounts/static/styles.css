@@ -2,4 +2,13 @@
 body {
   min-height: 75rem;
   padding-top: 4.5rem;
+  /* prevents overscroll: */
+  height: 100%;
+  overflow: auto;
+}
+
+html {
+    /* prevents overscroll */
+    overflow: hidden;
+    height: 100%;
 }

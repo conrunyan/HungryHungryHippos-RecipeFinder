@@ -12,17 +12,15 @@
 <!-- Refer to https://docs.djangoproject.com/en/1.11/topics/forms/
 			  https://docs.djangoproject.com/en/1.11/ref/forms/api/ -->
 
-<ul>
-	{% for error in form.non_field_errors %}
+{% for error in form.non_field_errors %}
+	<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+{% endfor %}
+
+{% for field in form %}
+	{% for error in field.errors %}
 		<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
 	{% endfor %}
-
-	{% for field in form %}
-		{% for error in field.errors %}
-			<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
-		{% endfor %}
-	{% endfor %}
-</ul>
+{% endfor %}
 
 <form method="post" class="form-signin">
 	{% csrf_token %}
