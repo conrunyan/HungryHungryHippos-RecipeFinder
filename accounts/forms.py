@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions
 
 class CreateUserForm(forms.Form):
 
@@ -18,8 +20,11 @@ class CreateUserForm(forms.Form):
 		password = self.cleaned_data['password']
 		password_verify = self.cleaned_data['password_verify']
 
-		if(len(password) < 6):
-			self.add_error('password', 'Password must contain at least 6 characters')
+		try:
+			validate_password(password, user_name)
+		except exceptions.ValidationError as e:
+			for error in e.messages:
+				self.add_error('password', error)
 			valid = False
 		
 		if(password != password_verify):
