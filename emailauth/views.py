@@ -6,6 +6,7 @@ import re
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
+from hhh.emailauth.models import EmailAuth
 
 # Create your views here.
 
@@ -47,8 +48,10 @@ def activateUser(request):
     '''Function activates a user, upon usage of link sent to user email.
     '''
     if request.method == 'GET':
-        id = request.GET['id']
-    pass
+        auth_id = request.GET['id']
+        cur_usr = EmailAuth.objects.get(authetication_id=auth_id)
+        cur_usr.is_auth = True
+        cur_usr.save()
 
 
 def makeUserAuthLink(usr_email):
@@ -58,14 +61,14 @@ def makeUserAuthLink(usr_email):
     '''
     cwd = os.getcwd()
     auth_url = 'hhhippo.tk/emailauth/activate/id='
-    test_url = '10.10.10.102:8000/emailauth/activate/id='
+    test_url = 'localhost:8000/emailauth/activate/id='
 
     # check whether in staging, prod, or testing branch
-    if re.search(r'.*staging.*', cwd) is None:
+    if re.search(r'.*staging.*', cwd) is not None:
         auth_url = 'test.' + auth_url
-    elif re.search(r'.*production.*', cwd) is None:
+    elif re.search(r'.*production.*', cwd) is not None:
         # do nothing
-        pass
+        auth_url = auth_url
     else:
         auth_url = test_url
 
