@@ -6,13 +6,16 @@ import re
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
-from hhh.emailauth.models import EmailAuth
+from .models import EmailAuth
 
 # Create your views here.
 
 
 def emailAuthPage(request):
-    return HttpResponse('Your account has been successfully activated! Thanks for joining!')
+    if request.method == 'GET':
+        auth_id = request.GET['id']
+        activateUser(auth_id)
+        return HttpResponse('Your account has been successfully activated! Thanks for joining!')
 
 
 def sendAuthEmail(email_addr):
@@ -44,38 +47,10 @@ def validateEmail(email_addr):
     pass
 
 
-def activateUser(request):
+def activateUser(auth_id):
     '''Function activates a user, upon usage of link sent to user email.
     '''
-    if request.method == 'GET':
-        auth_id = request.GET['id']
-        cur_usr = EmailAuth.objects.get(authetication_id=auth_id)
-        cur_usr.is_auth = True
-        cur_usr.save()
-
-
-def makeUserAuthLink(usr_email):
-    '''Function generates a sha256 version of the given email.given
-
-    Will be used as the url/authentication key for a given user.
-    '''
-    cwd = os.getcwd()
-    auth_url = 'hhhippo.tk/emailauth/activate/id='
-    test_url = 'localhost:8000/emailauth/activate/id='
-
-    # check whether in staging, prod, or testing branch
-    if re.search(r'.*staging.*', cwd) is not None:
-        auth_url = 'test.' + auth_url
-    elif re.search(r'.*production.*', cwd) is not None:
-        # do nothing
-        auth_url = auth_url
-    else:
-        auth_url = test_url
-
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(usr_email)
-    hash_key = sha256_hash.hexdigest()
-
-    auth_url += hash_key
-
-    return auth_url
+    # had to do it this way because python = dumb
+    cur_usr = EmailAuth.objects.get(authetication_id=auth_id)
+    cur_usr.is_auth = True
+    cur_usr.save()

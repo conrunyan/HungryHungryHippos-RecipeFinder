@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
+import hashlib
+import re
 from django.db import models
 from django.contrib.auth.models import User
-from .views import makeUserAuthLink
 
 
 class EmailAuth(models.Model):
@@ -19,8 +21,36 @@ class EmailAuth(models.Model):
 
 
 def makeEmailAuth(user, is_auth):
+    '''Creates an EmailAuth user instance'''
     email = user.email
     auth_id = makeUserAuthLink(email)
     EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id=auth_id)
     ea = EmailAuth.objects.get(usr_id=user)
     print('Email Auth model created', str(ea))
+
+
+def makeUserAuthLink(usr_email):
+    '''Function generates a sha256 version of the given email.given
+
+    Will be used as the url/authentication key for a given user.
+    '''
+    cwd = os.getcwd()
+    auth_url = 'hhhippo.tk/emailauth/activate/id='
+    test_url = 'localhost:8000/emailauth/activate/id='
+
+    # check whether in staging, prod, or testing branch
+    if re.search(r'.*staging.*', cwd) is not None:
+        auth_url = 'test.' + auth_url
+    elif re.search(r'.*production.*', cwd) is not None:
+        # do nothing
+        auth_url = auth_url
+    else:
+        auth_url = test_url
+
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(usr_email)
+    hash_key = sha256_hash.hexdigest()
+
+    auth_url += hash_key
+
+    return auth_url
