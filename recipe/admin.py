@@ -6,10 +6,19 @@ from django import forms
 from . import models
 
 
+class RecipeIngredientInline(admin.TabularInline):
+    """Allows adding ingredients directly to recipe."""
+
+    model = models.RecipeIngredient
+    extra = 3
+
+
 class RecipeAdmin(admin.ModelAdmin):
     """Defines the display of recipe attributes in the admin app."""
 
     list_display = ('title', 'user', 'difficulty', 'time', 'creation_date')
+    filter_horizontal = ('appliances',)
+    inlines = (RecipeIngredientInline,)
 
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
@@ -28,7 +37,7 @@ class CommentModelForm(forms.ModelForm):
 
     class Meta:
         """This class is required for Django."""
-        
+
         model = models.Comment
         fields = '__all__'
 
