@@ -89,6 +89,19 @@ class RecipeModelTest(TestCase):
         self.assertEquals(list(recipe.get_appliances()), [a1, a3])
 
 
+class RecipeIngredientModelTest(TestCase):
+    """Tests the RecipeIngredient model and methods."""
+
+    def test_str_returns_string(self):
+        """Tests that the string of RecipeIngrient doesn't crash. Created for #6."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        recipe_fake = Recipe.objects.create(title="Fake", instructions="fake")
+        r1 = RecipeIngredient(recipe=recipe_fake, ingredient=ing1, amount='1/2', unit='cup')
+
+        self.assertIs(type(str(r1)), str)
+
+
 class RecipeAppIndexTest(TestCase):
     """Test the recipe app index page."""
 
