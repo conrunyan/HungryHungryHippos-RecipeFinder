@@ -13,18 +13,18 @@ class RecipeIngredientInline(admin.TabularInline):
     extra = 3
 
 
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    """Defines the display of recipe-ingredient attributes in the admin app."""
+
+    list_display = ('recipe', 'ingredient', 'amount', 'unit')
+
+
 class RecipeAdmin(admin.ModelAdmin):
     """Defines the display of recipe attributes in the admin app."""
 
     list_display = ('title', 'user', 'difficulty', 'time', 'creation_date')
     filter_horizontal = ('appliances',)
     inlines = (RecipeIngredientInline,)
-
-
-class RecipeIngredientAdmin(admin.ModelAdmin):
-    """Defines the display of recipe-ingredient attributes in the admin app."""
-
-    list_display = ('recipe', 'ingredient', 'amount', 'unit')
 
 
 class CommentModelForm(forms.ModelForm):
