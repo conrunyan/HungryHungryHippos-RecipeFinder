@@ -6,14 +6,15 @@ import re
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
-from .models import EmailAuth
+from .models import EmailAuth, makeUserAuthLink
 
 # Create your views here.
 
 
 def emailAuthPage(request):
     if request.method == 'GET':
-        auth_id = request.GET['id']
+        auth_id = request.GET['auth']
+        print 'Auth ID:', auth_id
         activateUser(auth_id)
         return HttpResponse('Your account has been successfully activated! Thanks for joining!')
 
@@ -51,6 +52,6 @@ def activateUser(auth_id):
     '''Function activates a user, upon usage of link sent to user email.
     '''
     # had to do it this way because python = dumb
-    cur_usr = EmailAuth.objects.get(authetication_id=auth_id)
-    cur_usr.is_auth = True
+    cur_usr = EmailAuth.objects.get(authentication_id=auth_id)
+    cur_usr.is_authenticated = True
     cur_usr.save()

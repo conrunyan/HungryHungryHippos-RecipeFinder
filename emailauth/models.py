@@ -23,10 +23,19 @@ class EmailAuth(models.Model):
 def makeEmailAuth(user, is_auth):
     '''Creates an EmailAuth user instance'''
     email = user.email
-    auth_id = makeUserAuthLink(email)
+    auth_id = makeUserAuthHash(email)
     EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id=auth_id)
     ea = EmailAuth.objects.get(usr_id=user)
     print('Email Auth model created', str(ea))
+
+
+def makeUserAuthHash(usr_email):
+    '''Function returns a hashed value of the usr_email'''
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(usr_email)
+    hash_key = sha256_hash.hexdigest()
+
+    return hash_key
 
 
 def makeUserAuthLink(usr_email):
@@ -35,8 +44,8 @@ def makeUserAuthLink(usr_email):
     Will be used as the url/authentication key for a given user.
     '''
     cwd = os.getcwd()
-    auth_url = 'hhhippo.tk/emailauth/activate/id='
-    test_url = 'localhost:8000/emailauth/activate/id='
+    auth_url = 'hhhippo.tk/emailauth/activate/?auth='
+    test_url = 'localhost:8000/emailauth/activate/?auth='
 
     # check whether in staging, prod, or testing branch
     if re.search(r'.*staging.*', cwd) is not None:
