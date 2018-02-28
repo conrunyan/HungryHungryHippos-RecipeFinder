@@ -16,7 +16,8 @@ def emailAuthPage(request):
         auth_id = request.GET['auth']
         print 'Auth ID:', auth_id
         activateUser(auth_id)
-        return HttpResponse('Your account has been successfully activated! Thanks for joining!')
+        context={}
+        return HttpResponse(render(request, 'emailauth/success.html', context))
 
 
 def sendAuthEmail(email_addr):
