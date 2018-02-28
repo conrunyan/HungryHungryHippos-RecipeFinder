@@ -51,7 +51,8 @@ def validateEmail(email_addr):
 def activateUser(auth_id):
     '''Function activates a user, upon usage of link sent to user email.
     '''
-    # had to do it this way because python = dumb
     cur_usr = EmailAuth.objects.get(authentication_id=auth_id)
     cur_usr.is_authenticated = True
     cur_usr.save()
+
+    return cur_usr

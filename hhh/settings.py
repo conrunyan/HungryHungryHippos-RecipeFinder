@@ -80,6 +80,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hhh.wsgi.application'
 
+# Testing
+NOSE_ARGS = ['--nocapture', '--nologcapture',]
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
