@@ -33,8 +33,7 @@ class TestViews(TestCase):
 class TestModels(TestCase):
 	'''Suite of tests to make sure key elements in the models are working'''
 	def setUp(self):
-		user = User.objects.create_user('test1', 'test1@test.com', 'password')
-		EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id='HASHED KEY')
+		user = User.objects.create_user('test2', 'test2@test.com', 'password')
 
 
 	def test_makeAuthLink(self):
@@ -48,7 +47,10 @@ class TestModels(TestCase):
 
 
 	def test_makeEmailAuth(self):
-		user = User.objects.get(email='test1@test.com')
+		user = User.objects.get(email='test2@test.com')
+		makeEmailAuth(user, False)
+		self.assertEqual('Made it this far. Must have worked', 'Made it this far. Must have worked')
+		
 
 
 
