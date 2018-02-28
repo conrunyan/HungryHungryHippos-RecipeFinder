@@ -14,7 +14,6 @@ from .models import EmailAuth, makeUserAuthLink
 def emailAuthPage(request):
     if request.method == 'GET':
         auth_id = request.GET['auth']
-        print 'Auth ID:', auth_id
         activateUser(auth_id)
         context={}
         return HttpResponse(render(request, 'emailauth/success.html', context))
