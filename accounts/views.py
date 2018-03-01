@@ -29,7 +29,6 @@ def login_view(request):
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/login.html', context))
 
-
 def register_view(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
@@ -38,7 +37,6 @@ def register_view(request):
             user_name = form.cleaned_data['user_name']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            password_verify = form.cleaned_data['password_verify']
 
             cur_usr = User.objects.create_user(user_name, email, password)
             # adding creation of email_authentication/user relationship step
@@ -62,7 +60,6 @@ def register_view(request):
 
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/register.html', context))
-
 
 def logout_view(request):
     logout(request)
