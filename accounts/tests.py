@@ -127,3 +127,44 @@ class CreateUserFormTest(TestCase):
             'password_verify': '!@HesJwir3442@'
             })
         self.assertFalse(form.is_valid())
+
+class CreateUserViewTest(TestCase):
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_successful_creation(self):
+        response = self.client.post(reverse('register'), {
+            'user_name' : 'test',
+            'email' : 'email@email.com',
+            'password' : 'This is a strong p',
+            'password_verify' : 'This is a strong p'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Account Created Sucessfully')
+        self.assertEqual(User.objects.get(username='test').username,'test')
+
+    def test_missing_form_field_creation(self):
+        response = self.client.post(reverse('register'), {
+            'email' : 'email@email.com',
+            'password' : 'This is a strong p',
+            'password_verify' : 'This is a strong p'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'This field is required.')
+        self.assertRaises(User.DoesNotExist, User.objects.get, username='test')
+
+    def test_form_errors(self):
+        User.objects.create_user('test','test@test.com','pass')
+        response = self.client.post(reverse('register'), {
+            'user_name' : 'test',
+            'email' : 'test@test.com',
+            'password' : 'password',
+            'password_verify' : 'Blahblerg'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'That user already exists!')
+        self.assertContains(response, 'That email is already being used.')
+        self.assertContains(response, 'Passwords did not match.')
+        self.assertContains(response, 'This password is too common.')
