@@ -32,7 +32,7 @@ def makeEmailAuth(user, is_auth):
 def makeUserAuthHash(usr_email):
     '''Function returns a hashed value of the usr_email'''
     sha256_hash = hashlib.sha256()
-    sha256_hash.update(usr_email)
+    sha256_hash.update(usr_email.encode('utf-8'))
     hash_key = sha256_hash.hexdigest()
 
     return hash_key
