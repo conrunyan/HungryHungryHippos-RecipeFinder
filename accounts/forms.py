@@ -28,7 +28,7 @@ class CreateUserForm(forms.Form):
 			valid = False
 		
 		if(password != password_verify):
-			self.add_error('password_verify', 'Passwords did not match')
+			self.add_error('password_verify', 'Passwords did not match.')
 			valid = False
 
 		if(User.objects.filter(username__iexact=user_name)):

@@ -34,7 +34,6 @@ def register_view(request):
 			user_name = form.cleaned_data['user_name']
 			email = form.cleaned_data['email']
 			password = form.cleaned_data['password']
-			password_verify = form.cleaned_data['password_verify']
 
 			User.objects.create_user(user_name, email, password)
 			success_context = { 'user_name' : user_name, 'email' : email}

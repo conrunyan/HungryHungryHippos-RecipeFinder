@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout, get_user
 
+from accounts.forms import CreateUserForm
+
 class LogoutFunctionalityTest(TestCase):
     """Tests the logout functionality."""
 
@@ -57,3 +59,71 @@ class LoginFunctionalityTest(TestCase):
         user4= User.objects.create_user(username='test4', password='password')
         response = self.client.post(reverse('login'),{ 'user_name' : 'test4', 'password' : 'password' })
         self.assertEqual(response.status_code, 302)
+
+class CreateUserFormTest(TestCase):
+    """ Tests CreateUserForm """
+
+    def test_vaild(self):
+        '''Form is valid'''
+        form = CreateUserForm(data={
+            'user_name':       'test',
+            'email':           'test@test.com',
+            'password':        '!@HesJwir3442@',
+            'password_verify': '!@HesJwir3442@'
+            })
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_mismatch_passwords(self):
+        '''When passwords don't match, form is invalid and throws error message'''
+        form = CreateUserForm(data={
+            'user_name':       'test',
+            'email':           'test@test.com',
+            'password':        '!@HesJwir3442@',
+            'password_verify': 'BLLLLEEEERRRG!!!'
+            })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form['password_verify'].errors[0], "Passwords did not match.")
+
+    def test_invalid_duplicate_user(self):
+        '''When user already exists(case insensitive), form is invalid and throws error message'''
+        User.objects.create_user('TeSt','pass')
+        form = CreateUserForm(data={
+            'user_name':       'tEsT',
+            'email':           'test@test.com',
+            'password':        '!@HesJwir3442@',
+            'password_verify': '!@HesJwir3442@'
+            })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form['user_name'].errors[0], "That user already exists!")
+
+    def test_invalid_duplicate_email(self):
+        '''When email is duplicated from another account, form is invalid and throws error message'''
+        User.objects.create_user('tester','test@test.com','pass')
+        form = CreateUserForm(data={
+            'user_name':       'test',
+            'email':           'test@test.com',
+            'password':        '!@HesJwir3442@',
+            'password_verify': '!@HesJwir3442@'
+            })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form['email'].errors[0], "That email is already being used.")
+
+    def test_invalid_django_validation(self):
+        '''When passwords don't pass django validation, form is invalid and throws error message'''
+        form = CreateUserForm(data={
+            'user_name':       'test',
+            'email':           'test@test.com',
+            'password':        'password', #common password -- should fail
+            'password_verify': 'password'
+            })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form['password'].errors[0], "This password is too common.")  
+
+    def test_invalid_incomplete(self):
+        '''When form isn't completely filled out, form is not valid'''
+        form = CreateUserForm(data={
+            'user_name':       'test',
+            'password':        '!@HesJwir3442@',
+            'password_verify': '!@HesJwir3442@'
+            })
+        self.assertFalse(form.is_valid())
