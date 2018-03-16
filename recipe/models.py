@@ -106,7 +106,7 @@ class RecipeIngredient(models.Model):
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
-        return self.recipe
+        return str(self.recipe)
 
 
 class Comment(models.Model):
