@@ -80,6 +80,7 @@ class Recipe(models.Model):
 through='RecipeIngredient')
     appliances = models.ManyToManyField(Appliance)
     is_private = models.BooleanField(default=True)
+    source_url = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
