@@ -26,7 +26,7 @@ class CreateUserForm(forms.Form):
             for error in e.messages:
                 self.add_error('password', error)
             valid = False
-        
+
         if(password != password_verify):
             self.add_error('password_verify', 'Passwords did not match.')
             valid = False
@@ -44,4 +44,3 @@ class CreateUserForm(forms.Form):
 class LoginForm(forms.Form):
     user_name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Username'}), max_length=20)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Password'}), max_length=20)
-
