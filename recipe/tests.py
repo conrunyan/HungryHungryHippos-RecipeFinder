@@ -88,6 +88,12 @@ class RecipeModelTest(TestCase):
 
         self.assertEquals(list(recipe.get_appliances()), [a1, a3])
 
+    def test_default_visibility_is_private(self):
+        """Check visibility of recipe is private by default."""
+        recipe = Recipe.objects.create(title="Recipe", instructions="Empty")
+
+        self.assertTrue(recipe.is_private)
+
 
 class RecipeIngredientModelTest(TestCase):
     """Tests the RecipeIngredient model and methods."""
