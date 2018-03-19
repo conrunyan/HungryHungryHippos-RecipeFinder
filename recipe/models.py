@@ -1,6 +1,7 @@
 """Holds the recipe models for the database."""
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -62,7 +63,6 @@ class Recipe(models.Model):
     """
 
     title = models.CharField(max_length=50)
-    summary = models.CharField(max_length=280, null=True, blank=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     DIFFICULTY_CHOICES = (
         ('E', 'Easy'),
@@ -91,6 +91,35 @@ through='RecipeIngredient')
     def get_appliances(self):
         """Return a queryset of the appliances required by this recipe."""
         return self.appliances.all()
+
+    def has_ingredients(self, ingredients):
+        """"Returns a true if the recipe has all ingredients passed in funciton call"""
+        query_lst = self._make_querylist(ingredients)
+        expected_size = len(ingredients)
+        
+        # get number of matched ingredients in this recipe 
+        if len(self.ingredients.all().values().filter(*query_lst)) == expected_size:
+            return True
+        else:
+            return False
+
+
+    def _make_querylist(self, ingredients):
+        """Returns a list of ingredient name queries.
+
+        Converts a list of ingredient names into a string of Query objects to be
+        evaluated in the "has_ingredients" function.
+        """
+
+        query_lst = []
+        for ingr in ingredients:
+            # create a new Q (advanced query set) for each ingredient
+            tmp_q = 'Q(name={0})'.format(str(ingr))
+            query_lst.append(tmp_q)
+            query_lst.append('|')
+        # remove last "|"
+        query_lst.pop()
+        return query_lst
 
 
 class RecipeIngredient(models.Model):
