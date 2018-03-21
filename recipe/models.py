@@ -50,7 +50,7 @@ class IngredientUtils():
         return "Ingredient Tools"
 
     
-    def ingredient_intersect(ing_qs_list):
+    def ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of Intersection Ingredients
 
         Given a list of Ingredient QuerySets, this function will
