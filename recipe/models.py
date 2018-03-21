@@ -60,6 +60,15 @@ class IngredientUtils():
 
         return QuerySet.intersection(*ing_qs_list)
 
+    def make_qs_list(self, ingredients):
+        """Returns a list of QuerySets given a list of ingredient names"""
+        qlist = Q()
+        # loop over ingredients, making new Q objects and storing
+        # them in a QuerySet
+        for ing in ingredients:
+            qlist |= Q(name=ing)
+        db_ings = Ingredient.objects.filter(qlist)
+        return db_ings
         
 
 
