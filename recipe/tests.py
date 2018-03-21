@@ -156,7 +156,7 @@ class IngredientSearchTest(TestCase):
         ing3 = ing3.recipe_set.values()
         ings = [ing1, ing2, ing3]
         # intersect QS's
-        qs = ing_utils.ingredient_intersect(ings)
+        qs = ing_utils._ingredient_intersect(ings)
         # check number of recipes in the qs with minimum size of 
         # base ingredient QuerySets
         self.assertEquals(len(qs), expected_size)
@@ -189,5 +189,5 @@ class IngredientSearchTest(TestCase):
         ing_utils = IngredientUtils()
 
         inglst = ["Ing 1", "Ing 2", "Ing 3"]
-        qlst = ing_utils.make_qs_list(inglst)
+        qlst = ing_utils._make_qs_list(inglst)
         self.assertEqual(len(qlst), 3) 

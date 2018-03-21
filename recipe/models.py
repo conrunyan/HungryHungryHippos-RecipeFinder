@@ -49,8 +49,15 @@ class IngredientUtils():
     def __str__(self):
         return "Ingredient Tools"
 
+
+    def find_recipes(self, ingredients):
+        """Returns a QuerySet of Recipes"""
+
+        ing_qs = make_qs_list(ingredient)
+        recipes = ingredient_intersect(ing_qs)
+        return recipes
     
-    def ingredient_intersect(self, ing_qs_list):
+    def _ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of Intersection Ingredients
 
         Given a list of Ingredient QuerySets, this function will
@@ -60,7 +67,7 @@ class IngredientUtils():
 
         return QuerySet.intersection(*ing_qs_list)
 
-    def make_qs_list(self, ingredients):
+    def _make_qs_list(self, ingredients):
         """Returns a list of QuerySets given a list of ingredient names"""
         qlist = Q()
         # loop over ingredients, making new Q objects and storing
@@ -127,35 +134,6 @@ through='RecipeIngredient')
     def get_appliances(self):
         """Return a queryset of the appliances required by this recipe."""
         return self.appliances.all()
-
-    def has_ingredients(self, ingredients):
-        """"Returns a true if the recipe has all ingredients passed in funciton call"""
-        query_lst = self._make_querylist(ingredients)
-        expected_size = len(ingredients)
-        
-        # get number of matched ingredients in this recipe 
-        if len(self.ingredients.all().values().filter(*query_lst)) == expected_size:
-            return True
-        else:
-            return False
-
-
-    def _make_querylist(self, ingredients):
-        """Returns a list of ingredient name queries.
-
-        Converts a list of ingredient names into a string of Query objects to be
-        evaluated in the "has_ingredients" function.
-        """
-
-        query_lst = []
-        for ingr in ingredients:
-            # create a new Q (advanced query set) for each ingredient
-            tmp_q = Q(name=str(ingr))
-            query_lst.append(tmp_q)
-            query_lst.append('|')
-        # remove last "|"
-        query_lst.pop()
-        return query_lst
 
 
 class RecipeIngredient(models.Model):
