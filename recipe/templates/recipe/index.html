@@ -1,7 +1,37 @@
 {% extends 'base.html' %}
 
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'recipe/slideout.css' %}" />
+
+{% endblock %}
+
+{% block slide_out %}
+<!--Code for slide out button here-->
+<!--Maybe include a slide-out html page in here-->
+<button class="toggle-button">☰</button>
+{% endblock %}
+
+{% block precontent %}
+<div id="menu">
+  <h2>Menu</h2>
+</div>
+{% endblock %}
+
 {% block content %}
+<h1>Index</h1>
+<ul>
+  <li>
+     Test1
+  </li>
+  <li>
+    Test 2
+  </li>
+</ul>
+{% endblock %}
 
-<h1> Index </h1>
-
+{% block footer %}
+  {% load staticfiles %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
+  <script src="{% static 'recipe/slidefunctionality.js' %}"></script>
 {% endblock %}
