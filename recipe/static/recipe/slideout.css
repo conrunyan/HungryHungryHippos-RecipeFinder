@@ -7,13 +7,16 @@ body {
   position: fixed;
   top: 56px;
   bottom: 0;
-  width: 256px;
+  width: 50%;
+  min-width: 300px;
   min-height: 100vh;
+  padding: 30px;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   z-index: 1;
   display: none;
-  background-color: grey;
+  background-color: #D9D9D9;
+  color: #263238; /* Bootstrap blue-grey darken-4 */
 }
 
 .slideout-menu-left {
@@ -30,6 +33,7 @@ body {
   will-change: transform;
   background-color: #FFF; /* A background-color is required */
   min-height: 100vh;
+  transform: translateX(0px) !important;
 }
 
 .slideout-open,
