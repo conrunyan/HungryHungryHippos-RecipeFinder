@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from django.urls import reverse
 from django.test import Client
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -114,3 +114,41 @@ class RecipeAppIndexTest(TestCase):
         response = self.client.get(reverse('recipe:index'))
 
         self.assertEquals(response.status_code, 200)
+
+
+class IngredientSearchTest(TestCase):
+    """Test Searching of Recipes by Ingredient"""
+    
+    def setUp(self):
+        """Get ingredients objects"""
+        self.ing_utils = IngredientUtils()
+
+    def test_ingr_qs_intserection(self):
+        """Tests the interesection of two ingredients"""        
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+        # Create fake recipe to populate RecipeIngredient table.
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        r1 = RecipeIngredient(recipe=recipe_fake, ingredient=ing1, amount=1)
+        r2 = RecipeIngredient(recipe=recipe_fake, ingredient=ing2, amount=3)
+        r1.save()
+        r2.save()
+        # Create real recipe to test against.
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        r3 = RecipeIngredient(recipe=recipe, ingredient=ing1, amount=3)
+        r4 = RecipeIngredient(recipe=recipe, ingredient=ing2, amount=1)
+        r3.save()
+        r4.save()
+        ing1 = ingredients[0]
+        ing2 = ingredients[1]
+        expected_size = min(len(ing1, ing2))
+
+        # save ingredient QS's in a list
+        ings = [ing1, ing2]
+        # intersect QS's
+        qs = ing_utils.ingredient_intersect(ings)
+        # check number of recipes in the qs with minimum size of 
+        # base ingredient QuerySets
+        self.assertEquals(len(qs), expected_size)
+        
+        

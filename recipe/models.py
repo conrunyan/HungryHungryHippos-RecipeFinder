@@ -1,7 +1,7 @@
 """Holds the recipe models for the database."""
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -35,6 +35,33 @@ class Ingredient(models.Model):
     def __str__(self):
         """Return a string to identify the object in the admin app."""
         return self.name
+
+    def get_recipes(self):
+        """Return a QuerySet of associated Recipes"""
+        return self.recipe_set.values()
+
+class IngredientUtils():
+    """Class of ingredient helper functions.
+
+    Contains methods to help search for recipes by ingredient
+    """
+
+    def __str__(self):
+        return "Ingredient Tools"
+
+    
+    def ingredient_intersect(ing_qs_list):
+        """Returns a QuerySet of Intersection Ingredients
+
+        Given a list of Ingredient QuerySets, this function will
+        perform a set intersection, and return a QuerySet containing
+        only shared Recipes between the various Ingredients.
+        """
+
+        return QuerySet.intersection(*ing_qs_list)
+
+        
+
 
 
 class Appliance(models.Model):
@@ -114,7 +141,7 @@ through='RecipeIngredient')
         query_lst = []
         for ingr in ingredients:
             # create a new Q (advanced query set) for each ingredient
-            tmp_q = 'Q(name={0})'.format(str(ingr))
+            tmp_q = Q(name=str(ingr))
             query_lst.append(tmp_q)
             query_lst.append('|')
         # remove last "|"
