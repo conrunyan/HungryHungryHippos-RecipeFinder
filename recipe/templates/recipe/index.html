@@ -2,6 +2,67 @@
 
 {% block content %}
 
-<h1> Index </h1>
+<h1>Select Ingredients:</h1>
+<form id="form_ingredients">
+<table class="table">
+  <tr class="thead-light">
+    <th>
+      U Want?
+    </th>
+    <th>
+      Ingredient
+    </th>
+    <th>
+      Group
+    </th>
+  </tr>
+  {% if ingredients %}
+    {% for ingredient in ingredients %}
+      <tr>
+        <td>
+          <input type="checkbox" name="{{ ingredient.name }}" />
+        </td>
+        <td>
+          {{ ingredient.name }}
+        </td>
+        <td>
+          {{ ingredient.group.name }}
+        </td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td></td>
+      <td>
+        No ingredients :(
+      </td>
+      <td></td>
+    </tr>
+  {% endif %}
+</table>
+
+<input type="submit" value="Submit" class="btn btn-success" />
+</form>
+
+<div class="mt-3">
+<h2 id="selected_title"></h2>
+<ul id="selected_ingredients"></ul>
+</div>
+
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script>
+$(document).ready(function() {
+  $('#form_ingredients').on('submit', function(e) {
+    e.preventDefault();
+    $("#selected_ingredients").empty();
+
+    $('#selected_title').html("You Selected:");
+    $("#form_ingredients input:checked").each(function() {
+      var name = $(this).attr('name');
+      $("#selected_ingredients").append("<li>" + name + "</li>")
+    });
+  });
+});
+</script>
 
 {% endblock %}
