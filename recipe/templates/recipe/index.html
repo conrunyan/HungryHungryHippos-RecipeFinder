@@ -3,6 +3,7 @@
 {% block head %}
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/slideout.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/ingredientsmenu.css' %}" />
 {% endblock %}
 
 {% block slide_out %}
@@ -19,4 +20,5 @@
   {% load staticfiles %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
   <script src="{% static 'recipe/slidefunctionality.js' %}"></script>
+  <script src="{% static 'recipe/ingredientsmenu.js' %}"></script>
 {% endblock %}
