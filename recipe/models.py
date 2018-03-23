@@ -49,12 +49,13 @@ class IngredientUtils():
     def __str__(self):
         return "Ingredient Tools"
 
-
+# TODO: Determine correct data type to pass the intersection function...
+#       It could be that I need to use an active member of the ingredient DB
     def find_recipes(self, ingredients):
         """Returns a QuerySet of Recipes"""
 
-        ing_qs = _make_qs_list(ingredient)
-        recipes = _ingredient_intersect(ing_qs)
+        ing_qs = self._make_qs_list(ingredients)
+        recipes = self._ingredient_intersect(ing_qs)
         return recipes
     
     def _ingredient_intersect(self, ing_qs_list):
