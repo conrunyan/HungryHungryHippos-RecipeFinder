@@ -53,8 +53,8 @@ class IngredientUtils():
     def find_recipes(self, ingredients):
         """Returns a QuerySet of Recipes"""
 
-        ing_qs = make_qs_list(ingredient)
-        recipes = ingredient_intersect(ing_qs)
+        ing_qs = _make_qs_list(ingredient)
+        recipes = _ingredient_intersect(ing_qs)
         return recipes
     
     def _ingredient_intersect(self, ing_qs_list):
