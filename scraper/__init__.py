@@ -27,5 +27,6 @@ def _to_json(scraper):
     results = {}
 
     results['host_name'] = scraper.host_name()
+    results['title'] = scraper.title()
 
     return results

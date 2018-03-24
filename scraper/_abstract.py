@@ -10,10 +10,15 @@ class AbstractScraper:
         """Create a scraper from the given url."""
         self.url = url
 
-        content = urlopen(url).read()
+        contentFile = urlopen(url)
+        content = contentFile.read()
+        contentFile.close()
         self.soup = BeautifulSoup(content, "html.parser")
-
 
     def host_name(self):
         """Return the host name of the scraper."""
+        raise NotImplementedError("abstract")
+
+    def title(self):
+        """Return the title of the recipe."""
         raise NotImplementedError("abstract")
