@@ -26,3 +26,7 @@ class AbstractScraper:
     def summary(self):
         """Return the short summary of the recipe."""
         raise NotImplementedError("abstract")
+
+    def instructions(self):
+        """Return the instructions of the recipe."""
+        raise NotImplementedError("abstract")
