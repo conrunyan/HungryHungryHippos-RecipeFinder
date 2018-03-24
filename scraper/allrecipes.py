@@ -13,3 +13,7 @@ class AllRecipes(AbstractScraper):
     def title(self):
         """Return the title of the recipe."""
         return self.soup.find(attrs={'class': 'recipe-summary__h1'}).text
+
+    def summary(self):
+        """Return the short summary of the recipe."""
+        return self.soup.find(attrs={'class': 'submitter__description'}).text
