@@ -39,3 +39,18 @@ class AllRecipes(AbstractScraper):
         # img_src is thumbnail size. need to upscale it (allrecipes lets you pass in parameters through url)
         img_src = re.sub(r"/[0-9]+x[0-9]+/", "/600x600/", img_src)
         return img_src
+
+    def time(self):
+        """Return the total time to make in minutes."""
+        time_raw = self.soup.find(attrs={'class': 'ready-in-time'}).text
+
+        hour_match = re.search('([0-9]+) h', time_raw)
+        minute_match = re.search('([0-9]+) m', time_raw)
+
+        total_time = 0
+        if hour_match:
+            total_time += int(hour_match.group(1)) * 60
+        if minute_match:
+            total_time += int(minute_match.group(1))
+
+        return str(total_time)

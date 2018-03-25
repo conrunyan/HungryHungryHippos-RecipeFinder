@@ -15,6 +15,10 @@ class AbstractScraper:
         contentFile.close()
         self.soup = BeautifulSoup(content, "html.parser")
 
+    def source_url(self):
+        """Return the url we are scraping from."""
+        return self.url
+
     def host_name(self):
         """Return the host name of the scraper."""
         raise NotImplementedError("abstract")
@@ -25,7 +29,7 @@ class AbstractScraper:
 
     def summary(self):
         """Return the short summary of the recipe."""
-        raise NotImplementedError("abstract")
+        return ''
 
     def instructions(self):
         """Return the instructions of the recipe."""
@@ -33,4 +37,8 @@ class AbstractScraper:
 
     def image_url(self):
         """Return the url of the main recipe image."""
+        return ''
+
+    def time(self):
+        """Return the total time to make in minutes."""
         return ''
