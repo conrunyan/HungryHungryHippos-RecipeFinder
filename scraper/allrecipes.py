@@ -1,5 +1,6 @@
 """Provides concrete implementation for AllRecipes."""
 
+import re
 from ._abstract import AbstractScraper
 
 class AllRecipes(AbstractScraper):
@@ -29,3 +30,12 @@ class AllRecipes(AbstractScraper):
         results += '</ol>'
 
         return results
+
+    def image_url(self):
+        """Return the url of the main recipe image."""
+        img_obj = self.soup.find(attrs={'class': 'photo-strip__items'}).find('li').find('img')
+        img_src = img_obj['src']
+
+        # img_src is thumbnail size. need to upscale it (allrecipes lets you pass in parameters through url)
+        img_src = re.sub(r"/[0-9]+x[0-9]+/", "/600x600/", img_src)
+        return img_src

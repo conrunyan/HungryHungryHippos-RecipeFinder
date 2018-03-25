@@ -30,3 +30,7 @@ class AbstractScraper:
     def instructions(self):
         """Return the instructions of the recipe."""
         raise NotImplementedError("abstract")
+
+    def image_url(self):
+        """Return the url of the main recipe image."""
+        return ''
