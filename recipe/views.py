@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
 
-from .models import Recipe, RecipeIngredient
+from .models import Recipe, RecipeIngredient, Ingredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
 
 
 def index(request):
-    context = {}
+    """Return the base index page for the site."""
+    ingredients = Ingredient.objects.all()
+    context = {"ingredients": ingredients}
     return HttpResponse(render(request, 'recipe/index.html', context))
 
 

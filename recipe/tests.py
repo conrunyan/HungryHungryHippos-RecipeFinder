@@ -88,6 +88,31 @@ class RecipeModelTest(TestCase):
 
         self.assertEquals(list(recipe.get_appliances()), [a1, a3])
 
+    def test_default_visibility_is_private(self):
+        """Check visibility of recipe is private by default."""
+        recipe = Recipe.objects.create(title="Recipe", instructions="Empty")
+
+        self.assertTrue(recipe.is_private)
+
+    def test_can_create_valid_source_url(self):
+        """Check creation of valid source url."""
+        SOURCE_URL = "https://goodrecipes.com/recipes/awesome.html"
+        recipe = Recipe.objects.create(title="Recipe", instructions="Empty", source_url=SOURCE_URL)
+
+        self.assertEquals(recipe.source_url, SOURCE_URL)
+
+    def test_can_create_blank_source_url(self):
+        """Check creation of blank source url."""
+        recipe = Recipe.objects.create(title="Recipe", instructions="Empty", source_url="")
+
+        self.assertEquals(recipe.source_url, "")
+
+    def test_can_create_null_source_url(self):
+        """Check creation of null source url."""
+        recipe = Recipe.objects.create(title="Recipe", instructions="Empty", source_url=None)
+
+        self.assertIsNone(recipe.source_url)
+
 
 class RecipeIngredientModelTest(TestCase):
     """Tests the RecipeIngredient model and methods."""
