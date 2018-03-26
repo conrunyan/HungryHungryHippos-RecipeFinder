@@ -1,6 +1,7 @@
 """Holds the recipe models for the database."""
 
 from django.db import models
+from django.db.models import Q, QuerySet
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -35,6 +36,65 @@ class Ingredient(models.Model):
         """Return a string to identify the object in the admin app."""
         return self.name
 
+    def get_recipes(self):
+        """Return a QuerySet of associated Recipes"""
+        return self.recipe_set.values()
+
+
+class IngredientUtils():
+    """Class of ingredient helper functions.
+
+    Contains methods to help search for recipes by ingredient
+    """
+
+    def __str__(self):
+        return "Ingredient Tools"
+
+    def find_recipes(self, ingredients):
+        """Returns a QuerySet of Recipes"""
+        recipe_qs = self._make_qs_list(ingredients)
+        # if ingredients were found...
+        if len(recipe_qs) > 0:
+            recipes = self._ingredient_intersect(recipe_qs)
+            # print('Returning:', recipes)
+            return recipes
+        # return empty queryset
+        else:
+            emp_qs = Recipe.objects.none()
+            # print('Returning:', emp_qs)
+            return emp_qs
+
+    def _ingredient_intersect(self, ing_qs_list):
+        """Returns a QuerySet of recipes shared between ingredients"""
+
+        return QuerySet.intersection(*ing_qs_list)
+
+    def _make_qs_list(self, ingredients):
+        """Returns a QuerySet of recipes given a list of ingredient names"
+        return QuerySet.intersection(*ing_qs_list)
+        Given a list of Ingredients, this function will search for recipes
+        linked to each ingredient, then perform a set intersection.
+        and return a list of QuerySets containing only shared Recipes between
+        the various Ingredients.
+        """
+
+        recipe_qs = []
+        # loop over ingredients, finding recipes associated with
+        # each ingredient, then storing them in a list of QuerySets 
+        for ing in ingredients:
+            try:
+                cur_ing_qs = Ingredient.objects.get(name=ing)
+            # if ingredient found, get recipes
+                if cur_ing_qs:
+                    tmp_ing = cur_ing_qs
+                    tmp_rec = tmp_ing.get_recipes()
+                    recipe_qs.append(tmp_rec)
+            # else, ingredient does not exist in the database
+            except (Ingredient.DoesNotExist):
+                continue
+        # return query set of recipes
+        return recipe_qs
+
 
 class Appliance(models.Model):
     """This is an appliance that is required to make a recipe.
@@ -62,7 +122,6 @@ class Recipe(models.Model):
     """
 
     title = models.CharField(max_length=50)
-    summary = models.CharField(max_length=280, null=True, blank=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     DIFFICULTY_CHOICES = (
         ('E', 'Easy'),
