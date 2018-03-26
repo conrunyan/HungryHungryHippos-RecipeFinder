@@ -3,6 +3,11 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
+# Supply user agent so scraper is not viewed as bot.
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+}
+
 class AbstractScraper:
     """Defines the abstract recipe scraper."""
 
