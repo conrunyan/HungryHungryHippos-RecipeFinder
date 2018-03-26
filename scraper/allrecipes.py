@@ -2,6 +2,7 @@
 
 import re
 from ._abstract import AbstractScraper
+from ._utils import normalize
 
 class AllRecipes(AbstractScraper):
     """Defines the concrete scraper for AllRecipes."""
@@ -13,23 +14,18 @@ class AllRecipes(AbstractScraper):
 
     def title(self):
         """Return the title of the recipe."""
-        return self.soup.find(attrs={'class': 'recipe-summary__h1'}).text
+        return normalize(self.soup.find(attrs={'class': 'recipe-summary__h1'}).text)
 
     def summary(self):
         """Return the short summary of the recipe."""
-        return self.soup.find(attrs={'class': 'submitter__description'}).text
+        return normalize(self.soup.find(attrs={'class': 'submitter__description'}).text)
 
     def instructions(self):
         """Return the instructions of the recipe."""
         instructions = self.soup.find(attrs={'class': 'recipe-directions__list'})
-        instruction_list = instructions.findAll('span')
+        instruction_list = [x.text for x in instructions.findAll('span')]
 
-        results = '<ol>'
-        for item in instruction_list:
-            results += '<li>{}</li>'.format(item.text)
-        results += '</ol>'
-
-        return results
+        return instruction_list
 
     def image_url(self):
         """Return the url of the main recipe image."""
@@ -57,7 +53,7 @@ class AllRecipes(AbstractScraper):
 
     def ingredients(self):
         """Return the ingredients, amounts, and units needed to make the recipe."""
-        ingredients_raw = self.soup.find_all(attrs={'class': 'recipe-ingred_txt'})
+        ingredients_raw = self.soup.find_all(attrs={'class': 'recipe-ingred_txt', 'itemprop': 'ingredients'})
         ingredients_raw_text = [item.text for item in ingredients_raw]
 
         UNITS = ['teaspoon', 'teaspoons', 'tsp', 't', 'tablespoon', 'tablespoons', 'tbsp', 'T',
@@ -66,9 +62,9 @@ class AllRecipes(AbstractScraper):
 
         ingredient_objs = []
         # Regular expression for extracting the unit
-        reg_unit = re.compile(r'([0-9]+( [0-9]+/[0-9]+)?) +(?P<unit>\w+)')
+        reg_unit = re.compile(r'([0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<unit>\w+)')
         # Regular expression for after the unit has been removed
-        reg = re.compile(r'^(?P<amount>[0-9]+( [0-9]+/[0-9]+)?) +(?P<ingredient>[\w ]+)')
+        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<ingredient>[\w ]+)')
         for item in ingredients_raw_text:
             unit_match = reg_unit.match(item)
             unit = ''
@@ -92,6 +88,6 @@ class AllRecipes(AbstractScraper):
             if not ingredient:
                 continue
 
-            ingredient_objs.append({'amount': amount, 'unit': unit, 'ingredient': ingredient})
+            ingredient_objs.append({'amount': normalize(amount), 'unit': normalize(unit), 'ingredient': normalize(ingredient)})
 
         return ingredient_objs

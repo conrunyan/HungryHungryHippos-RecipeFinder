@@ -11,7 +11,7 @@ def scrape(request):
     """Return a json object from a given url. URL is specified by '?url=' parameter."""
     site_url = escape(request.GET.get('url', ''))
 
-    results = {'valid': 'false', 'url': site_url}
+    results = {'valid': 'false', 'source_url': site_url}
 
     try:
         parse_results = parse(site_url)

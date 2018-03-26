@@ -6,13 +6,15 @@ from urllib.request import urlopen
 class AbstractScraper:
     """Defines the abstract recipe scraper."""
 
-    def __init__(self, url):
-        """Create a scraper from the given url."""
+    def __init__(self, url, test=False):
+        """Create a scraper from the given url. If test=True, then the url is the actual html."""
         self.url = url
 
-        contentFile = urlopen(url)
-        content = contentFile.read()
-        contentFile.close()
+        content = url
+        if not test:
+            contentFile = urlopen(url)
+            content = contentFile.read()
+            contentFile.close()
         self.soup = BeautifulSoup(content, "html.parser")
 
     def source_url(self):
