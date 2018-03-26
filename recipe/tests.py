@@ -143,12 +143,12 @@ class RecipeAppIndexTest(TestCase):
 
 class IngredientSearchTest(TestCase):
     """Test Searching of Recipes by Ingredient"""
-    
+
     def setUp(self):
         """Get ingredients objects"""
 
     def test_ingr_qs_intserection(self):
-        """Tests the interesection of two ingredients"""        
+        """Tests the interesection of two ingredients"""
         group = Group.objects.create(name="TestGroup")
         ing1 = Ingredient.objects.create(group=group, name="Ing 1")
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
@@ -182,12 +182,12 @@ class IngredientSearchTest(TestCase):
         ings = [ing1, ing2, ing3]
         # intersect QS's
         qs = ing_utils._ingredient_intersect(ings)
-        # check number of recipes in the qs with minimum size of 
+        # check number of recipes in the qs with minimum size of
         # base ingredient QuerySets
         self.assertEquals(len(qs), expected_size)
-        
+
     def test_make_qs_list(self):
-            
+
         group = Group.objects.create(name="TestGroup")
         ing1 = Ingredient.objects.create(group=group, name="Ing 1")
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
@@ -210,9 +210,43 @@ class IngredientSearchTest(TestCase):
         r4.save()
         r5.save()
         r6.save()
-    
         ing_utils = IngredientUtils()
 
         inglst = ["Ing 1", "Ing 2", "Ing 3"]
         qlst = ing_utils._make_qs_list(inglst)
-        self.assertEqual(len(qlst), 3) 
+        self.assertEqual(len(qlst), 3)
+
+    def test_get_recipe_range(self):
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
+        # Create fake recipe to populate RecipeIngredient table.
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
+        r1.save()
+        r2.save()
+        # Create real recipe to test against.
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
+        r3.save()
+        # Create real recipe3 to test against.
+        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
+        r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
+        r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
+        r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
+        r4.save()
+        r5.save()
+        r6.save()
+        ing_utils = IngredientUtils()
+
+        # make recipe list
+        inglst = ["Ing 1", "Ing 2"]
+        ing_qs = ing_utils._make_qs_list(inglst)
+        recs = ing_utils._ingredient_intersect(ing_qs)
+
+        # get recipe slice
+        sliced_recs = ing_utils._get_recipe_range(recs, 0, 2)
+
+        self.assertEquals(len(sliced_recs), 2)

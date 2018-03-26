@@ -53,14 +53,23 @@ class IngredientUtils():
     def __str__(self):
         return "Ingredient Tools"
 
-    def find_recipes(self, ingredients):
-        """Returns a QuerySet of Recipes"""
+    def find_recipes(self, ingredients, start, end):
+        """Returns a QuerySet of Recipes
+        Given a list of ingredients and a range, the database
+        will be queried to find all recipes with common association
+        between the ingredients.
+
+        Once these are found, the range provided will determine how
+        many recipes are actually returned.
+        """
+
         recipe_qs = self._make_qs_list(ingredients)
         # if ingredients were found...
         if len(recipe_qs) > 0:
             recipes = self._ingredient_intersect(recipe_qs)
+            sliced_recipes = self._get_recipe_range(recipes, start, end)
             # print('Returning:', recipes)
-            return recipes
+            return sliced_recipes
         # return empty queryset
         else:
             emp_qs = Recipe.objects.none()
@@ -74,7 +83,7 @@ class IngredientUtils():
 
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
-        return QuerySet.intersection(*ing_qs_list)
+
         Given a list of Ingredients, this function will search for recipes
         linked to each ingredient, then perform a set intersection.
         and return a list of QuerySets containing only shared Recipes between
@@ -83,7 +92,7 @@ class IngredientUtils():
 
         recipe_qs = []
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets 
+        # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
             try:
                 cur_ing_qs = Ingredient.objects.get(name=ing)
@@ -97,6 +106,14 @@ class IngredientUtils():
                 continue
         # return query set of recipes
         return recipe_qs
+
+    def _get_recipe_range(self, recipe_list, start, end):
+        """Returns a slice of a Recipe QuerySet
+
+        NOTE: Currently set to sort by "title". Can be changed to
+        whatever we want the recipes to be sorted by.
+        """
+        return recipe_list.order_by('title')[start:end]
 
 
 class Appliance(models.Model):
