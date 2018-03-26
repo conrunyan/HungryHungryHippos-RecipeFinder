@@ -48,3 +48,7 @@ class AbstractScraper:
     def ingredients(self):
         """Return the ingredients, amounts, and units needed to make the recipe."""
         raise NotImplementedError("abstract")
+
+    def appliances(self):
+        """Return the appliances needed to make the recipe."""
+        raise NotImplementedError("abstract")

@@ -75,3 +75,9 @@ class TestAllRecipes(TestCase):
         scraper_amounts = [x['amount'] for x in self.scraper.ingredients()]
 
         self.assertListEqual(AMOUNTS, scraper_amounts)
+
+    def test_appliances(self):
+        """Test the appliances required for the recipe."""
+        APPLIANCES = ['oven', 'microwave']
+
+        self.assertListEqual(APPLIANCES, self.scraper.appliances())

@@ -91,3 +91,15 @@ class AllRecipes(AbstractScraper):
             ingredient_objs.append({'amount': normalize(amount), 'unit': normalize(unit), 'ingredient': normalize(ingredient)})
 
         return ingredient_objs
+
+    def appliances(self):
+        """Return the appliances needed to make the recipe."""
+        APPLIANCES = ['oven', 'microwave', 'deep-fryer', 'mixer', 'blender', 'food processor']
+
+        instr = ' '.join(self.instructions())
+        appliances = []
+        for appliance in APPLIANCES:
+            if instr.find(appliance) != -1 and appliance not in appliances:
+                appliances.append(appliance)
+
+        return appliances
