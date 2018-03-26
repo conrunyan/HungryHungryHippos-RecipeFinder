@@ -117,7 +117,7 @@ class CreateUserFormTest(TestCase):
             'password_verify': 'password'
             })
         self.assertFalse(form.is_valid())
-        self.assertEqual(form['password'].errors[0], "This password is too common.")  
+        self.assertEqual(form['password'].errors[0], "This password is too common.")
 
     def test_invalid_incomplete(self):
         '''When form isn't completely filled out, form is not valid'''
