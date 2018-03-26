@@ -29,6 +29,7 @@ def login_view(request):
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/login.html', context))
 
+
 def register_view(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
@@ -60,6 +61,7 @@ def register_view(request):
 
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/register.html', context))
+
 
 def logout_view(request):
     logout(request)

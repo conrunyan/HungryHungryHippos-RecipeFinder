@@ -63,21 +63,23 @@ class Recipe(models.Model):
 
     title = models.CharField(max_length=50)
     summary = models.CharField(max_length=280, null=True, blank=True)
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(
+        User, null=True, on_delete=models.SET_NULL, editable=False)
     DIFFICULTY_CHOICES = (
+        ('', '--Difficulty--'),
         ('E', 'Easy'),
         ('M', 'Medium'),
         ('D', 'Difficult')
     )
     difficulty = models.CharField(max_length=1, null=True,
-        choices=DIFFICULTY_CHOICES)
+                                  choices=DIFFICULTY_CHOICES)
     time = models.IntegerField(null=True, blank=True)
     image_url = models.CharField(max_length=200, null=True, blank=True)
-    rating = models.FloatField(null=True, blank=True)
+    rating = models.FloatField(null=True, blank=True, editable=False)
     instructions = models.TextField()
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(auto_now_add=True, editable=False)
     ingredients = models.ManyToManyField(Ingredient,
-through='RecipeIngredient')
+                                         through='RecipeIngredient')
     appliances = models.ManyToManyField(Appliance)
 
     def __str__(self):

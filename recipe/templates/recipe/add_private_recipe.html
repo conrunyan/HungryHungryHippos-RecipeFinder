@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center m-5">Add Private Recipe</h1>
+
+
+{% for error in form.non_field_errors %}
+	<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+{% endfor %}
+
+{% for field in form %}
+	{% for error in field.errors %}
+		<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+	{% endfor %}
+{% endfor %}
+
+<form method="post" class="form-signin">
+	{% csrf_token %}
+
+	<!-- {{ form2 }} -->
+
+	<!-- Add Recipe form -->
+	{% for field in form %}
+		<p>
+			{{ field }}
+		</p>
+	{% endfor %}
+
+	<!-- Ingredient forms -->
+	{% for ingredient_form in formset %}
+		<!-- Ingredient form errors -->
+		{% for ingredient_error in ingredient_form.non_field_errors %}
+			<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
+		{% endfor %}
+
+		<!-- Ingredient form field errors -->
+		{% for ingredient_field in ingredient_form %}
+		<!-- Ingredient form field errors -->
+			{% for ingredient_error in ingredient_field.errors %}
+				<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
+			{% endfor %}
+
+			<!-- Ingredient field -->
+			{{ ingredient_field }}
+		{% endfor %}
+	{% endfor %}
+	<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
+</form>
+
+<form method="post" class="form-signin">
+	{% csrf_token %}
+	{{ form3 }}
+</form>
+
+{% endblock %}
+
+
