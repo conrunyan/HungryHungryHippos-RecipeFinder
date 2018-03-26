@@ -3,6 +3,7 @@
 import re
 from ._abstract import AbstractScraper
 from ._utils import normalize
+from .errors import IngredientParsingError
 
 class AllRecipes(AbstractScraper):
     """Defines the concrete scraper for AllRecipes."""
@@ -66,6 +67,7 @@ class AllRecipes(AbstractScraper):
         # Regular expression for after the unit has been removed
         reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<ingredient>[\w ]+)')
         for item in ingredients_raw_text:
+            raw_item = item
             unit_match = reg_unit.match(item)
             unit = ''
             # Try to match the unit and remove it
@@ -78,15 +80,15 @@ class AllRecipes(AbstractScraper):
             # Then match the rest
             match = reg.match(item)
             if not match:
-                continue
+                raise IngredientParsingError(raw_item)
 
             amount = match.group('amount')
             ingredient = match.group('ingredient')
 
             if not amount:
                 amount = ''
-            if not ingredient:
-                continue
+            if not ingredient or ingredient.isspace():
+                raise IngredientParsingError(raw_item)
 
             ingredient_objs.append({'amount': normalize(amount), 'unit': normalize(unit), 'ingredient': normalize(ingredient)})
 

@@ -3,13 +3,11 @@
 from urllib.parse import urlparse
 
 from .allrecipes import AllRecipes
+from .errors import UnknownWebsiteError
 
 SCRAPERS = {
     AllRecipes.host_name()  :   AllRecipes
 }
-
-class UnknownWebsiteError(NotImplementedError):
-    """Error for if a website has not been implemented yet."""
 
 def parse(url):
     """Choose an appropriate scraper and scrape the url."""

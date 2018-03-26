@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.html import escape
 from urllib.error import URLError
-from scraper import parse, UnknownWebsiteError
+from scraper import parse
+from .errors import UnknownWebsiteError, RecipeParsingError
 
 # Create your views here.
 def scrape(request):
@@ -23,6 +24,8 @@ def scrape(request):
     except (ValueError, URLError):
         results['error'] = 'invalid url'
     except UnknownWebsiteError as e:
+        results['error'] = str(e)
+    except RecipeParsingError as e:
         results['error'] = str(e)
 
     return JsonResponse(results)
