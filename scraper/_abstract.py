@@ -1,7 +1,7 @@
 """Provides the abstract definition for a scraper."""
 
 from bs4 import BeautifulSoup
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 # Supply user agent so scraper is not viewed as bot.
 HEADERS = {
@@ -17,7 +17,7 @@ class AbstractScraper:
 
         content = url
         if not test:
-            contentFile = urlopen(url)
+            contentFile = urlopen(Request(url, headers=HEADERS))
             content = contentFile.read()
             contentFile.close()
         self.soup = BeautifulSoup(content, "html.parser")
