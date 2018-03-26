@@ -66,11 +66,12 @@ class IngredientUtils():
 
     def _ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of recipes shared between ingredients"""
+
         return QuerySet.intersection(*ing_qs_list)
 
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
-
+        return QuerySet.intersection(*ing_qs_list)
         Given a list of Ingredients, this function will search for recipes
         linked to each ingredient, then perform a set intersection.
         and return a list of QuerySets containing only shared Recipes between
@@ -78,16 +79,19 @@ class IngredientUtils():
         """
 
         recipe_qs = []
-        # loop over ingredients, making new Q objects and storing
-        # them in a QuerySet
+        # loop over ingredients, finding recipes associated with
+        # each ingredient, then storing them in a list of QuerySets 
         for ing in ingredients:
-            cur_ing_qs = Ingredient.objects.filter(name=ing)
+            try:
+                cur_ing_qs = Ingredient.objects.get(name=ing)
             # if ingredient found, get recipes
-            if len(cur_ing_qs) == 1:
-                tmp_ing = cur_ing_qs[0]
-                tmp_rec = tmp_ing.get_recipes()
-                recipe_qs.append(tmp_rec)
-
+                if cur_ing_qs:
+                    tmp_ing = cur_ing_qs
+                    tmp_rec = tmp_ing.get_recipes()
+                    recipe_qs.append(tmp_rec)
+            # else, ingredient does not exist in the database
+            except (Ingredient.DoesNotExist):
+                continue
         # return query set of recipes
         return recipe_qs
 
