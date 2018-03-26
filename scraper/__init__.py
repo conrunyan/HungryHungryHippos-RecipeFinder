@@ -32,5 +32,6 @@ def _to_json(scraper):
     results['instructions'] = scraper.instructions()
     results['image_url'] = scraper.image_url()
     results['time'] = scraper.time()
+    results['ingredients'] = scraper.ingredients()
 
     return results

@@ -42,3 +42,7 @@ class AbstractScraper:
     def time(self):
         """Return the total time to make in minutes."""
         return ''
+
+    def ingredients(self):
+        """Return the ingredients, amounts, and units needed to make the recipe."""
+        raise NotImplementedError("abstract")
