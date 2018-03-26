@@ -50,14 +50,23 @@ class IngredientUtils():
     def __str__(self):
         return "Ingredient Tools"
 
-# TODO: Determine correct data type to pass the intersection function...
-#       It could be that I need to use an active member of the ingredient DB
     def find_recipes(self, ingredients):
         """Returns a QuerySet of Recipes"""
+        recipe_qs = self._make_qs_list(ingredients)
+        # if ingredients were found...
+        if len(recipe_qs) > 0:
+            recipes = self._ingredient_intersect(recipe_qs)
+            # print('Returning:', recipes)
+            return recipes
+        # return empty queryset
+        else:
+            emp_qs = Recipe.objects.none()
+            # print('Returning:', emp_qs)
+            return emp_qs
 
-        recipes = self._make_qs_list(ingredients)
-        # recipes = self._ingredient_intersect(ing_qs)
-        return recipes
+    def _ingredient_intersect(self, ing_qs_list):
+        """Returns a QuerySet of recipes shared between ingredients"""
+        return QuerySet.intersection(*ing_qs_list)
 
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
@@ -79,11 +88,8 @@ class IngredientUtils():
                 tmp_rec = tmp_ing.get_recipes()
                 recipe_qs.append(tmp_rec)
 
-        # AND recipes together to remove any non-shared recipes
-        out_qs = Q(*recipe_qs)
-
         # return query set of recipes
-        return out_qs.children[0]
+        return recipe_qs
 
 
 class Appliance(models.Model):
