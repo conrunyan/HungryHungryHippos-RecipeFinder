@@ -5,13 +5,13 @@ from django.http import JsonResponse, HttpResponse
 from django.utils.html import escape
 from django.contrib.admin.views.decorators import staff_member_required
 from urllib.error import URLError
-from scraper import parse
+from scraper import parse, get_batch
 from .errors import UnknownWebsiteError, RecipeParsingError
 from ._utils import htmlify_list
 from recipe.models import Ingredient, Recipe, Appliance, Group, RecipeIngredient
 
-def _scrape(request):
-    site_url = escape(request.GET.get('url', ''))
+def _scrape(url):
+    site_url = escape(url)
 
     results = {'valid': 'False', 'source_url': site_url}
 
@@ -24,6 +24,8 @@ def _scrape(request):
         results['valid'] = 'True'
     except (ValueError, URLError):
         results['error'] = 'invalid url'
+    except (KeyError, AttributeError) as e:
+        results['error'] = 'parsing error: {}'.format(e)
     except UnknownWebsiteError as e:
         results['error'] = str(e)
     except RecipeParsingError as e:
@@ -31,23 +33,14 @@ def _scrape(request):
 
     return results
 
-
-@staff_member_required(login_url='login')
-def scrape_and_display(request):
-    """Return a json object from a given url. URL is specified by '?url=' parameter."""
-    return JsonResponse(_scrape(request))
-
-@staff_member_required(login_url='login')
-def scrape_and_save(request):
-    """Parse a url and save it to the database."""
-    results = _scrape(request)
-
+def _scrape_and_save(url, user):
+    results = _scrape(url)
     if results['valid'] != 'True':
-        return HttpResponse('Error in parsing site.')
+        return 'Error in parsing site: {}'.format(results['error'])
 
     source_url = results['source_url']
     if Recipe.objects.filter(source_url__contains=source_url):
-        return HttpResponse('This url has already been parsed')
+        return 'This url has already been parsed'
 
     title = results['title']
     summary = results['summary']
@@ -56,10 +49,10 @@ def scrape_and_save(request):
     time = results['time']
     if time:
         time = int(time)
+    else:
+        time = None
     ingredients = results['ingredients']
     appliances = results['appliances']
-
-    user = request.user
 
     recipe = Recipe.objects.create(title=title, summary=summary, instructions=instructions,
         image_url=image_url, time=time, source_url=source_url, user=user, is_private=False)
@@ -67,7 +60,42 @@ def scrape_and_save(request):
     recipe.appliances.add(*get_appliance_objects(appliances))
     add_ingredient_objects(ingredients, recipe)
 
-    return HttpResponse('Recipe saved')
+    return 'Recipe saved'
+
+@staff_member_required(login_url='login')
+def scrape_batch(request, start, end):
+    """Scrape and save a batch of recipes based on passed parameters."""
+    start = int(start)
+    end = int(end)
+    if start > end:
+        return HttpResponse('Start must be less than end')
+
+    site_url = escape(request.GET.get('url', ''))
+    results = []
+
+    try:
+        site_list = get_batch(site_url, start, end)
+
+        for site in site_list:
+            results.append(_scrape_and_save(site, request.user) + " --- " + site)
+    except (URLError) as e:
+        return HttpResponse('Invalid url: ' + str(e))
+    # except (KeyError, ValueError) as e:
+    #     return HttpResponse('Key or Value error: ' + str(e))
+    except UnknownWebsiteError as e:
+        return HttpResponse('Unknown website: ' + str(e))
+
+    return HttpResponse('Successfully added batch<br/>' + htmlify_list(results))
+
+@staff_member_required(login_url='login')
+def scrape_and_display(request):
+    """Return a json object from a given url. URL is specified by '?url=' parameter."""
+    return JsonResponse(_scrape(escape(request.GET.get('url', ''))))
+
+@staff_member_required(login_url='login')
+def scrape_and_save(request):
+    """Parse a url and save it to the database."""
+    return HttpResponse(_scrape_and_save(escape(request.GET.get('url', '')), request.user))
 
 def get_appliance_objects(appliances):
     """Turn a string of appliances into appliance objects and create them if they don't exist."""

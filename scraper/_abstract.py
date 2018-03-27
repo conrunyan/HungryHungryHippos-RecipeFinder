@@ -5,7 +5,7 @@ from urllib.request import urlopen, Request
 
 # Supply user agent so scraper is not viewed as bot.
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 }
 
 class AbstractScraper:
@@ -21,6 +21,10 @@ class AbstractScraper:
             content = contentFile.read()
             contentFile.close()
         self.soup = BeautifulSoup(content, "html.parser")
+
+    def generate_url(self, number):
+        """Generate a url with the specified parameters."""
+        raise NotImplementedError("abstract")
 
     def source_url(self):
         """Return the url we are scraping from."""

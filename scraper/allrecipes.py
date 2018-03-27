@@ -1,12 +1,20 @@
 """Provides concrete implementation for AllRecipes."""
 
 import re
-from ._abstract import AbstractScraper
+from ._abstract import AbstractScraper, HEADERS
 from ._utils import normalize
-from .errors import IngredientParsingError
+from .errors import IngredientParsingError, RecipeParsingError
+from urllib.request import build_opener, Request, urlopen
 
 class AllRecipes(AbstractScraper):
     """Defines the concrete scraper for AllRecipes."""
+
+    @classmethod
+    def generate_url(self, number):
+        """Generate a url with the specified parameters."""
+        url = "https://www.allrecipes.com/recipe/{}".format(number)
+        content = urlopen(Request(url, headers=HEADERS))
+        return content.geturl()
 
     @classmethod
     def host_name(self):
@@ -15,22 +23,38 @@ class AllRecipes(AbstractScraper):
 
     def title(self):
         """Return the title of the recipe."""
-        return normalize(self.soup.find(attrs={'class': 'recipe-summary__h1'}).text)
+        title = self.soup.find(attrs={'class': 'recipe-summary__h1'})
+        if not title:
+            raise RecipeParsingError("No title found")
+        return normalize(title.text)
 
     def summary(self):
         """Return the short summary of the recipe."""
-        return normalize(self.soup.find(attrs={'class': 'submitter__description'}).text)
+        summary = self.soup.find(attrs={'class': 'submitter__description'})
+        if not summary:
+            return ''
+        return normalize(summary.text)
 
     def instructions(self):
         """Return the instructions of the recipe."""
         instructions = self.soup.find(attrs={'class': 'recipe-directions__list'})
+        if not instructions:
+            raise RecipeParsingError("No instructions found")
         instruction_list = [x.text for x in instructions.findAll('span')]
 
         return instruction_list
 
     def image_url(self):
         """Return the url of the main recipe image."""
-        img_obj = self.soup.find(attrs={'class': 'photo-strip__items'}).find('li').find('img')
+        photo_strip = self.soup.find(attrs={'class': 'photo-strip__items'})
+        if not photo_strip:
+            return ''
+        li = photo_strip.find('li')
+        if not li:
+            return ''
+        img_obj = li.find('img')
+        if not img_obj:
+            return ''
         img_src = img_obj['src']
 
         # img_src is thumbnail size. need to upscale it (allrecipes lets you pass in parameters through url)
@@ -39,7 +63,10 @@ class AllRecipes(AbstractScraper):
 
     def time(self):
         """Return the total time to make in minutes."""
-        time_raw = self.soup.find(attrs={'class': 'ready-in-time'}).text
+        time = self.soup.find(attrs={'class': 'ready-in-time'})
+        if not time:
+            return ''
+        time_raw = time.text
 
         hour_match = re.search(r'([0-9]+) h', time_raw)
         minute_match = re.search(r'([0-9]+) m', time_raw)
@@ -65,7 +92,7 @@ class AllRecipes(AbstractScraper):
         # Regular expression for extracting the unit
         reg_unit = re.compile(r'([0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<unit>\w+)')
         # Regular expression for after the unit has been removed
-        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<ingredient>[\w ]+)')
+        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<ingredient>[\w -]+)')
         for item in ingredients_raw_text:
             raw_item = item
             unit_match = reg_unit.match(item)

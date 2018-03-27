@@ -11,14 +11,28 @@ SCRAPERS = {
 
 def parse(url):
     """Choose an appropriate scraper and scrape the url."""
+    scraper = _get_scraper(url)
+
+    return _to_json(scraper(url))
+
+def get_batch(base_url, start, end):
+    """Return a list of urls appropriate to the parameters."""
+    scraper = _get_scraper(base_url)
+
+    sites = []
+    for i in range(start, end + 1):
+        sites.append(scraper.generate_url(i))
+    return sites
+
+def _get_scraper(url):
+    """Return an appropriate scraper for the url."""
     hostname = urlparse(url).hostname
 
     try:
         scraper = SCRAPERS[hostname]
+        return scraper
     except KeyError:
         raise UnknownWebsiteError('No scraper for {}'.format(hostname))
-
-    return _to_json(scraper(url))
 
 def _to_json(scraper):
     """Convert valid scraper object to json."""
