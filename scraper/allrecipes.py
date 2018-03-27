@@ -2,7 +2,7 @@
 
 import re
 from ._abstract import AbstractScraper, HEADERS
-from ._utils import normalize
+from . import utils
 from .errors import IngredientParsingError, RecipeParsingError
 from urllib.request import build_opener, Request, urlopen
 
@@ -13,8 +13,9 @@ class AllRecipes(AbstractScraper):
     def generate_url(self, number):
         """Generate a url with the specified parameters."""
         url = "https://www.allrecipes.com/recipe/{}".format(number)
-        content = urlopen(Request(url, headers=HEADERS))
-        return content.geturl()
+        #content = urlopen(Request(url, headers=HEADERS))
+        #return content.geturl()
+        return url
 
     @classmethod
     def host_name(self):
@@ -26,14 +27,14 @@ class AllRecipes(AbstractScraper):
         title = self.soup.find(attrs={'class': 'recipe-summary__h1'})
         if not title:
             raise RecipeParsingError("No title found")
-        return normalize(title.text)
+        return utils.normalize(title.text)
 
     def summary(self):
         """Return the short summary of the recipe."""
         summary = self.soup.find(attrs={'class': 'submitter__description'})
         if not summary:
             return ''
-        return normalize(summary.text)
+        return utils.normalize(summary.text)
 
     def instructions(self):
         """Return the instructions of the recipe."""
@@ -117,7 +118,7 @@ class AllRecipes(AbstractScraper):
             if not ingredient or ingredient.isspace():
                 raise IngredientParsingError(raw_item)
 
-            ingredient_objs.append({'amount': normalize(amount), 'unit': normalize(unit), 'ingredient': normalize(ingredient)})
+            ingredient_objs.append({'amount': utils.normalize(amount), 'unit': utils.normalize(unit), 'ingredient': utils.normalize(ingredient)})
 
         return ingredient_objs
 
