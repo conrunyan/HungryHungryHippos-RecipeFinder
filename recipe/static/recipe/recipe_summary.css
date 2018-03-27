@@ -1,0 +1,9 @@
+.recipe-summary img {
+  height: 75px;
+  width: 75px;
+  overflow: hidden;
+  float: left;
+  margin-right: 10px;
+  align: top;
+  border-radius: 8px;
+}

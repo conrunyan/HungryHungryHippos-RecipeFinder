@@ -6,6 +6,7 @@ from emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
 from emailauth.views import sendAuthEmail
+from recipe.models import Recipe
 
 
 def login_view(request):
@@ -66,3 +67,8 @@ def logout_view(request):
     response = redirect('recipe:index')
     response.user = request.user
     return response
+
+def myrecipes_view(request):
+    my_recipes = Recipe.objects.filter(user=request.user)
+    context = {"my_recipes" : my_recipes }
+    return HttpResponse(render(request, 'recipe/myRecipes.html', context))

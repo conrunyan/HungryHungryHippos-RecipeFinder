@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'recipe/recipe_summary.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <h1>My Recipes:</h1>
+  {% if my_recipes %}
+    {% for recipe in my_recipes %}
+      <hr />
+      <div class="recipe-summary">
+        <img src="{{recipe.image_url}}"/>
+        <div>
+          <h3>{{recipe.title}}</h3>
+          <p>{{recipe.summary}}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>You have not added any recipes.</p>
+  {% endif %}
+{% endblock %}
