@@ -26,9 +26,13 @@ $(document).ready(function() {
   function addToList(element) {
     if (element.prop("checked")) {
       listOfIngredients.push(element.prop("value"));
+      document.getElementById("noIngredients").style.display = 'none';
     } else {
       var index = listOfIngredients.indexOf(element.prop("value"));
       if (index !== -1) listOfIngredients.splice(index, 1);
+      if (listOfIngredients.length == 0) {
+        document.getElementById("noIngredients").style.display = 'block';
+      }
     }
   }
 });

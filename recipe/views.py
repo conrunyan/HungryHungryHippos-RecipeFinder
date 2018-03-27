@@ -7,5 +7,6 @@ from .models import Group
 def index(request):
 	"""Return the base index page for the site."""
 	groups = Group.objects.order_by("name")
-	context = { "groups" : groups }
+	ingredientsAreSelected = False
+	context = { "groups" : groups , "ingredientsAreSelected" : ingredientsAreSelected}
 	return HttpResponse(render(request, 'recipe/index.html', context))
