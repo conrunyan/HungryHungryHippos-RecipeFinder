@@ -9,3 +9,11 @@ def normalize(s):
         s = s[:-1]
 
     return s
+
+def htmlify_list(l):
+    """Turn a list into an html ordered list."""
+    r = "<ol>"
+    for i in l:
+        r += "<li>{}</li>".format(str(i))
+    r += "</ol>"
+    return r

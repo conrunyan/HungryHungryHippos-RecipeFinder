@@ -6,6 +6,6 @@ from . import views
 
 app_name = "scraper"
 urlpatterns = [
-    url(r'^$', views.scrape_site, name='scrape_site'),
-    url(r'^save/$', views.scrape_and_save, name='scrape')
+    url(r'^display/$', views.scrape_and_display, name='scrape_and_display'),
+    url(r'^$', views.scrape_and_save, name='scrape_and_save')
 ]
