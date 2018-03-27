@@ -8,7 +8,7 @@ from urllib.error import URLError
 from scraper import parse
 from .errors import UnknownWebsiteError, RecipeParsingError
 from ._utils import htmlify_list
-from recipe.models import Ingredient, Recipe, Appliance
+from recipe.models import Ingredient, Recipe, Appliance, Group, RecipeIngredient
 
 def _scrape(request):
     site_url = escape(request.GET.get('url', ''))
@@ -46,6 +46,9 @@ def scrape_and_save(request):
         return HttpResponse('Error in parsing site.')
 
     source_url = results['source_url']
+    if Recipe.objects.filter(source_url__contains=source_url):
+        return HttpResponse('This url has already been parsed')
+
     title = results['title']
     summary = results['summary']
     instructions = htmlify_list(results['instructions'])
@@ -62,6 +65,7 @@ def scrape_and_save(request):
         image_url=image_url, time=time, source_url=source_url, user=user, is_private=False)
 
     recipe.appliances.add(*get_appliance_objects(appliances))
+    add_ingredient_objects(ingredients, recipe)
 
     return HttpResponse('Recipe saved')
 
@@ -75,4 +79,36 @@ def get_appliance_objects(appliances):
             results.append(obj.first())
         else:
             results.append(Appliance.objects.create(name=appliance))
+    return results
+
+def add_ingredient_objects(ingredients, recipe):
+    """Turn a list of json objects into Ingredient and RecipeIngredient and create if they don't exist."""
+    # Get an uncategorized group
+    UNCATEGORIZED_NAME = 'uncategorized'
+    group = Group.objects.filter(name__iexact=UNCATEGORIZED_NAME)
+    if group:
+        group = group.first()
+    else:
+        group = Group.objects.create(name=UNCATEGORIZED_NAME)
+
+    # Create Ingredients if they don't exist and add them to recipe ingredients
+    results = []
+    for obj in ingredients:
+        name = obj['ingredient'].lower()
+        ingredient_filter = Ingredient.objects.filter(name__iexact=name)
+        ingredient = None
+        if ingredient_filter:
+            ingredient = ingredient_filter.first()
+        else:
+            ingredient = Ingredient.objects.create(name=name, group=group)
+
+        amount = obj['amount']
+        unit = obj['unit']
+
+        if not amount:
+            amount = None
+        if not unit:
+            unit = None
+
+        results.append(RecipeIngredient.objects.create(recipe=recipe, ingredient=ingredient, amount=amount, unit=unit))
     return results
