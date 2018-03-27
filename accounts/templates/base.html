@@ -11,52 +11,50 @@
   </head>
   <body>
     <!--Navbar-->
-    <nav class="navbar navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-dark fixed-top bg-dark navbar-expand-md">
       {% block slide_out %}
       {% endblock %}
       <a class="navbar-brand nav-item nav-link mr-auto" href="{% url 'recipe:index' %}">Hungry Hungry Hippos</a>
-      <div class="navbar-expand-md">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav ml-auto">
-            <!--TODO: Use JavaScript to reset what is active-->
-            {% if user.is_authenticated %}
-            <!--User view-->
-              <li class="nav-item">
-                <span class="nav-link">{{ user.get_username }}</span>
-              </li>
-              <li class="nav-item">
-                <!--TODO: replace # with correct links once they are up and running-->
-                <a class="nav-link" href="#">Profile</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Settings</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Favorites</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Add Recipe</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">My Recipes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-              </li>
-            {% else %}
-            <!--Guest view-->
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'register' %}">Create Account</a>
-              </li>
-            {% endif %}
-          </ul>
-        </div>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto">
+          <!--TODO: Use JavaScript to reset what is active-->
+          {% if user.is_authenticated %}
+          <!--User view-->
+            <li class="nav-item">
+              <span class="nav-link">{{ user.get_username }}</span>
+            </li>
+            <li class="nav-item">
+              <!--TODO: replace # with correct links once they are up and running-->
+              <a class="nav-link" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Settings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Favorites</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Add Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">My Recipes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+          {% else %}
+          <!--Guest view-->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}">Create Account</a>
+            </li>
+          {% endif %}
+        </ul>
       </div>
     </nav>
 

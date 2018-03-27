@@ -45,3 +45,17 @@ body {
 .slideout-open .slideout-menu {
   display: block;
 }
+
+.hamburger-menu-button {
+  height: 40px;
+  width: 56px;
+}
+
+button {
+  padding:0;
+  border-style: none;
+}
+
+button:hover {
+  cursor: pointer;
+}

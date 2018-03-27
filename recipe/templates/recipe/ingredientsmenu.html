@@ -17,7 +17,10 @@
             <div class="card card-block bg-light">
               <ul class="mt-2">
                 {% for ingredient in group.ingredient_set.all %}
-                  <li class="text-dark">{{ ingredient.name }}</li>
+                  <div>
+                    <input id="checkBox" type="checkbox">
+                    <label class="text-dark">{{ ingredient.name }}</label>
+                  </div>
                 {% endfor %}
               </ul>
             </div>
