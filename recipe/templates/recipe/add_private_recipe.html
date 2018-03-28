@@ -28,22 +28,27 @@
 	{% endfor %}
 
 	<!-- Ingredient forms -->
+	{{ formset.management_form }}
 	{% for ingredient_form in formset %}
 		<!-- Ingredient form errors -->
 		{% for ingredient_error in ingredient_form.non_field_errors %}
 			<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
 		{% endfor %}
 
-		<!-- Ingredient form field errors -->
-		{% for ingredient_field in ingredient_form %}
-		<!-- Ingredient form field errors -->
-			{% for ingredient_error in ingredient_field.errors %}
-				<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
-			{% endfor %}
+		<!-- Ingredient form field -->
+		<div class="formset_row">
+			{% for ingredient_field in ingredient_form %}
+				<!-- Ingredient form field errors -->
+				{% for ingredient_error in ingredient_field.errors %}
+					<span class="form-group has-errors text-danger">{{ingredient_error|escape}}</span>
+				{% endfor %}
 
-			<!-- Ingredient field -->
-			{{ ingredient_field }}
-		{% endfor %}
+				<!-- Ingredient field -->
+				<span>
+					{{ ingredient_field }}
+				</span>
+			{% endfor %}
+		</div>
 	{% endfor %}
 	<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
 </form>
@@ -54,5 +59,4 @@
 </form>
 
 {% endblock %}
-
 

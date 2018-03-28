@@ -14,23 +14,22 @@ def index(request):
 
 
 def add_private_recipe(request):
-    inlineformset = RecipeIngredientFormSet()
     if(request.method == 'POST'):
         form = RecipeForm(request.POST)
-        formset = RecipeIngredientForm(request.POST)
+        formset = RecipeIngredientFormSet(request.POST)
 
-        if formset.is_valid():
-            if form.is_valid():
-                recipe = form.save(commit=False)
-                for form in formset:
-                    form.save()
-                    recipe.ingredient.add(form)
-
-                return redirect('recipe:index')
+        if form.is_valid() and formset.is_valid():
+            recipe = form.save()
+            for ingredient_form in formset:
+                if(ingredient_form.has_changed()):
+                    ingredient = ingredient_form.save(commit=False)
+                    ingredient.recipe = recipe
+                    ingredient.save()
+            return redirect('recipe:index')
 
     else:
         form = RecipeForm()
-        formset = RecipeIngredientForm()
+        formset = RecipeIngredientFormSet()
 
     context = {'form': form,
                'formset': formset}

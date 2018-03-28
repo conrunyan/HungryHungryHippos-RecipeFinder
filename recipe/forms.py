@@ -4,10 +4,12 @@ from django.core import exceptions
 
 from .models import Recipe, RecipeIngredient, Ingredient
 
+import re
+
 
 class RecipeForm(forms.ModelForm):
-    # time = forms.CharField(widget=forms.TextInput(attrs={
-    #                        'class': 'form-control', 'placeholder': 'Time HH:MM'}))
+    time = forms.CharField(widget=forms.TextInput(attrs={
+                           'class': 'form-control', 'placeholder': 'Time (Hours:Minutes)'}))
 
     class Meta:
         model = Recipe
@@ -21,31 +23,51 @@ class RecipeForm(forms.ModelForm):
             'instructions': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Instructions'}),
         }
 
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        time_re = re.compile(r'(\d*):?(\d*)')
+        hourmin = time_re.match(time)
+
+        hours = 0
+        mins = 0
+        if hourmin.group(1) != "":
+            hours = int(hourmin.group(1))
+        if hourmin.group(2) != "":
+            mins = int(hourmin.group(2))
+        time = hours * 60 + mins
+        if(time == 0):
+            vaild = False
+            self.add_error(
+                'time', 'You must enter a valid non-zero time! (Hours:Minutes)')
+#            ValidationError(_('Invalid value'), code='invalid')
+
+        return time
+
     def is_valid(self):
-        valid = super(CreateRecipeForm, self).is_valid()
+        valid = super(RecipeForm, self).is_valid()
 
         return valid
 
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.ModelChoiceField(widget=forms.Select(attrs={
-                                        'class': 'form-control', 'placeholder': 'Ingredient'}),
+                                        'placeholder': 'Ingredient'}),
                                         empty_label='--Ingredient--',
                                         queryset=Ingredient.objects)
 
     class Meta:
         model = RecipeIngredient
-        fields = ('ingredient', 'unit', 'amount')
+        fields = ('ingredient', 'amount', 'unit')
         widgets = {
-            'amount': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Amount (ex: 2 1/2)'}),
-            'unit':   forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Unit (ex: Cups)'})
+            'amount': forms.TextInput(attrs={'placeholder': 'Amount (ex: 2 1/2)'}),
+            'unit':   forms.TextInput(attrs={'placeholder': 'Unit (ex: Cups)'}),
         }
 
     def is_valid(self):
-        valid = super(AddRecipeIngredientForm, self).is_valid()
+        valid = super(RecipeIngredientForm, self).is_valid()
 
         return valid
 
 
 RecipeIngredientFormSet = forms.inlineformset_factory(
-    Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=3)
+    Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=3, can_delete=False)
