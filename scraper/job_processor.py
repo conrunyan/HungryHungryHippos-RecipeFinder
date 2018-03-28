@@ -7,32 +7,35 @@ from .scraper_functions import get_batch
 from .utils import scrape_and_save
 from .errors import UnknownWebsiteError, RecipeParsingError
 from urllib.error import URLError
-
-_wrapper_thread_counter = 1
+from random import randint
+from .models import ScrapeResult
 
 def submit_job(urls, begin, end, user):
     """Submit a job on a separate thread."""
-    global _wrapper_thread_counter
-    thread = WrapperThread(urls, begin, end, user)
+    job_id = randint(10000000, 99999999)
+
+    thread = WrapperThread(job_id, urls, begin, end, user)
     thread.daemon = True
-    thread.name = "WrapperThread-{}".format(_wrapper_thread_counter)
-    _wrapper_thread_counter += 1
     thread.start()
+
+    return job_id
 
 class WrapperThread(Thread):
     """Creates a job processor on a new thread."""
 
-    def __init__(self, urls, begin, end, user):
+    def __init__(self, job_id, urls, begin, end, user):
         """Create a wrapper thread to start the job processor."""
         Thread.__init__(self)
+        self.name = "WrapperThread-{}".format(job_id)
         self.urls = urls
         self.begin = begin
         self.end = end
         self.user = user
+        self.job_id = job_id
 
     def run(self):
         """Create a JobProcessor on a new thread."""
-        processor = JobProcessor(4, self.user)
+        processor = JobProcessor(self.job_id, self.user, num_threads=4)
         processor.add_jobs(self.urls, self.begin, self.end)
         processor.wait()
         print("Done with job")
@@ -40,13 +43,13 @@ class WrapperThread(Thread):
 class JobProcessor():
     """Manages the processing of a set of jobs."""
 
-    def __init__(self, num_threads, user):
+    def __init__(self, job_id, user, num_threads=2):
         """Create a JobProcessor with the specified number of threads."""
         self.queue = Queue()
         self.queueLock = Lock()
         self.threads = []
         for i in range(1, num_threads + 1):
-            self.threads.append(ScraperThread(self.queueLock, self.queue, user))
+            self.threads.append(ScraperThread(job_id, self.queueLock, self.queue, user))
 
         for i in self.threads:
             i.start()
@@ -71,13 +74,14 @@ class JobProcessor():
 class ScraperThread(Thread):
     """Continually prcesses jobs in a queue."""
 
-    def __init__(self, queueLock, queue, user):
+    def __init__(self, job_id, queueLock, queue, user):
         """Create a scraper thread and set it running."""
         Thread.__init__(self)
         self.should_exit = False
         self.queueLock = queueLock
         self.queue = queue
         self.user = user
+        self.job_id = job_id
 
     def run(self):
         """Continually try to scrape and save websites while there are jobs in the queue."""
@@ -95,12 +99,15 @@ class ScraperThread(Thread):
         """Scrape and save a url and its scraping results."""
         try:
             scrape_and_save(url, self.user)
-            print("Saved url: {}".format(url))
-        except (URLError) as e:
-            print('Invalid url: ' + str(e))
-        except (KeyError, ValueError) as e:
-            print('Key or Value error: ' + str(e))
-        except UnknownWebsiteError as e:
-            print('Unknown website: ' + str(e))
-        except RecipeParsingError as e:
-            print('{0} -- Recipe parsing error: {1}'.format(url, e))
+            self.add_result(url, True)
+        except Exception as e:
+            self.add_result(url, False, exception=e)
+
+    def add_result(self, url, successful, exception=None):
+        """Add a result of a scraping job."""
+        error_type = None
+        error = None
+        if exception:
+            error_type = type(exception).__name__
+            error = str(exception)
+        ScrapeResult.objects.create(source_url=url, successful=successful, error_type=error_type, error=error)

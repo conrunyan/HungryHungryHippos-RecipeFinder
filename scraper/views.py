@@ -10,7 +10,43 @@ from .job_processor import submit_job
 @staff_member_required(login_url='login')
 def scrape(request):
     """User interface for the scraper."""
-    return HttpResponse('not implemented')
+    if request.method == 'GET':
+        return render(request, 'scraper/create_job.html')
+
+    # Assume post
+    form_errors = []
+
+    site_url = escape(request.POST.get('sample-url', ''))
+    start = escape(request.POST.get('id-start', ''))
+    count = escape(request.POST.get('id-count', ''))
+
+    if not site_url:
+        form_errors.append('Site url invalid or empty')
+    if not start:
+        form_errors.append('Start invalid or empty')
+    if not count:
+        form_errors.append('Count invalid or empty')
+
+    end = 0
+    if not form_errors:
+        try:
+            start = int(start)
+            end = start + int(count)
+        except Exception as e:
+            form_errors.append(e)
+
+    if form_errors:
+        return render(request, 'scraper/create_job.html', {'errors': form_errors})
+
+    job_errors = []
+    job_id = -1
+    try:
+        job_id = submit_job(site_url, start, end, request.user)
+    except Exception as e:
+        job_errors.append('Job raised exception: {}'.format(e))
+
+    context = {'job_id': job_id, 'errors': job_errors}
+    return render(request, 'scraper/job_status.html', context)
 
 @staff_member_required(login_url='login')
 def scrape_batch(request, start, end):

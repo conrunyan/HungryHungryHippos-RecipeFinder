@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-center m-5">Job {{ job_id }} status</h1>
+
+{% if errors %}
+<h2>Job returned with errors:</h2>
+{% endif %}
+
+{% for error in errors %}
+  <div class="form-group text-danger text-center">{{ error | escape }}</div>
+{% endfor %}
+{% endblock %}
