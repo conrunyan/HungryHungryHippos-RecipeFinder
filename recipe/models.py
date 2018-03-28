@@ -80,7 +80,7 @@ class IngredientUtils():
 
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
-        return QuerySet.intersection(*ing_qs_list)
+
         Given a list of Ingredients, this function will search for recipes
         linked to each ingredient, then perform a set intersection.
         and return a list of QuerySets containing only shared Recipes between
@@ -89,7 +89,7 @@ class IngredientUtils():
 
         recipe_qs = []
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets 
+        # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
             try:
                 cur_ing_qs = Ingredient.objects.get(name=ing)
@@ -107,12 +107,10 @@ class IngredientUtils():
     def _get_recipe_range(self, recipe_list, start, end):
         """Returns a slice of a Recipe QuerySet
 
-        NOT: Currently set to sort by "title". Can be changed to 
+        NOTE: Currently set to sort by "title". Can be changed to
         whatever we want the recipes to be sorted by.
         """
         return recipe_list.order_by('title')[start:end]
-
-
 
 
 class Appliance(models.Model):
