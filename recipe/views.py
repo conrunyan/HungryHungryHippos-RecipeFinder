@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
+from django.contrib.auth.decorators import login_required
 
 from .models import Recipe, RecipeIngredient, Ingredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
@@ -13,13 +14,16 @@ def index(request):
     return HttpResponse(render(request, 'recipe/index.html', context))
 
 
+@login_required
 def add_private_recipe(request):
     if(request.method == 'POST'):
         form = RecipeForm(request.POST)
         formset = RecipeIngredientFormSet(request.POST)
 
         if form.is_valid() and formset.is_valid():
-            recipe = form.save()
+            recipe = form.save(commit=False)
+            recipe.user = request.user
+            recipe.save()
             for ingredient_form in formset:
                 if(ingredient_form.has_changed()):
                     ingredient = ingredient_form.save(commit=False)
