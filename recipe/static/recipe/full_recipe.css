@@ -54,3 +54,14 @@ hr {
   margin-left: 10%;
   margin-right: 10%;
 }
+
+.source-url {
+  font-size: 1rem;
+  font-weight: 100;
+  text-align: center;
+  color: #263238;
+}
+
+.source-url:hover {
+  color: #263238;
+}

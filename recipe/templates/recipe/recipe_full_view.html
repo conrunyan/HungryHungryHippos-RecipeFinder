@@ -10,6 +10,11 @@
   <div class="content">
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
+    <div class="text-center">
+      {% if current_recipe.source_url %}
+        <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
+      {% endif %}
+    </div>
     <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
     <h2>{{current_recipe.summary}}</h2>
     <hr />
