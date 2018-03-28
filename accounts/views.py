@@ -6,7 +6,7 @@ from emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
 from emailauth.views import sendAuthEmail
-from recipe.models import Recipe
+from recipe.models import Recipe, RecipeIngredient
 
 
 def login_view(request):

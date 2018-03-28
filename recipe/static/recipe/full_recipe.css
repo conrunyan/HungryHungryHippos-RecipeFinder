@@ -1,0 +1,56 @@
+.content {
+  font-family: "Raleway";
+}
+
+.content img {
+  width: 70%;
+  max-width: 500px;
+  display: block;
+  margin: 20px auto 20px auto;
+  border-radius: 15px;
+}
+
+.content h1 {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.content h2 {
+  font-size: 1.25rem;
+  margin-left: 10%;
+  margin-right: 10%;
+  font-style: italic;
+}
+
+.content p {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.ingredients-list {
+  text-align: center;
+}
+
+.ingredients-list div {
+  display: block;
+  margin: 5px auto 5px auto;
+  text-align: left;
+  width: 10%;
+  min-width: 200px;
+}
+
+.spacing {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.instructions {
+  margin-left: 10%;
+  margin-right: 10%;
+}

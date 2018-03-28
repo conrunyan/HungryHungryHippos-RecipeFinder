@@ -4,6 +4,7 @@
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/slideout.css' %}" />
   <link rel="stylesheet" href="{% static 'recipe/ingredientsmenu.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/no_ingredients.css' %}" />
 {% endblock %}
 
 {% block slide_out %}
@@ -19,9 +20,7 @@
 
 {% block content %}
   <div id="noIngredients" class="text-center m-5">
-    <h1> You have not selected any ingredients to search by.</h1>
-    <br />
-    <h1>If you want to search for recipes, please select which ingredients you want.</h1>
+    <h1>If you want to search for recipes, please select which ingredients you want to search by.</h1>
     <br />
     <button class="toggle-button btn btn-dark" type="button" data-toggle="collapse">Start Search</button>
   </div>

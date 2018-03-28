@@ -75,7 +75,7 @@ class Recipe(models.Model):
     DIFFICULTY_CHOICES = (
         ('E', 'Easy'),
         ('M', 'Medium'),
-        ('D', 'Difficult')
+        ('D', 'Hard')
     )
     # The actual difficulty of the recipe
     difficulty = models.CharField(max_length=1, null=True,

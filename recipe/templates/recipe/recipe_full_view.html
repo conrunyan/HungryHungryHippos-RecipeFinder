@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'recipe/full_recipe.css' %}" />
+{% endblock %}
+
+{% block content %}
+{% if current_recipe %}
+  <div class="content">
+    <img src="{{current_recipe.image_url}}" />
+    <h1>{{current_recipe.title}}</h1>
+    <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
+    <h2>{{current_recipe.summary}}</h2>
+    <hr />
+    {% if ingredients %}
+      <div class="ingredients-list">
+        {% for ingredient in ingredients %}
+          <div>
+            {{ingredient.amount}} {{ingredient.unit}} {{ingredient.ingredient}}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <hr />
+    <div class="instructions">
+      <p>{{current_recipe.instructions | safe}}</p>
+    </div>
+  </div>
+{% else %}
+  <p>Could not load selected recipe.</p>
+{% endif %}
+{% endblock %}
