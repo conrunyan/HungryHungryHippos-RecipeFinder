@@ -93,7 +93,7 @@ class AllRecipes(AbstractScraper):
         # Regular expression for extracting the unit
         reg_unit = re.compile(r'([0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<unit>\w+)')
         # Regular expression for after the unit has been removed
-        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>[\w -]+)')
+        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>[\w -\']+)')
         for item in ingredients_raw_text:
             raw_item = item
             unit_match = reg_unit.match(item)
