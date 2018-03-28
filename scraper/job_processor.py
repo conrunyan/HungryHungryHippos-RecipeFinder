@@ -3,6 +3,7 @@
 from threading import Thread, Lock
 from queue import Queue
 import time
+import traceback
 from .scraper_functions import get_batch
 from .utils import scrape_and_save
 from .errors import UnknownWebsiteError, RecipeParsingError
@@ -101,13 +102,18 @@ class ScraperThread(Thread):
             scrape_and_save(url, self.user)
             self.add_result(url, True)
         except Exception as e:
-            self.add_result(url, False, exception=e)
+            self.add_result(url, False, exception=e, trace=traceback.format_exc())
 
-    def add_result(self, url, successful, exception=None):
+    def add_result(self, url, successful, exception=None, trace=None):
         """Add a result of a scraping job."""
         error_type = None
         error = None
+        error_trace = None
         if exception:
             error_type = type(exception).__name__
             error = str(exception)
-        ScrapeResult.objects.create(source_url=url, successful=successful, error_type=error_type, error=error)
+        if trace:
+            error_trace = trace
+
+        ScrapeResult.objects.create(job_id=self.job_id, source_url=url,
+            successful=successful, error_type=error_type, error=error, error_trace=error_trace)
