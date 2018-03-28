@@ -118,12 +118,12 @@ class RecipeAppIndexTest(TestCase):
 
 class IngredientSearchTest(TestCase):
     """Test Searching of Recipes by Ingredient"""
-    
+
     def setUp(self):
         """Get ingredients objects"""
 
     def test_ingr_qs_intserection(self):
-        """Tests the interesection of two ingredients"""        
+        """Tests the interesection of two ingredients"""
         group = Group.objects.create(name="TestGroup")
         ing1 = Ingredient.objects.create(group=group, name="Ing 1")
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
@@ -157,12 +157,12 @@ class IngredientSearchTest(TestCase):
         ings = [ing1, ing2, ing3]
         # intersect QS's
         qs = ing_utils._ingredient_intersect(ings)
-        # check number of recipes in the qs with minimum size of 
+        # check number of recipes in the qs with minimum size of
         # base ingredient QuerySets
         self.assertEquals(len(qs), expected_size)
-        
+
     def test_make_qs_list(self):
-            
+
         group = Group.objects.create(name="TestGroup")
         ing1 = Ingredient.objects.create(group=group, name="Ing 1")
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
@@ -185,9 +185,8 @@ class IngredientSearchTest(TestCase):
         r4.save()
         r5.save()
         r6.save()
-    
         ing_utils = IngredientUtils()
 
         inglst = ["Ing 1", "Ing 2", "Ing 3"]
         qlst = ing_utils._make_qs_list(inglst)
-        self.assertEqual(len(qlst), 3) 
+        self.assertEqual(len(qlst), 3)
