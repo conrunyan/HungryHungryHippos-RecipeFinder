@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
@@ -68,6 +69,7 @@ def logout_view(request):
     response.user = request.user
     return response
 
+@login_required
 def myrecipes_view(request):
     my_recipes = Recipe.objects.filter(user=request.user)
     context = {"my_recipes" : my_recipes }
