@@ -60,7 +60,7 @@ def get_results(request, job_id):
 @staff_member_required(login_url='login')
 def get_results_raw(request, job_id):
     """Return the current results of a job."""
-    results = ScrapeResult.objects.filter(job_id=job_id).order_by("-scrape_time").values()
+    results = ScrapeResult.objects.filter(job_id=job_id).order_by("scrape_time").values()
     return JsonResponse({'results': list(results)})
 
 @staff_member_required(login_url='login')

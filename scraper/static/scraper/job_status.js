@@ -2,7 +2,7 @@
 
 $(document).ready(function() {
   refreshStatus();
-  //setInterval(refreshStatus, 5000);
+  setInterval(refreshStatus, 5000);
 
   function refreshStatus() {
     let xhr = new XMLHttpRequest();
@@ -18,30 +18,43 @@ $(document).ready(function() {
   function updateStatus(e) {
     let response = JSON.parse(e);
     let container = $('#result-status-container');
+
+    // Get previous expanded panels
+    let open = [];
+    $('.collapse.show').each((index, element) => {
+      open.push(element.id);
+    });
+
     container.empty();
     container.append($('<thead><tr><th>Result</th><th>Time</th><th>Error Type</th><th>Error</th></tr></thead>'));
     container.append($('<tbody>'));
 
     response.results.forEach(result => {
       let domid = "result-status-" + result.id;
-      // Check if element already exists
-      if($("#" + domid).length == 0) {
-        let element = createElement(domid, result);
-        container.append(element);
-      }
+      let element = createElement(domid, result);
+      container.append(element);
     });
 
     container.append($('</tbody>'));
+
+    open.forEach(id => {
+      $('#' + id).addClass('show');
+    });
   };
 
   function createElement(id, result) {
-    let html = '<tr id=' + id + '>';
+    let html = '';
+    html += '<tr style="cursor: pointer;" data-toggle="collapse" data-target="#{0}">'.format(id);
 
     html += htmlifySuccess(result);
     html += htmlifyDateTime(result);
     html += htmlifyErrorType(result);
     html += htmlifyError(result);
 
+    html += '</tr>';
+
+    html += '<tr id="{0}" class="collapse">'.format(id);
+    html += htmlifyUrlAndErrorTrace(result);
     html += '</tr>';
 
     return $(html);
@@ -88,18 +101,51 @@ $(document).ready(function() {
 
   function htmlifyErrorType(result) {
     var html = '<td>';
-    html += result.error_type;
+    if(result.error_type) {
+      html += result.error_type;
+    } else {
+      html += "-";
+    }
     html += '</td>';
     return html;
   }
 
   function htmlifyError(result) {
     var html = '<td>';
-    var error = result.error.slice(0, 60);
-    error = error.replace(/&/g, '&amp;');
-    error = error.replace(/</g, '&lt;');
-    error = error.replace(/>/g, '&gt;');
-    html += error;
+    if(result.error) {
+      var error = result.error.slice(0, 60);
+      error = error.replace(/&/g, '&amp;');
+      error = error.replace(/</g, '&lt;');
+      error = error.replace(/>/g, '&gt;');
+      html += error;
+    } else {
+      html += "-";
+    }
+    html += '</td>';
+    return html;
+  }
+
+  function htmlifyUrlAndErrorTrace(result) {
+    var html = '<td colspan="4">';
+
+    html += '<div>';
+    html += '<h5>Source Url</h5>';
+    html += '<a href="{0}">{0}</a>'.format(result.source_url);
+    html += '</div>';
+
+    if(result.error_trace) {
+      html += '<div class="mt-3">';
+      html += '<h5>Error Trace</h5>';
+      html += '<code>';
+      var error = result.error_trace;
+      error = error.replace(/&/g, '&amp;');
+      error = error.replace(/</g, '&lt;');
+      error = error.replace(/>/g, '&gt;');
+      html += error;
+      html += '</code>';
+      html += '</div>';
+    }
+
     html += '</td>';
     return html;
   }
