@@ -58,8 +58,8 @@ class AllRecipes(AbstractScraper):
             return ''
         img_src = img_obj['src']
 
-        # img_src is thumbnail size. need to upscale it (allrecipes lets you pass in parameters through url)
-        img_src = re.sub(r"/[0-9]+x[0-9]+/", "/600x600/", img_src)
+        # img_src is thumbnail size. need to remove manual url scaping so it comes at native size.
+        img_src = re.sub(r"/[0-9]+x[0-9]+/", "", img_src)
         return img_src
 
     def time(self):
