@@ -1,11 +1,12 @@
 """Holds the views for the scraper."""
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.utils.html import escape
 from django.contrib.admin.views.decorators import staff_member_required
 from . import utils
 from .job_processor import submit_job
+from .models import ScrapeResult
 
 @staff_member_required(login_url='login')
 def scrape(request):
@@ -45,8 +46,22 @@ def scrape(request):
     except Exception as e:
         job_errors.append('Job raised exception: {}'.format(e))
 
-    context = {'job_id': job_id, 'errors': job_errors}
-    return render(request, 'scraper/job_status.html', context)
+    if job_errors:
+        context = {'job_id': job_id, 'errors': job_errors}
+        return render(request, 'scraper/job_error.html', context)
+
+    return redirect('scraper:results', job_id=job_id)
+
+@staff_member_required(login_url='login')
+def get_results(request, job_id):
+    """Return the page to display status of a job."""
+    return render(request, 'scraper/job_status.html', {'job_id': job_id})
+
+@staff_member_required(login_url='login')
+def get_results_raw(request, job_id):
+    """Return the current results of a job."""
+    results = ScrapeResult.objects.filter(job_id=job_id).order_by("-scrape_time").values()
+    return JsonResponse({'results': list(results)})
 
 @staff_member_required(login_url='login')
 def scrape_batch(request, start, end):

@@ -14,9 +14,9 @@ class ScrapeResult(models.Model):
     # Whether the scrape was successful
     successful = models.BooleanField()
     # The type of error that occured
-    error_type = models.CharField(max_length=30, null=True, blank=True)
+    error_type = models.CharField(max_length=50, null=True, blank=True)
     # An error if there was one
-    error = models.CharField(max_length=200, null=True, blank=True)
+    error = models.CharField(max_length=300, null=True, blank=True)
     # Stack trace of error
     error_trace = models.TextField(null=True, blank=True)
 

@@ -36,7 +36,7 @@ class WrapperThread(Thread):
 
     def run(self):
         """Create a JobProcessor on a new thread."""
-        processor = JobProcessor(self.job_id, self.user, num_threads=4)
+        processor = JobProcessor(self.job_id, self.user, num_threads=2)
         processor.add_jobs(self.urls, self.begin, self.end)
         processor.wait()
         print("Done with job")
