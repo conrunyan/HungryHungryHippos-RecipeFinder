@@ -87,7 +87,9 @@ class AllRecipes(AbstractScraper):
 
         UNITS = ['teaspoon', 'teaspoons', 'tsp', 't', 'tablespoon', 'tablespoons', 'tbsp', 'T',
             'pinch', 'pinches', 'shakes', 'dash', 'ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs',
-            'cup', 'cups', 'pint', 'pints', 'quart', 'quarts', 'gallon', 'gallons']
+            'cup', 'cups', 'pint', 'pints', 'quart', 'quarts', 'gallon', 'gallons',
+            'stalk', 'stalks', 'clove', 'cloves', 'packet', 'packets', 'can', 'cans', 'bunch', 'bunches',
+            'loaf', 'loaves', 'package', 'packages', 'jar', 'jars', 'drop', 'drops']
 
         ingredient_objs = []
         # Regular expression for extracting the unit
