@@ -15,7 +15,7 @@ body {
   -webkit-overflow-scrolling: touch;
   z-index: 1;
   display: none;
-  background-color: #D9D9D9;
+  background-color: #f0f0f1fa;
   color: #263238; /* Bootstrap blue-grey darken-4 */
 }
 
@@ -58,4 +58,40 @@ button {
 
 button:hover {
   cursor: pointer;
+}
+
+.list-group {
+  margin-bottom: 10px;
+}
+
+.list-group img {
+  margin-left: 20px;
+  margin-right: 10px;
+}
+
+#menu {
+  font-family: "Raleway";
+}
+
+#menu hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.checkbox {
+  background-color: black;
+}
+
+.single-ingredient {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.update-list {
+  margin-bottom: 0px;
+}
+
+.checkbox-label {
+  margin-left: 10px !important;
 }

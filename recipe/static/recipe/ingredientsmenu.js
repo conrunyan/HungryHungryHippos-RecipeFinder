@@ -1,8 +1,11 @@
 'use strict'
 
 $(document).ready(function() {
-  let COLLAPSED_SRC = "http://icons.iconarchive.com/icons/awicons/vista-artistic/128/add-icon.png";
-  let EXPANDED_SRC = "https://cdn1.iconfinder.com/data/icons/basic-ui-elements-color/700/07_minus-128.png";
+  // let COLLAPSED_SRC = "http://icons.iconarchive.com/icons/awicons/vista-artistic/128/add-icon.png";
+  // let EXPANDED_SRC = "https://cdn1.iconfinder.com/data/icons/basic-ui-elements-color/700/07_minus-128.png";
+  let COLLAPSED_SRC = "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/down4-512.png";
+  let EXPANDED_SRC = "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/up4-256.png";
+
   var listOfIngredients = [];
 
   updateImage($(".update-on-expand"), COLLAPSED_SRC);

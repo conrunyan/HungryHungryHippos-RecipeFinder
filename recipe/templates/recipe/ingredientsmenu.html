@@ -14,13 +14,16 @@
             </div>
           </div>
           <div id="collapse-{{ group.name }}" class="collapse update-on-expand">
-            <div class="card card-block bg-light">
+            <div>
               <ul class="mt-2">
                 {% for ingredient in group.ingredient_set.all %}
-                  <div>
-                    <input type="checkbox" value="{{ ingredient.name }}" class="update-list">
-                    <label class="text-dark"> {{ ingredient.name }}</label>
+                  <div class="single-ingredient pretty p-default p-thick">
+                    <input class="checkbox update-list" type="checkbox" value="{{ ingredient.name }}" label="{{ingredient.name}}">
+                    <div class="state p-info-o">
+                      <label class="text-dark checkbox-label"> {{ ingredient.name }}</label>
+                    </div>
                   </div>
+                  <br />
                 {% endfor %}
               </ul>
             </div>
