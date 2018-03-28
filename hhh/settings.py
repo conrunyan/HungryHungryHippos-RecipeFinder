@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Email backend definition and settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '587' 
+EMAIL_PORT = '587'
 EMAIL_HOST_USER = 'noreply.hhhippo@gmail.com'
 EMAIL_HOST_PASSWORD = 'Hungry4evr'
 EMAIL_USE_TLS = True
@@ -41,6 +41,7 @@ ALLOWED_HOSTS = ["hhhippo.tk", "test.hhhippo.tk", "localhost", "76.27.107.186", 
 INSTALLED_APPS = [
     'recipe.apps.RecipeConfig',
     'emailauth.apps.EmailauthConfig',
+    'scraper.apps.ScraperConfig',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
