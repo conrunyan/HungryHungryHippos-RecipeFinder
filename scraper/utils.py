@@ -21,8 +21,8 @@ def scrape_to_json(url):
         results = {**results, **parse_results}
 
         results['valid'] = 'True'
-    except (ValueError, URLError):
-        results['error'] = 'invalid url'
+    except (ValueError, URLError) as e:
+        results['error'] = 'invalid url: {}'.format(e)
     except (KeyError, AttributeError) as e:
         results['error'] = 'parsing error: {}'.format(e)
     except UnknownWebsiteError as e:
@@ -37,14 +37,18 @@ def save(json, user):
     global _save_lock
 
     if json['valid'] != 'True':
-        return 'Error in parsing site: {}'.format(json['error'])
+        raise RecipeParsingError('Error in parsing site: {}'.format(json['error']))
 
     source_url = json['source_url']
     if Recipe.objects.filter(source_url__contains=source_url):
-        return 'This url has already been parsed'
+        raise RecipeParsingError('This url has already been parsed')
 
     title = json['title']
     summary = json['summary']
+
+    if Recipe.objects.filter(title__iexact=title,summary=summary):
+        raise RecipeParsingError('A recipe very similar to this has already been parsed: {0}'.format(title))
+
     instructions = htmlify_list(json['instructions'])
     image_url = json['image_url']
     time = json['time']

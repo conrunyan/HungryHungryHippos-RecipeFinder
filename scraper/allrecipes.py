@@ -13,8 +13,8 @@ class AllRecipes(AbstractScraper):
     def generate_url(self, number):
         """Generate a url with the specified parameters."""
         url = "https://www.allrecipes.com/recipe/{}".format(number)
-        #content = urlopen(Request(url, headers=HEADERS))
-        #return content.geturl()
+        # content = urlopen(Request(url, headers=HEADERS))
+        # return content.geturl()
         return url
 
     @classmethod
@@ -86,14 +86,14 @@ class AllRecipes(AbstractScraper):
         ingredients_raw_text = [item.text for item in ingredients_raw]
 
         UNITS = ['teaspoon', 'teaspoons', 'tsp', 't', 'tablespoon', 'tablespoons', 'tbsp', 'T',
-            'pinch', 'dash', 'ounce', 'oz', 'pounds', 'lb', 'lbs',
+            'pinch', 'pinches', 'shakes', 'dash', 'ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs',
             'cup', 'cups', 'pint', 'pints', 'quart', 'quarts', 'gallon', 'gallons']
 
         ingredient_objs = []
         # Regular expression for extracting the unit
         reg_unit = re.compile(r'([0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<unit>\w+)')
         # Regular expression for after the unit has been removed
-        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<ingredient>[\w -]+)')
+        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>[\w -]+)')
         for item in ingredients_raw_text:
             raw_item = item
             unit_match = reg_unit.match(item)

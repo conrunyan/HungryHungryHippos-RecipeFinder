@@ -22,7 +22,10 @@ def scrape_batch(request, start, end):
 
     site_url = escape(request.GET.get('url', ''))
 
-    submit_job(site_url, start, end, request.user)
+    try:
+        submit_job(site_url, start, end, request.user)
+    except Exception as e:
+        return HttpResponse('Job threw unexpected error: {}'.format(e))
 
     return HttpResponse('Job submitted successfully')
 

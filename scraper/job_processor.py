@@ -35,6 +35,7 @@ class WrapperThread(Thread):
         processor = JobProcessor(4, self.user)
         processor.add_jobs(self.urls, self.begin, self.end)
         processor.wait()
+        print("Done with job")
 
 class JobProcessor():
     """Manages the processing of a set of jobs."""
@@ -101,3 +102,5 @@ class ScraperThread(Thread):
             print('Key or Value error: ' + str(e))
         except UnknownWebsiteError as e:
             print('Unknown website: ' + str(e))
+        except RecipeParsingError as e:
+            print('{0} -- Recipe parsing error: {1}'.format(url, e))
