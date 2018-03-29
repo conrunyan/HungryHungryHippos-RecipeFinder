@@ -250,7 +250,6 @@ class IngredientSearchTest(TestCase):
 
         inglst = ["Ing 1", "Ing 2", "Ing 3"]
         qlst = ing_utils._make_qs_list(inglst)
-<<<<<<< HEAD
         self.assertEqual(len(qlst), 3)
 
     def test_populates_ingredients(self):
@@ -287,6 +286,35 @@ class IngredientSearchTest(TestCase):
         self.assertEquals(ingredient_set_3.count(), 2)
         self.assertEquals(ingredient_set_3.get(name='Ing 3 1'), ing3_1)
         self.assertEquals(ingredient_set_3.get(name='Ing 3 2'), ing3_2)
-=======
-        self.assertEqual(len(qlst), 3)
+
+class SearchRecipesBySelectedIngredientsTest(TestCase):
+    """Test the return of the search algorithm for specified ingredients."""
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_get_recipes_view_returns_json_response_of_recipes(self):
+        """Check if the search algorithm returns valid recipes based on the ingredients searched."""
+        # create ingredients
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
+        # create a recipe with two ingredients
+        recipe_one = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
+        r1.save()
+        r2.save()
+        # create another recipe with the third ingredient
+        recipe_two = Recipe.objects.create(title="Recipe2", instructions="recipe2 instructions")
+        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing3, amount=3)
+        r3.save()
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 1"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(str(response.content).find("Recipe1"), -1)
+        self.assertEqual(str(response.content).find("Recipe2"), -1)
 >>>>>>> recipe
