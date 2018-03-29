@@ -140,84 +140,6 @@ class RecipeAppIndexTest(TestCase):
 
         self.assertEquals(response.status_code, 200)
 
-
-class IngredientSearchTest(TestCase):
-    """Test Searching of Recipes by Ingredient"""
-    
-    def setUp(self):
-        """Get ingredients objects"""
-        self.client = Client()
-
-    def test_ingr_qs_intserection(self):
-        """Tests the interesection of two ingredients"""        
-        group = Group.objects.create(name="TestGroup")
-        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
-        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
-        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
-        # Create fake recipe to populate RecipeIngredient table.
-        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
-        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
-        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
-        r1.save()
-        r2.save()
-        # Create real recipe to test against.
-        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
-        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
-        r3.save()
-        # Create real recipe3 to test against.
-        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
-        r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
-        r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
-        r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
-        r4.save()
-        r5.save()
-        r6.save()
-
-        expected_size = 1
-        ing_utils = IngredientUtils()
-
-        # save ingredient QS's in a list
-        ing1 = ing1.recipe_set.values()
-        ing2 = ing2.recipe_set.values()
-        ing3 = ing3.recipe_set.values()
-        ings = [ing1, ing2, ing3]
-        # intersect QS's
-        qs = ing_utils._ingredient_intersect(ings)
-        # check number of recipes in the qs with minimum size of 
-        # base ingredient QuerySets
-        self.assertEquals(len(qs), expected_size)
-        
-    def test_make_qs_list(self):
-            
-        group = Group.objects.create(name="TestGroup")
-        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
-        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
-        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
-        # Create fake recipe to populate RecipeIngredient table.
-        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
-        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
-        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
-        r1.save()
-        r2.save()
-        # Create real recipe to test against.
-        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
-        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
-        r3.save()
-        # Create real recipe3 to test against.
-        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
-        r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
-        r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
-        r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
-        r4.save()
-        r5.save()
-        r6.save()
-    
-        ing_utils = IngredientUtils()
-
-        inglst = ["Ing 1", "Ing 2", "Ing 3"]
-        qlst = ing_utils._make_qs_list(inglst)
-        self.assertEqual(len(qlst), 3) 
-    
     def test_populates_ingredients(self):
         """Check if the server populates the ingredients from the database."""
         group1 = Group.objects.create(name="Group1")
@@ -252,3 +174,119 @@ class IngredientSearchTest(TestCase):
         self.assertEquals(ingredient_set_3.count(), 2)
         self.assertEquals(ingredient_set_3.get(name='Ing 3 1'), ing3_1)
         self.assertEquals(ingredient_set_3.get(name='Ing 3 2'), ing3_2)
+
+class IngredientSearchTest(TestCase):
+    """Test Searching of Recipes by Ingredient"""
+
+    def setUp(self):
+        """Get ingredients objects"""
+        self.client = Client()
+
+    def test_ingr_qs_intserection(self):
+        """Tests the interesection of two ingredients"""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
+        # Create fake recipe to populate RecipeIngredient table.
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
+        r1.save()
+        r2.save()
+        # Create real recipe to test against.
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
+        r3.save()
+        # Create real recipe3 to test against.
+        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
+        r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
+        r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
+        r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
+        r4.save()
+        r5.save()
+        r6.save()
+
+        expected_size = 1
+        ing_utils = IngredientUtils()
+
+        # save ingredient QS's in a list
+        ing1 = ing1.recipe_set.values()
+        ing2 = ing2.recipe_set.values()
+        ing3 = ing3.recipe_set.values()
+        ings = [ing1, ing2, ing3]
+        # intersect QS's
+        qs = ing_utils._ingredient_intersect(ings)
+        # check number of recipes in the qs with minimum size of
+        # base ingredient QuerySets
+        self.assertEquals(len(qs), expected_size)
+
+    def test_make_qs_list(self):
+
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
+        # Create fake recipe to populate RecipeIngredient table.
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
+        r1.save()
+        r2.save()
+        # Create real recipe to test against.
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
+        r3.save()
+        # Create real recipe3 to test against.
+        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
+        r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
+        r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
+        r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
+        r4.save()
+        r5.save()
+        r6.save()
+
+        ing_utils = IngredientUtils()
+
+        inglst = ["Ing 1", "Ing 2", "Ing 3"]
+        qlst = ing_utils._make_qs_list(inglst)
+<<<<<<< HEAD
+        self.assertEqual(len(qlst), 3)
+
+    def test_populates_ingredients(self):
+        """Check if the server populates the ingredients from the database."""
+        group1 = Group.objects.create(name="Group1")
+        ing1_1 = Ingredient.objects.create(group=group1, name="Ing 1 1")
+        ing1_2 = Ingredient.objects.create(group=group1, name="Ing 1 2")
+        ing1_3 = Ingredient.objects.create(group=group1, name="Ing 1 3")
+        group2 = Group.objects.create(name="Group2")
+        group3 = Group.objects.create(name="Group3")
+        ing3_1 = Ingredient.objects.create(group=group3, name="Ing 3 1")
+        ing3_2 = Ingredient.objects.create(group=group3, name="Ing 3 2")
+
+        response = self.client.get(reverse('recipe:index'))
+
+        groups = response.context['groups']
+        self.assertTrue(groups.exists())
+
+        self.assertEquals(groups.count(), 3)
+        self.assertEquals(groups.get(name='Group1'), group1)
+        self.assertEquals(groups.get(name='Group2'), group2)
+        self.assertEquals(groups.get(name='Group3'), group3)
+
+        ingredient_set_1 = groups.get(name='Group1').ingredient_set.all()
+        self.assertEquals(ingredient_set_1.count(), 3)
+        self.assertEquals(ingredient_set_1.get(name='Ing 1 1'), ing1_1)
+        self.assertEquals(ingredient_set_1.get(name='Ing 1 2'), ing1_2)
+        self.assertEquals(ingredient_set_1.get(name='Ing 1 3'), ing1_3)
+
+        ingredient_set_2 = groups.get(name='Group2').ingredient_set.all()
+        self.assertEquals(ingredient_set_2.count(), 0)
+
+        ingredient_set_3 = groups.get(name='Group3').ingredient_set.all()
+        self.assertEquals(ingredient_set_3.count(), 2)
+        self.assertEquals(ingredient_set_3.get(name='Ing 3 1'), ing3_1)
+        self.assertEquals(ingredient_set_3.get(name='Ing 3 2'), ing3_2)
+=======
+        self.assertEqual(len(qlst), 3)
+>>>>>>> recipe

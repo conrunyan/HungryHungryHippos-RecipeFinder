@@ -83,7 +83,7 @@ class IngredientUtils():
 
         recipe_qs = []
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets 
+        # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
             try:
                 cur_ing_qs = Ingredient.objects.get(name=ing)
@@ -135,7 +135,7 @@ class Recipe(models.Model):
     DIFFICULTY_CHOICES = (
         ('E', 'Easy'),
         ('M', 'Medium'),
-        ('D', 'Difficult')
+        ('D', 'Hard')
     )
     # The actual difficulty of the recipe
     difficulty = models.CharField(max_length=1, null=True,

@@ -14,10 +14,16 @@
             </div>
           </div>
           <div id="collapse-{{ group.name }}" class="collapse update-on-expand">
-            <div class="card card-block bg-light">
+            <div>
               <ul class="mt-2">
                 {% for ingredient in group.ingredient_set.all %}
-                  <li class="text-dark">{{ ingredient.name }}</li>
+                  <div class="single-ingredient pretty p-default p-thick">
+                    <input class="checkbox update-list" type="checkbox" value="{{ ingredient.name }}" label="{{ingredient.name}}">
+                    <div class="state p-info-o">
+                      <label class="text-dark checkbox-label"> {{ ingredient.name }}</label>
+                    </div>
+                  </div>
+                  <br />
                 {% endfor %}
               </ul>
             </div>
@@ -31,46 +37,6 @@
 </div>
 
 <!--
-
-<h1>Select Ingredients:</h1>
-<form id="form_ingredients">
-<table class="table">
-  <tr class="thead-light">
-    <th>
-      U Want?
-    </th>
-    <th>
-      Ingredient
-    </th>
-    <th>
-      Group
-    </th>
-  </tr>
-  {% if ingredients %}
-    {% for ingredient in ingredients %}
-      <tr>
-        <td>
-          <input type="checkbox" name="{{ ingredient.name }}" />
-        </td>
-        <td>
-          {{ ingredient.name }}
-        </td>
-        <td>
-          {{ ingredient.group.name }}
-        </td>
-      </tr>
-    {% endfor %}
-  {% else %}
-    <tr>
-      <td></td>
-      <td>
-        No ingredients :(
-      </td>
-      <td></td>
-    </tr>
-  {% endif %}
-</table>
-
 <input type="submit" value="Submit" class="btn btn-success" />
 </form>
 
