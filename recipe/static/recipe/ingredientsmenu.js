@@ -10,6 +10,7 @@ $(document).ready(function() {
   var panelIsOpen = false;
 
   updateImage($(".update-on-expand"), COLLAPSED_SRC);
+  checkPersistentIngredients(PERSISTENT_INGREDIENTS);
 
   $(".update-on-expand").on('show.bs.collapse', function() {
     updateImage($(this), EXPANDED_SRC);
@@ -66,4 +67,15 @@ $(document).ready(function() {
   function getListOfIngredients() {
     return listOfIngredients;
   }
+
+  function checkPersistentIngredients(ingredients) {
+    for(var i = 0; i < ingredients.length; i++) {
+      var ingredient = ingredients[i];
+      var e = $("input[type='checkbox'][value='" + ingredient + "']");
+      if(e) {
+        e.prop('checked', true);
+        addToList(e);
+      }
+    }
+  };
 });

@@ -34,12 +34,21 @@ def save_ingredients_to_user(user, ingredients):
     If an ingredient in the database is not found in 'ingredients', then it is removed from the database.
     """
     submitted_ingredients = Ingredient.objects.filter(name__in=ingredients)
-    user_persistent_ingredients = PersistentIngredient.objects.filter(user=user)
-    saved_ingredients = Ingredient.objects.filter(id__in=user_persistent_ingredients.values('ingredient_id'))
+    saved_ingredients = get_ingredient_objs_of_user(user)
 
     ingredients_to_delete = saved_ingredients.difference(submitted_ingredients)
     ingredients_to_add = submitted_ingredients.difference(saved_ingredients)
 
-    ingredients_to_delete.delete()
+    for ingredient in ingredients_to_delete:
+        PersistentIngredient.objects.get(ingredient=ingredient).delete()
     for ingredient in ingredients_to_add:
         PersistentIngredient.objects.create(user=user, ingredient=ingredient)
+
+def get_ingredient_objs_of_user(user):
+    """Return a QuerySet of Ingredients that are saved by the user."""
+    user_persistent_ingredients = PersistentIngredient.objects.filter(user=user)
+    return Ingredient.objects.filter(id__in=user_persistent_ingredients.values('ingredient_id'))
+
+def get_ingredient_names(ingredients):
+    """Return a list of ingredient names from a queryset."""
+    return list(ingredients.values_list('name', flat=True))
