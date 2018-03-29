@@ -4,6 +4,7 @@ from recipe.models import Ingredient, Recipe, Appliance, Group, RecipeIngredient
 from .errors import UnknownWebsiteError, RecipeParsingError
 from urllib.error import URLError
 from .scraper_functions import parse, get_batch
+from .string_utils import htmlify_list
 from threading import Lock
 
 _save_lock = Lock()
