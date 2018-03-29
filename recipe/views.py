@@ -6,6 +6,7 @@ from .models import Group, Recipe, RecipeIngredient, IngredientUtils
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
+from .ingredient_functions import save_ingredients_to_user
 
 def index(request):
 	"""Return the base index page for the site."""
@@ -23,6 +24,8 @@ def get_recipes(request):
 	# parse json string to list of ingredient names
 	ing = request.body.decode("utf-8")
 	ingredients_to_search_by = ing[1:-1].replace('"',"").split(',')
+	# save ingredients for the future
+	save_ingredients_to_user(request.user, ingredients_to_search_by)
 	# send ingredients to search algorithm
 	found_recipes = IngredientUtils().find_recipes(ingredients_to_search_by)
 	# convert queryset to JSON!!!
