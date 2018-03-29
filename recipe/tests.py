@@ -317,4 +317,3 @@ class SearchRecipesBySelectedIngredientsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(str(response.content).find("Recipe1"), -1)
         self.assertEqual(str(response.content).find("Recipe2"), -1)
->>>>>>> recipe
