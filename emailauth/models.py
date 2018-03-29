@@ -57,6 +57,7 @@ def makeUserAuthLink(usr_email):
         auth_url = test_url
 
     sha256_hash = hashlib.sha256()
+    usr_email = str(usr_email).encode('utf-8')
     sha256_hash.update(usr_email)
     hash_key = sha256_hash.hexdigest()
 
