@@ -83,7 +83,7 @@ class IngredientUtils():
 
         recipe_qs = []
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets 
+        # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
             try:
                 cur_ing_qs = Ingredient.objects.get(name=ing)

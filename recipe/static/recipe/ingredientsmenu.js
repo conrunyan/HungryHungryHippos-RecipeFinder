@@ -7,6 +7,7 @@ $(document).ready(function() {
   let EXPANDED_SRC = "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/up4-256.png";
 
   var listOfIngredients = [];
+  var panelIsOpen = false;
 
   updateImage($(".update-on-expand"), COLLAPSED_SRC);
 
@@ -21,6 +22,29 @@ $(document).ready(function() {
   $(".update-list").change(function() {
     addToList($(this));
   });
+
+  $("#run-search").click(function() {
+    if (!panelIsOpen) {
+      panelIsOpen = true;
+    } else {
+      panelIsOpen = false;
+      var request = new XMLHttpRequest();
+      var params = JSON.stringify(listOfIngredients);
+      request.open('POST', URL_ALG_REQUEST, true);
+      request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+      request.onreadystatechange = function() {
+        if(request.readyState == 4 && request.status == 200) {
+          parseResponse(request.responseText);
+        }
+      };
+      request.send(params);
+    }
+  });
+
+  function parseResponse(r) {
+    let response = JSON.parse(r);
+    console.log(response);
+  }
 
   function updateImage(div, src) {
     div.siblings().find(".update-image").attr("src", src);
@@ -37,5 +61,9 @@ $(document).ready(function() {
         document.getElementById("noIngredients").style.display = 'block';
       }
     }
+  }
+
+  function getListOfIngredients() {
+    return listOfIngredients;
   }
 });
