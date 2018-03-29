@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'accounts/profile.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/recipe_summary.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="content">
+  {% if user %}
+    <div class="user-info">
+      <p>Username: <span class="user-value">{{user.username}}</span></p>
+      <p>Email: <span class="user-value">{{user.email}}</span></p>
+    </div>
+    <hr class="big-hr" />
+  {% endif %}
+  {% if users_recipes %}
+    <h1>My Recipes</h1>
+    <hr />
+    <div class="top-three">
+      {% for recipe in users_recipes %}
+      <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' recipe.id %}">
+        <img src="{{recipe.image_url}}"/>
+        <div>
+          <h3>{{recipe.title}}</h3>
+          <p>{{recipe.summary}}</p>
+        </div>
+      </a>
+        <hr />
+      {% endfor %}
+      <a class="see-more center-block" href="{% url 'myRecipes' %}"><p>Click to see more</p></a>
+      <hr class="big-hr" />
+    </div>
+  {% endif %}
+  <!--TODO: implement an if statement for favorite recipes. Model it after the My Recipes one -->
+</div>
+{% endblock %}
