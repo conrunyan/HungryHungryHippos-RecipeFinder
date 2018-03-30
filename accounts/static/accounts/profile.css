@@ -1,0 +1,26 @@
+.user-info {
+  font-size: 1.25rem;
+  margin: 30px;
+}
+
+p {
+  font-family: "Raleway";
+  font-weight: 400;
+}
+
+.user-value {
+  font-weight: 200;
+  margin-left: 10px;
+}
+
+.big-hr {
+  border-top: 2px solid #343a40;
+}
+
+.see-more {
+  text-align: center;
+}
+
+.see-more p {
+  padding: 20px;
+}

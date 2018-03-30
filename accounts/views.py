@@ -2,13 +2,16 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
 from emailauth.views import sendAuthEmail
+from recipe.models import Recipe, RecipeIngredient
 
 
 def login_view(request):
+    """View for when the user goes to the login page."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
 
@@ -30,6 +33,7 @@ def login_view(request):
     return HttpResponse(render(request, 'accounts/login.html', context))
 
 def register_view(request):
+    """View for when the user goes to the creating account page."""
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
 
@@ -62,7 +66,23 @@ def register_view(request):
     return HttpResponse(render(request, 'accounts/register.html', context))
 
 def logout_view(request):
+    """View for when the user logs out."""
     logout(request)
     response = redirect('recipe:index')
     response.user = request.user
     return response
+
+@login_required
+def myrecipes_view(request):
+    """View for when the user goes to the My Recipes page."""
+    my_recipes = Recipe.objects.filter(user=request.user)
+    context = {"my_recipes" : my_recipes }
+    return HttpResponse(render(request, 'recipe/myRecipes.html', context))
+
+@login_required
+def profile(request):
+    """View for when the user goes to the Profile page."""
+    user = User.objects.get(username=request.user)
+    users_recipes = Recipe.objects.filter(user=request.user)[:3]
+    context = { 'user' : user, 'users_recipes' : users_recipes }
+    return HttpResponse(render(request, 'accounts/profile.html', context))

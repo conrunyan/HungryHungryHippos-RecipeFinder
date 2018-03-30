@@ -26,15 +26,14 @@ def makeEmailAuth(user, is_auth):
     auth_id = makeUserAuthHash(email)
     EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id=auth_id)
     ea = EmailAuth.objects.get(usr_id=user)
-    print('Email Auth model created', str(ea))
+    # Kept printing when running tests
+    # print('Email Auth model created', str(ea))
 
 
 def makeUserAuthHash(usr_email):
     '''Function returns a hashed value of the usr_email'''
     sha256_hash = hashlib.sha256()
-    # encode email line
-    usr_email = usr_email.encode('utf-8')
-    sha256_hash.update(usr_email)
+    sha256_hash.update(usr_email.encode('utf-8'))
     hash_key = sha256_hash.hexdigest()
 
     return hash_key

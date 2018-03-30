@@ -152,7 +152,7 @@ class Recipe(models.Model):
     DIFFICULTY_CHOICES = (
         ('E', 'Easy'),
         ('M', 'Medium'),
-        ('D', 'Difficult')
+        ('D', 'Hard')
     )
     # The actual difficulty of the recipe
     difficulty = models.CharField(max_length=1, null=True,
@@ -201,7 +201,7 @@ class RecipeIngredient(models.Model):
     # The Ingredient that this RecipeIngredient connection refers to
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     # The amount of this ingredient in the recipe
-    amount = models.CharField(max_length=10)
+    amount = models.CharField(max_length=10, null=True, blank=True)
     # The unit which the amount is measured in
     unit = models.CharField(max_length=20, null=True, blank=True)
 

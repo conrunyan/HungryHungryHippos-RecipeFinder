@@ -1,0 +1,64 @@
+<div id="menu">
+  <h2>Choose your ingredients</h2>
+  <hr />
+  <div id="list-ingredients">
+    {% if groups %}
+      {% for group in groups %}
+        <div class="list-group">
+          <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-{{ group.name }}">
+            <div class="col-xs-2 mr-1">
+              <img class="img-fluid update-image" style="height: 1rem;" src="" alt="">
+            </div>
+            <div class="col-xs-10">
+              <h4>{{ group.name }}</h4>
+            </div>
+          </div>
+          <div id="collapse-{{ group.name }}" class="collapse update-on-expand">
+            <div>
+              <ul class="mt-2">
+                {% for ingredient in group.ingredient_set.all %}
+                  <div class="single-ingredient pretty p-default p-thick">
+                    <input class="checkbox update-list" type="checkbox" value="{{ ingredient.name }}" label="{{ingredient.name}}">
+                    <div class="state p-info-o">
+                      <label class="text-dark checkbox-label"> {{ ingredient.name }}</label>
+                    </div>
+                  </div>
+                  <br />
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h3>Couldn't get ingredients from the server.</h3>
+    {% endif %}
+  </div>
+</div>
+
+<!--
+<input type="submit" value="Submit" class="btn btn-success" />
+</form>
+
+<div class="mt-3">
+<h2 id="selected_title"></h2>
+<ul id="selected_ingredients"></ul>
+</div>
+
+
+<script>
+$(document).ready(function() {
+  $('#form_ingredients').on('submit', function(e) {
+    e.preventDefault();
+    $("#selected_ingredients").empty();
+
+    $('#selected_title').html("You Selected:");
+    $("#form_ingredients input:checked").each(function() {
+      var name = $(this).attr('name');
+      $("#selected_ingredients").append("<li>" + name + "</li>")
+    });
+  });
+});
+</script>
+
+-->
