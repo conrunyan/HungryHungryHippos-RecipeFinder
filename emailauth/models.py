@@ -26,7 +26,8 @@ def makeEmailAuth(user, is_auth):
     auth_id = makeUserAuthHash(email)
     EmailAuth.objects.create(usr_id=user, is_authenticated=False, authentication_id=auth_id)
     ea = EmailAuth.objects.get(usr_id=user)
-    print('Email Auth model created', str(ea))
+    # Kept printing when running tests
+    # print('Email Auth model created', str(ea))
 
 
 def makeUserAuthHash(usr_email):
@@ -57,7 +58,8 @@ def makeUserAuthLink(usr_email):
         auth_url = test_url
 
     sha256_hash = hashlib.sha256()
-    sha256_hash.update(usr_email.encode('utf-8'))
+    usr_email = str(usr_email).encode('utf-8')
+    sha256_hash.update(usr_email)
     hash_key = sha256_hash.hexdigest()
 
     auth_url += hash_key

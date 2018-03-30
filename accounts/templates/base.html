@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
     {% block head %}
@@ -11,10 +12,10 @@
   </head>
   <body>
     <!--Navbar-->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-dark fixed-top bg-dark navbar-expand-md">
       {% block slide_out %}
       {% endblock %}
-      <a class="navbar-brand nav-item nav-link" href="{% url 'recipe:index' %}">Hungry Hungry Hippos</a>
+      <a class="navbar-brand nav-item nav-link mr-auto" href="{% url 'recipe:index' %}">Hungry Hungry Hippos</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -28,7 +29,7 @@
             </li>
             <li class="nav-item">
               <!--TODO: replace # with correct links once they are up and running-->
-              <a class="nav-link" href="#">Profile</a>
+              <a class="nav-link" href="{% url 'profile' %}">Profile</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Settings</a>
@@ -40,7 +41,7 @@
               <a class="nav-link" href="{% url 'recipe:add_private_recipe' %}">Add Recipe</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">My Recipes</a>
+              <a class="nav-link" href="{% url 'myRecipes' %}">My Recipes</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>

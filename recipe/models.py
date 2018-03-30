@@ -1,6 +1,7 @@
 """Holds the recipe models for the database."""
 
 from django.db import models
+from django.db.models import Q, QuerySet
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -37,6 +38,82 @@ class Ingredient(models.Model):
     def __str__(self):
         """Return a string to identify the object in the admin app."""
         return self.name
+
+    def get_recipes(self):
+        """Return a QuerySet of associated Recipes."""
+        return self.recipe_set.values()
+
+
+class IngredientUtils():
+    """Class of ingredient helper functions.
+
+    Contains methods to help search for recipes by ingredient
+    """
+
+    def __str__(self):
+        return "Ingredient Tools"
+
+    def find_recipes(self, ingredients, start=0, end=200):
+        """Returns a QuerySet of Recipes
+        Given a list of ingredients and a range, the database
+        will be queried to find all recipes with common association
+        between the ingredients.
+
+        Once these are found, the range provided will determine how
+        many recipes are actually returned.
+        """
+
+        recipe_qs = self._make_qs_list(ingredients)
+        # if ingredients were found...
+        if len(recipe_qs) > 0:
+            recipes = self._ingredient_intersect(recipe_qs)
+            sliced_recipes = self._get_recipe_range(recipes, start, end)
+            # print('Returning:', recipes)
+            return sliced_recipes
+        # return empty queryset
+        else:
+            emp_qs = Recipe.objects.none()
+            # print('Returning:', emp_qs)
+            return emp_qs
+
+    def _ingredient_intersect(self, ing_qs_list):
+        """Returns a QuerySet of recipes shared between ingredients"""
+
+        return QuerySet.intersection(*ing_qs_list)
+
+    def _make_qs_list(self, ingredients):
+        """Returns a QuerySet of recipes given a list of ingredient names"
+
+        Given a list of Ingredients, this function will search for recipes
+        linked to each ingredient, then perform a set intersection.
+        and return a list of QuerySets containing only shared Recipes between
+        the various Ingredients.
+        """
+
+        recipe_qs = []
+        # loop over ingredients, finding recipes associated with
+        # each ingredient, then storing them in a list of QuerySets
+        for ing in ingredients:
+            try:
+                cur_ing_qs = Ingredient.objects.get(name=ing)
+            # if ingredient found, get recipes
+                if cur_ing_qs:
+                    tmp_ing = cur_ing_qs
+                    tmp_rec = tmp_ing.get_recipes()
+                    recipe_qs.append(tmp_rec)
+            # else, ingredient does not exist in the database
+            except (Ingredient.DoesNotExist):
+                continue
+        # return query set of recipes
+        return recipe_qs
+
+    def _get_recipe_range(self, recipe_list, start, end):
+        """Returns a slice of a Recipe QuerySet
+
+        NOTE: Currently set to sort by "title". Can be changed to
+        whatever we want the recipes to be sorted by.
+        """
+        return recipe_list.order_by('title')[start:end]
 
 
 class Appliance(models.Model):
@@ -75,7 +152,7 @@ class Recipe(models.Model):
         ('', '--Difficulty--'),
         ('E', 'Easy'),
         ('M', 'Medium'),
-        ('D', 'Difficult')
+        ('D', 'Hard')
     )
     # The actual difficulty of the recipe
     difficulty = models.CharField(max_length=1, null=True,
@@ -126,7 +203,7 @@ class RecipeIngredient(models.Model):
     # The Ingredient that this RecipeIngredient connection refers to
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     # The amount of this ingredient in the recipe
-    amount = models.CharField(max_length=10)
+    amount = models.CharField(max_length=10, null=True, blank=True)
     # The unit which the amount is measured in
     unit = models.CharField(max_length=20, null=True, blank=True)
 

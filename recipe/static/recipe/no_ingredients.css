@@ -1,0 +1,12 @@
+#noIngredients {
+  font-family: "Raleway";
+  margin-top: 30% !important;
+}
+
+#noIngredients h1 {
+  font-size: 2rem;
+}
+
+#noIngredients button {
+  font-family: sans-serif;
+}
