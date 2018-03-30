@@ -31,6 +31,7 @@
   {% load staticfiles %}
   <script>
     const URL_ALG_REQUEST = "{% url 'recipe:get_recipes' %}";
+    const PERSISTENT_INGREDIENTS = {{ persistent_ingredients|safe }};
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
   <script src="{% static 'recipe/slidefunctionality.js' %}"></script>
