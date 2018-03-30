@@ -43,11 +43,6 @@ class Ingredient(models.Model):
         """Return a QuerySet of associated Recipes."""
         return self.recipe_set.values()
 
-    class Meta:
-        """Sort the ingredients within each group by their name."""
-        
-        ordering = ['name']
-
 
 class IngredientUtils():
     """Class of ingredient helper functions.

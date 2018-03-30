@@ -12,6 +12,11 @@ from accounts.models import PersistentIngredient
 def index(request):
 	"""Return the base index page for the site."""
 	groups = Group.objects.order_by("name")
+	group_dict = {};
+	for group in groups:
+		ing_list = list(group.ingredient_set.all().order_by("name"))
+		group_dict[group.name] = ing_list
+
 	ingredientsAreSelected = False
 	ingredients = Ingredient.objects.order_by("name")
 
@@ -20,7 +25,7 @@ def index(request):
 		persistent_ingredients = get_ingredient_objs_of_user(request.user)
 		persistent_ingredients = get_ingredient_names(persistent_ingredients)
 
-	context = { "groups" : groups , "ingredientsAreSelected" : ingredientsAreSelected,
+	context = { "groups" : groups, "group_dict" : group_dict, "ingredientsAreSelected" : ingredientsAreSelected,
 		"persistent_ingredients" : persistent_ingredients, "ingredients_list" : ingredients }
 	return HttpResponse(render(request, 'recipe/index.html', context))
 
