@@ -4,6 +4,8 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.urls import reverse
 from django.test import Client
+from accounts.models import PersistentIngredient
+from django.contrib.auth.models import User
 
 from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils
 
@@ -252,41 +254,6 @@ class IngredientSearchTest(TestCase):
         qlst = ing_utils._make_qs_list(inglst)
         self.assertEqual(len(qlst), 3)
 
-    def test_populates_ingredients(self):
-        """Check if the server populates the ingredients from the database."""
-        group1 = Group.objects.create(name="Group1")
-        ing1_1 = Ingredient.objects.create(group=group1, name="Ing 1 1")
-        ing1_2 = Ingredient.objects.create(group=group1, name="Ing 1 2")
-        ing1_3 = Ingredient.objects.create(group=group1, name="Ing 1 3")
-        group2 = Group.objects.create(name="Group2")
-        group3 = Group.objects.create(name="Group3")
-        ing3_1 = Ingredient.objects.create(group=group3, name="Ing 3 1")
-        ing3_2 = Ingredient.objects.create(group=group3, name="Ing 3 2")
-
-        response = self.client.get(reverse('recipe:index'))
-
-        groups = response.context['groups']
-        self.assertTrue(groups.exists())
-
-        self.assertEquals(groups.count(), 3)
-        self.assertEquals(groups.get(name='Group1'), group1)
-        self.assertEquals(groups.get(name='Group2'), group2)
-        self.assertEquals(groups.get(name='Group3'), group3)
-
-        ingredient_set_1 = groups.get(name='Group1').ingredient_set.all()
-        self.assertEquals(ingredient_set_1.count(), 3)
-        self.assertEquals(ingredient_set_1.get(name='Ing 1 1'), ing1_1)
-        self.assertEquals(ingredient_set_1.get(name='Ing 1 2'), ing1_2)
-        self.assertEquals(ingredient_set_1.get(name='Ing 1 3'), ing1_3)
-
-        ingredient_set_2 = groups.get(name='Group2').ingredient_set.all()
-        self.assertEquals(ingredient_set_2.count(), 0)
-
-        ingredient_set_3 = groups.get(name='Group3').ingredient_set.all()
-        self.assertEquals(ingredient_set_3.count(), 2)
-        self.assertEquals(ingredient_set_3.get(name='Ing 3 1'), ing3_1)
-        self.assertEquals(ingredient_set_3.get(name='Ing 3 2'), ing3_2)
-
 class SearchRecipesBySelectedIngredientsTest(TestCase):
     """Test the return of the search algorithm for specified ingredients."""
 
@@ -317,3 +284,27 @@ class SearchRecipesBySelectedIngredientsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(str(response.content).find("Recipe1"), -1)
         self.assertEqual(str(response.content).find("Recipe2"), -1)
+
+class PersistentIngredients(TestCase):
+    """Tests the saving and loading of persistent ingredients for a user."""
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_adds_new_checked_ingredients(self):
+        """Test that checking new ingredients saves then to be persistent."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        user = User.objects.create_user('test')
+        self.client.force_login(user)
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+
+        saved = PersistentIngredient.objects.filter(user=user)
+        self.assertEqual(saved.count(), 2)
+        self.assertTrue(saved.filter(ingredient=ing1))
+        self.assertTrue(saved.filter(ingredient=ing2))
