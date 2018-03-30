@@ -53,7 +53,7 @@ class IngredientUtils():
     def __str__(self):
         return "Ingredient Tools"
 
-    def find_recipes(self, ingredients, start, end):
+    def find_recipes(self, ingredients, start=0, end=200):
         """Returns a QuerySet of Recipes
         Given a list of ingredients and a range, the database
         will be queried to find all recipes with common association
