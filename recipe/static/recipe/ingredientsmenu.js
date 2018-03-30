@@ -41,6 +41,39 @@ $(document).ready(function() {
     }
   });
 
+  $("#menu").click(function(){
+    if (event.target.id != "myInput") {
+      $(".dropdown-content").hide();
+    }
+  });
+
+  $(".filterFunction").click(function() {
+    setSizeOfSlideout();
+    $(".dropdown-content").show();
+  });
+
+  $(".filterFunction").keyup(function() {
+    var input = $("#myInput");
+    var filter = input.val().toUpperCase();
+    var div = $("#searchDropdown");
+    var a = div.find("a");
+    for (var i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+  });
+
+  $(".searched-ingredient").click(function() {
+    var ing = $(this).text();
+    var val = $('input[value="'+ing+'"]');
+    val.prop('checked', true);
+    addToList(val);
+    $(".dropdown-content").hide();
+  });
+
   function parseResponse(r) {
     let response = JSON.parse(r);
     console.log(response);
@@ -65,5 +98,10 @@ $(document).ready(function() {
 
   function getListOfIngredients() {
     return listOfIngredients;
+  }
+
+  function setSizeOfSlideout() {
+    var size = $('#myInput').width();
+    $('#searchDropdown').width(size);
   }
 });

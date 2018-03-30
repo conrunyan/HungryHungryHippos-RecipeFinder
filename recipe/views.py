@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
@@ -11,7 +11,8 @@ def index(request):
 	"""Return the base index page for the site."""
 	groups = Group.objects.order_by("name")
 	ingredientsAreSelected = False
-	context = { "groups" : groups , "ingredientsAreSelected" : ingredientsAreSelected }
+	ingredients = Ingredient.objects.order_by("name")
+	context = { "groups" : groups , "ingredientsAreSelected" : ingredientsAreSelected , "ingredients_list" : ingredients }
 	return HttpResponse(render(request, 'recipe/index.html', context))
 
 @csrf_exempt

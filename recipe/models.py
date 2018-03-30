@@ -40,8 +40,13 @@ class Ingredient(models.Model):
         return self.name
 
     def get_recipes(self):
-        """Return a QuerySet of associated Recipes"""
+        """Return a QuerySet of associated Recipes."""
         return self.recipe_set.values()
+
+    class Meta:
+        """Sort the ingredients within each group by their name."""
+        
+        ordering = ['name']
 
 
 class IngredientUtils():
