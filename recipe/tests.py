@@ -292,6 +292,17 @@ class PersistentIngredients(TestCase):
         """Setup the test client before each test."""
         self.client = Client()
 
+    def test_anonymous_user_doesnt_save(self):
+        """Test that an anonymous user doesn't save any ingredients (or crash the sever)."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(PersistentIngredient.objects.all())
+
     def test_adds_new_checked_ingredients(self):
         """Test that checking new ingredients saves then to be persistent."""
         group = Group.objects.create(name="TestGroup")
