@@ -70,4 +70,4 @@ class RecipeIngredientForm(forms.ModelForm):
 
 
 RecipeIngredientFormSet = forms.inlineformset_factory(
-    Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=3, can_delete=False)
+    Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=10, can_delete=False)
