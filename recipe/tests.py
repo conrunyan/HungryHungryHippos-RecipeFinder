@@ -4,6 +4,8 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.urls import reverse
 from django.test import Client
+from accounts.models import PersistentIngredient
+from django.contrib.auth.models import User
 
 from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils
 
@@ -352,3 +354,58 @@ class SearchRecipesBySelectedIngredientsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(str(response.content).find("Recipe1"), -1)
         self.assertEqual(str(response.content).find("Recipe2"), -1)
+
+class PersistentIngredients(TestCase):
+    """Tests the saving and loading of persistent ingredients for a user."""
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_anonymous_user_doesnt_save(self):
+        """Test that an anonymous user doesn't save any ingredients (or crash the sever)."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(PersistentIngredient.objects.all())
+
+    def test_adds_new_checked_ingredients(self):
+        """Test that checking new ingredients saves them to be persistent."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        user = User.objects.create_user('test')
+        self.client.force_login(user)
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+
+        saved = PersistentIngredient.objects.filter(user=user)
+        self.assertEqual(saved.count(), 2)
+        self.assertTrue(saved.filter(ingredient=ing1))
+        self.assertTrue(saved.filter(ingredient=ing2))
+
+    def test_removes_unchecked_ingredients(self):
+        """Test that unchecking ingredients removes them to be persistent."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        user = User.objects.create_user('test')
+        self.client.force_login(user)
+
+        pers1 = PersistentIngredient.objects.create(user=user, ingredient=ing1)
+        pers2 = PersistentIngredient.objects.create(user=user, ingredient=ing2)
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='["Ing 2"]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+
+        saved = PersistentIngredient.objects.filter(user=user)
+        self.assertEqual(saved.count(), 1)
+        self.assertTrue(saved.filter(ingredient=ing2))
