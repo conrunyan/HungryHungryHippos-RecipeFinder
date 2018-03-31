@@ -78,6 +78,8 @@ $(document).ready(function() {
   function parseResponse(r) {
     let response = JSON.parse(r);
     console.log(response);
+    deleteRecipesFromPage();
+    addRecipesToPage(response['results'], 0, 10);
   }
 
   function updateImage(div, src) {
