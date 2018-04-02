@@ -28,6 +28,10 @@
   <div id="found_recipes" class="content">
     <!-- Javascript inserts recipes here -->
   </div>
+  <div id="next_10_button_div" class="text-center m-5">
+    <!-- <button id="next_10_button" class="btn btn-dark" type="button" style="display: none" onclick="runNext10();">Next 10</button> -->
+  </div>
+
 {% endblock %}
 
 {% block footer %}
@@ -41,4 +45,6 @@
   <script src="{% static 'recipe/slidefunctionality.js' %}"></script>
   <script src="{% static 'recipe/loadingredients.js' %}"></script>
   <script src="{% static 'recipe/ingredientsmenu.js' %}"></script>
+  <script src="{% static 'recipe/next10ingredients.js' %}"></script>
+  <script src="{% static 'recipe/call_next10ingredients.js' %}"></script>
 {% endblock %}

@@ -80,6 +80,7 @@ $(document).ready(function() {
     console.log(response);
     deleteRecipesFromPage();
     addRecipesToPage(response['results'], 0, 10);
+    runNext10(response['results']);
   }
 
   function updateImage(div, src) {
