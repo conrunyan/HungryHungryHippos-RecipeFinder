@@ -4,11 +4,6 @@ function addRecipesToPage(recipes, start_idx, end_idx){
     //get existing div
     let recipes_div = document.getElementById('found_recipes');
 
-    //add header
-    let header = document.createElement('h1');
-    header.textContent = "Recipes";
-    recipes_div.appendChild(header);
-
     // fix end index if it is greater than array size
     if(end_idx > recipes.length){
         end_idx = recipes.length;
@@ -53,4 +48,8 @@ function deleteRecipesFromPage(){
     while(recipes_div.firstChild){
         recipes_div.removeChild(recipes_div.firstChild);
     }
+    //add header
+    let header = document.createElement('h1');
+    header.textContent = "Recipes";
+    recipes_div.appendChild(header);
 }
