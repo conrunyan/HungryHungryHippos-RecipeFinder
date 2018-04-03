@@ -31,6 +31,7 @@ $(document).ready(function() {
       panelIsOpen = false;
       var request = new XMLHttpRequest();
       var params = JSON.stringify(listOfIngredients);
+      console.log(params);
       request.open('POST', URL_ALG_REQUEST, true);
       request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
       request.onreadystatechange = function() {
@@ -109,10 +110,12 @@ $(document).ready(function() {
   }
 
   function checkPersistentIngredients(ingredients) {
+    console.log(ingredients.length)
     for(var i = 0; i < ingredients.length; i++) {
       var ingredient = ingredients[i];
       var e = $("input[type='checkbox'][value='" + ingredient + "']");
       if(e) {
+        console.log("e exists!");
         e.prop('checked', true);
         addToList(e);
       }
