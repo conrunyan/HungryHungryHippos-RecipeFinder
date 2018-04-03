@@ -31,7 +31,6 @@ $(document).ready(function() {
       panelIsOpen = false;
       var request = new XMLHttpRequest();
       var params = JSON.stringify(listOfIngredients);
-      console.log(params);
       request.open('POST', URL_ALG_REQUEST, true);
       request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
       request.onreadystatechange = function() {
@@ -114,7 +113,7 @@ $(document).ready(function() {
       var ingredient = ingredients[i];
       var e = $("input[type='checkbox'][value='" + ingredient + "']");
       if(e) {
-        e.prop('checked', true);c
+        e.prop('checked', true);
         addToList(e);
       }
     }
