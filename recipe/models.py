@@ -146,30 +146,32 @@ class Recipe(models.Model):
     title = models.CharField(max_length=50)
     # Short summary of the recipe (to be used on preview when searching)
     summary = models.CharField(max_length=280, null=True, blank=True)
-    # The user that added the recipe
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    # The difficulty choices for the recipe (do not modify)
+    user = models.ForeignKey(
+        User, null=True, on_delete=models.SET_NULL, editable=False)
     DIFFICULTY_CHOICES = (
+        ('', '--Difficulty--'),
         ('E', 'Easy'),
         ('M', 'Medium'),
         ('D', 'Hard')
     )
     # The actual difficulty of the recipe
     difficulty = models.CharField(max_length=1, null=True,
-        choices=DIFFICULTY_CHOICES)
+                                  choices=DIFFICULTY_CHOICES)
     # The time it takes to make the recipe (in minutes)
     time = models.IntegerField(null=True, blank=True)
-    # The image url to be used to showcase the recipe (used in both search and detailed views)
+    # The image url to be used to showcase the recipe (used in both search and
+    # detailed views)
     image_url = models.CharField(max_length=200, null=True, blank=True)
-    # The user-given rating of the recipe (on a scale from 0.0 - 5.0 where 5.0 is 5 stars)
-    rating = models.FloatField(null=True, blank=True)
+    # The user-given rating of the recipe (on a scale from 0.0 - 5.0 where 5.0
+    # is 5 stars)
+    rating = models.FloatField(null=True, blank=True, editable=False)
     # The detailed instructions to make the recipe
     instructions = models.TextField()
     # The date this recipe object was created
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(auto_now_add=True, editable=False)
     # The ingredient set of ingredients that is required for this recipe
     ingredients = models.ManyToManyField(Ingredient,
-through='RecipeIngredient')
+                                         through='RecipeIngredient')
     # The appliance set of appliances needed for this recipe
     appliances = models.ManyToManyField(Appliance)
     # If the recipe is a user's private recipe

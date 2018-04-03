@@ -32,6 +32,7 @@ def login_view(request):
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/login.html', context))
 
+
 def register_view(request):
     """View for when the user goes to the creating account page."""
     if request.method == 'POST':
@@ -64,6 +65,7 @@ def register_view(request):
 
     context = {'form': form}
     return HttpResponse(render(request, 'accounts/register.html', context))
+
 
 def logout_view(request):
     """View for when the user logs out."""
