@@ -69,5 +69,5 @@ class RecipeIngredientForm(forms.ModelForm):
         return valid
 
 
-RecipeIngredientFormSet = forms.inlineformset_factory(
-    Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=10, can_delete=False)
+RecipeIngredientFormSet = forms.inlineformset_factory(Recipe, RecipeIngredient,
+                        form=RecipeIngredientForm, extra=10, min_num=1, validate_min=True, can_delete=False)
