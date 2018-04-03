@@ -10,5 +10,4 @@ urlpatterns = [
     url(r'^add_private_recipe', views.add_private_recipe, name='add_private_recipe'),
     url(r'^recipe_full_view/(?P<id>[0-9]+)/', views.recipe_full_view, name='recipe_full_view'),
     url(r'^get_recipes/$', views.get_recipes, name='get_recipes'),
-
 ]
