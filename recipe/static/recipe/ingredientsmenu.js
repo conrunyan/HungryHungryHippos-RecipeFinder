@@ -79,6 +79,7 @@ $(document).ready(function() {
     let response = JSON.parse(r);
     console.log(response);
     deleteRecipesFromPage();
+    deleteNext10Button()
     addRecipesToPage(response['results'], 0, 10);
     runNext10(response['results']);
   }

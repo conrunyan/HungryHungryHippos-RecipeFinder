@@ -12,74 +12,77 @@ let cur_recipes;
 let cur_button;
 
 function getNext10Recs(found_recipes) {
-        // check if incrementing another 10 recipes will exceed the bounds of
-        // the recipe list
-        let indices = getNextIndices();
-        // get starting and ending recipes as an array
-        let start_idx = indices[START];
-        let end_idx = indices[END];
-        // call Kayson's function
-        addRecipesToPage(found_recipes, start_idx, end_idx);
+    // check if incrementing another 10 recipes will exceed the bounds of
+    // the recipe list
+    let indices = getNextIndices();
+    // get starting and ending recipes as an array
+    let start_idx = indices[START];
+    let end_idx = indices[END];
+    // call Kayson's function
+    addRecipesToPage(found_recipes, start_idx, end_idx);
 };
 
 function getNextIndices() {
-        // Returns a two element array, the first element being
-        // the starting index, and second being the ending index of the
-        // next recipes to grab.
-
-        // increment indices
-        let next_start_idx = rec_start_idx + 10;
-        let next_end_idx = rec_end_idx + 10;
-        let next_indices = [0, 0];
-        // check if last ending index was the last item in the 
-        // recipes list
-        if (rec_end_idx == num_recs - 1)
-        {
-            // if yes, return the same index it started with
-            next_indices[START] = rec_end_idx;
-            next_indices[END] = rec_end_idx;
-        }
-        // else if the ending index is greater than rec_nums, return the position of 
-            //rec_nums-1 as the ending index, and rec_start_idx as the staring index
-        // TODO: add else if with above logic here
-        else if (rec_end_idx > num_recs)
-        {
-            next_end_idx = num_recs -1;
-            next_indices[START] = rec_start_idx ;
-            next_indices[END] = next_end_idx;
-        }
-        // else, return next_end_idx as ending index, and next_start_idx as starting index
-        // TDOO: add else to capture above logic
-        else
-        {
-            next_indices[START] = next_start_idx;
-            next_indices[END] = next_end_idx;
-        }
-
-        // store used indices in the rec_start_idx and rec_end_idx values 
-        rec_start_idx = next_indices[START];
-        rec_end_idx = next_indices[END];
-
-        // show or hide button based on recipe status
-        addRemoveButton();
-
-        return next_indices;
+    // Returns a two element array, the first element being
+    // the starting index, and second being the ending index of the
+    // next recipes to grab.
+    // increment indices
+    let next_start_idx = rec_start_idx + 10;
+    let next_end_idx = rec_end_idx + 10;
+    let next_indices = [0, 0];
+    // check if last ending index was the last item in the 
+    // recipes list
+    if (rec_end_idx == num_recs - 1)
+    {
+        // if yes, return the same index it started with
+        next_indices[START] = rec_end_idx;
+        next_indices[END] = rec_end_idx;
+    }
+    // else if the ending index is greater than rec_nums, return the position of 
+        //rec_nums-1 as the ending index, and rec_start_idx as the staring index
+    else if (rec_end_idx > num_recs)
+    {
+        next_end_idx = num_recs -1;
+        next_indices[START] = rec_start_idx ;
+        next_indices[END] = next_end_idx;
+    }
+    // else, return next_end_idx as ending index, and next_start_idx as starting index
+    else
+    {
+        next_indices[START] = next_start_idx;
+        next_indices[END] = next_end_idx;
+    }
+    // store used indices in the rec_start_idx and rec_end_idx values 
+    rec_start_idx = next_indices[START];
+    rec_end_idx = next_indices[END];
+    // show or hide button based on recipe status
+    addRemoveButton();
+    return next_indices;
 };
 
 function addRemoveButton() {
-        // if number of recipes is less than 10, or the last recipe displayed was the 
-        // last recipe in the list, don't display the button
-        
-        if (num_recs < 0 || rec_end_idx == num_recs - 1)
-        {
-            cur_button.style = "display: none";
-        }
-         // otherwise display it
-        else
-        {
-            cur_button.style = "";
-        }
-    };
+    // if number of recipes is less than 10, or the last recipe displayed was the 
+    // last recipe in the list, don't display the button
+    
+    if (num_recs < 10 || rec_end_idx == num_recs - 1)
+    {
+        cur_button.style = "display: none";
+    }
+     // otherwise display it
+    else
+    {
+        cur_button.style = "";
+    }
+};
+
+function deleteNext10Button() {
+    // looks for a next_10_button on the document, and deletes it
+    let next_10_div = document.getElementById('next_10_button_div')
+    while (next_10_div.firstChild)
+    {
+        next_10_div.removeChild(next_10_div.firstChild)
+    }
+};
 
 // TODO: Write function to kill the button upon new search
 
@@ -101,8 +104,7 @@ function runNext10(recipes){
     cur_button = next_button;
     console.log(next_button);
     // add button to next_10_button_div
-    
 
-    // determine if button is shown or not. 
+    // determine if button is shown or not.
     addRemoveButton();
 }
