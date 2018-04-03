@@ -409,3 +409,26 @@ class PersistentIngredients(TestCase):
         saved = PersistentIngredient.objects.filter(user=user)
         self.assertEqual(saved.count(), 1)
         self.assertTrue(saved.filter(ingredient=ing2))
+
+    def test_multiple_users_with_same_ingredient(self):
+        """#20: Check multiple users with same persistent ingredient."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+
+        user1 = User.objects.create_user('test1')
+        user2 = User.objects.create_user('test2')
+
+        pers1 = PersistentIngredient.objects.create(user=user1, ingredient=ing1)
+        pers2 = PersistentIngredient.objects.create(user=user2, ingredient=ing1)
+
+        self.client.force_login(user1)
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='[]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+
+        saved1 = PersistentIngredient.objects.filter(user=user1)
+        self.assertEqual(saved1.count(), 0)
+
+        saved2 = PersistentIngredient.objects.filter(user=user2)
+        self.assertEqual(saved2.count(), 1)
