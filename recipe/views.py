@@ -92,6 +92,8 @@ def add_private_recipe(request):
 @login_required
 def edit_private_recipe(request, id):
     recipe = get_object_or_404(Recipe, id=id)
+    if recipe.user != request.user:
+        raise PermissionDenied
 
     if(request.method == 'POST'):
         form = RecipeForm(request.POST, instance=recipe)
