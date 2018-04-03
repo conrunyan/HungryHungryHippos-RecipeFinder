@@ -110,5 +110,6 @@ def edit_private_recipe(request, id):
 
 
     context = {'form': form,
-               'formset': formset}
+               'formset': formset,
+               'recipe_id': recipe.id}
     return HttpResponse(render(request, 'recipe/edit_private_recipe.html', context))

@@ -48,7 +48,11 @@
 			{% endfor %}
 		</div>
 	{% endfor %}
-	<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
+	<div>
+		<a id="cancel" class="btn btn-warning btn-block btn-lg mt-5" href="{% url 'recipe:recipe_full_view' recipe_id %}"> Cancel </a>
+		<div id="delete" class="btn btn-danger btn-block btn-lg mt-5"> Delete </div>
+		<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
+	</div>
 </form>
 
 {% endblock %}
