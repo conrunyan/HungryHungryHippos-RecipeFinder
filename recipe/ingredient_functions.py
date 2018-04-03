@@ -40,7 +40,7 @@ def save_ingredients_to_user(user, ingredients):
     ingredients_to_add = submitted_ingredients.difference(saved_ingredients)
 
     for ingredient in ingredients_to_delete:
-        PersistentIngredient.objects.get(ingredient=ingredient).delete()
+        PersistentIngredient.objects.get(user=user, ingredient=ingredient).delete()
     for ingredient in ingredients_to_add:
         PersistentIngredient.objects.create(user=user, ingredient=ingredient)
 

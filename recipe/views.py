@@ -65,6 +65,7 @@ def recipe_full_view(request, id):
 
 @login_required
 def add_private_recipe(request):
+    """Create a view with a form for adding a recipe."""
     if(request.method == 'POST'):
         form = RecipeForm(request.POST)
         formset = RecipeIngredientFormSet(request.POST)

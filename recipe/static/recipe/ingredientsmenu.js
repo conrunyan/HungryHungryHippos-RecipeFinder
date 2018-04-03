@@ -110,13 +110,11 @@ $(document).ready(function() {
   }
 
   function checkPersistentIngredients(ingredients) {
-    console.log(ingredients.length)
     for(var i = 0; i < ingredients.length; i++) {
       var ingredient = ingredients[i];
       var e = $("input[type='checkbox'][value='" + ingredient + "']");
       if(e) {
-        console.log("e exists!");
-        e.prop('checked', true);
+        e.prop('checked', true);c
         addToList(e);
       }
     }
