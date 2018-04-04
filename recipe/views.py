@@ -25,8 +25,8 @@ def index(request):
     ingredients = Ingredient.objects.order_by("name")
 
     persistent_ingredients = []
-    if request.user and not request.user.is_anonymous():
-        persistent_ingredients = get_ingredient_objs_of_user(request.user)
+    if request.user:
+        persistent_ingredients = get_ingredient_objs_of_user(request.user, request.session)
         persistent_ingredients = get_ingredient_names(persistent_ingredients)
 
     context = {"groups": groups, "group_dict": group_dict, "ingredientsAreSelected": ingredientsAreSelected,
@@ -44,8 +44,8 @@ def get_recipes(request):
     ing = request.body.decode("utf-8")
     ingredients_to_search_by = ing[1:-1].replace('"', "").split(',')
     # save ingredients for the future
-    if request.user and not request.user.is_anonymous():
-        save_ingredients_to_user(request.user, ingredients_to_search_by)
+    if request.user:
+        save_ingredients_to_user(request.user, ingredients_to_search_by, request.session)
     # send ingredients to search algorithm
     found_recipes = IngredientUtils().find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!
