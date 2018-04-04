@@ -88,3 +88,36 @@ def add_private_recipe(request):
     context = {'form': form,
                'formset': formset}
     return HttpResponse(render(request, 'recipe/add_private_recipe.html', context))
+
+@login_required
+def edit_private_recipe(request, id):
+    recipe = get_object_or_404(Recipe, id=id)
+    if recipe.user != request.user:
+        raise PermissionDenied
+
+    if(request.method == 'POST'):
+        form = RecipeForm(request.POST, instance=recipe)
+        formset = RecipeIngredientFormSet(request.POST, instance=recipe)
+
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return redirect('recipe:recipe_full_view', id)
+
+    else:
+        form = RecipeForm(instance=recipe)
+        formset = RecipeIngredientFormSet(instance=recipe)
+
+
+    context = {'form': form,
+               'formset': formset,
+               'recipe_id': recipe.id}
+    return HttpResponse(render(request, 'recipe/edit_private_recipe.html', context))
+
+def delete_recipe_view(request, id):
+    recipe = get_object_or_404(Recipe, id=id)
+    if recipe.user != request.user:
+        raise PermissionDenied
+
+    recipe.delete()
+    return redirect('recipe:index')
