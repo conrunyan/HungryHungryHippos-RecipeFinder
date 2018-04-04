@@ -470,6 +470,25 @@ class ViewingPrivateRecipes(TestCase):
         """Setup the test client before each test."""
         self.client = Client()
 
+    def test_returning_list_of_users_private_recipes(self):
+        """Test that when a user navigates to 'My Recipes', they see all of their own recipes."""
+        user1 = User.objects.create_user('test1')
+        self.client.force_login(user1)
+        user2 = User.objects.create_user('test2')
+        # create a recipe with two ingredients
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        recipe_one = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions", user=user1)
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r1.save()
+        recipe_two = Recipe.objects.create(title="Recipe2", instructions="recipe2 instructions", user=user1)
+        r2 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=2)
+        r2.save()
+        # make sure the view returns those two recipes and only those two
+        response = self.client.get(reverse('myRecipes'))
+        test = response.context['my_recipes']
+        self.assertTrue(len(test) == 2)
+
     def test_viewing_private_recipe_for_same_user(self):
         """Test that a user can view their own recipe."""
         user1 = User.objects.create_user('test1')
