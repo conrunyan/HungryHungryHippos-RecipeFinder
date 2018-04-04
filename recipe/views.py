@@ -53,11 +53,10 @@ def get_recipes(request):
     return JsonResponse({'results': list(values)})
 
 
-@login_required
 def recipe_full_view(request, id):
     """Return the full view of a recipe."""
     current_recipe = get_object_or_404(Recipe, id=id)
-    if current_recipe.user != request.user:
+    if current_recipe.is_private and current_recipe.user != request.user:
         raise PermissionDenied
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)
     context = {'current_recipe': current_recipe, 'ingredients': ingredients}
@@ -66,6 +65,7 @@ def recipe_full_view(request, id):
 
 @login_required
 def add_private_recipe(request):
+    """Create a view with a form for adding a recipe."""
     if(request.method == 'POST'):
         form = RecipeForm(request.POST)
         formset = RecipeIngredientFormSet(request.POST)

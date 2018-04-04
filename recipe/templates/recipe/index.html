@@ -4,8 +4,8 @@
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/slideout.css' %}" />
   <link rel="stylesheet" href="{% static 'recipe/no_ingredients.css' %}" />
-  <link rel="stylesheet" href="    https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css
-" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" />
+  <link rel="stylesheet" href="{% static 'recipe/recipe_summary.css' %}" />
 {% endblock %}
 
 {% block slide_out %}
@@ -25,15 +25,20 @@
     <br />
     <button class="toggle-button btn btn-dark" type="button" data-toggle="collapse">Start Search</button>
   </div>
+  <div id="found_recipes" class="content">
+    <!-- Javascript inserts recipes here -->
+  </div>
 {% endblock %}
 
 {% block footer %}
   {% load staticfiles %}
   <script>
     const URL_ALG_REQUEST = "{% url 'recipe:get_recipes' %}";
+    const URL_FULL_VIEW = "{% url 'recipe:recipe_full_view' 0 %}".slice(0,-1); //slice to remove '0'
     const PERSISTENT_INGREDIENTS = {{ persistent_ingredients|safe }};
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
   <script src="{% static 'recipe/slidefunctionality.js' %}"></script>
+  <script src="{% static 'recipe/loadingredients.js' %}"></script>
   <script src="{% static 'recipe/ingredientsmenu.js' %}"></script>
 {% endblock %}
