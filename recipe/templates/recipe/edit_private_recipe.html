@@ -50,9 +50,18 @@
 	{% endfor %}
 	<div>
 		<a id="cancel" class="btn btn-warning btn-block btn-lg mt-5" href="{% url 'recipe:recipe_full_view' recipe_id %}"> Cancel </a>
-		<div id="delete" class="btn btn-danger btn-block btn-lg mt-5"> Delete </div>
+		<a id="delete" class="btn btn-danger btn-block btn-lg mt-5" href="{% url 'recipe:delete_recipe_view' recipe_id %}"> Delete </a>
 		<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
 	</div>
 </form>
 
+{% endblock %}
+
+{% block footer %}
+	{% load staticfiles %}
+	<script>
+		$(document).on('click', '#delete', function(){
+    		return confirm('Are you sure you want to delete this?');
+    	})
+    </script>
 {% endblock %}

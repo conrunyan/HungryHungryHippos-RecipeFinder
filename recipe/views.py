@@ -113,3 +113,10 @@ def edit_private_recipe(request, id):
                'formset': formset,
                'recipe_id': recipe.id}
     return HttpResponse(render(request, 'recipe/edit_private_recipe.html', context))
+
+def delete_recipe_view(request, id):
+    recipe = get_object_or_404(Recipe, id=id)
+    if recipe.user != request.user:
+        raise PermissionDenied
+
+    print("IT worked!!")
