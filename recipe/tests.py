@@ -178,14 +178,14 @@ class RecipeAppIndexTest(TestCase):
         self.assertEquals(ingredient_set_3.get(name='Ing 3 2'), ing3_2)
 
 class IngredientSearchTest(TestCase):
-    """Test Searching of Recipes by Ingredient"""
+    """Test Searching of Recipes by Ingredient."""
 
     def setUp(self):
-        """Get ingredients objects"""
+        """Get ingredients objects."""
         self.client = Client()
 
     def test_ingr_qs_intserection(self):
-        """Tests the interesection of two ingredients"""
+        """Tests the interesection of two ingredients."""
         group = Group.objects.create(name="TestGroup")
         ing1 = Ingredient.objects.create(group=group, name="Ing 1")
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
@@ -409,3 +409,94 @@ class PersistentIngredients(TestCase):
         saved = PersistentIngredient.objects.filter(user=user)
         self.assertEqual(saved.count(), 1)
         self.assertTrue(saved.filter(ingredient=ing2))
+
+    def test_multiple_users_with_same_ingredient(self):
+        """#20: Check multiple users with same persistent ingredient."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+
+        user1 = User.objects.create_user('test1')
+        user2 = User.objects.create_user('test2')
+
+        pers1 = PersistentIngredient.objects.create(user=user1, ingredient=ing1)
+        pers2 = PersistentIngredient.objects.create(user=user2, ingredient=ing1)
+
+        self.client.force_login(user1)
+
+        response = self.client.post(reverse('recipe:get_recipes'), data='[]', content_type="application/json; charset=utf-8")
+
+        self.assertEqual(response.status_code, 200)
+
+        saved1 = PersistentIngredient.objects.filter(user=user1)
+        self.assertEqual(saved1.count(), 0)
+
+        saved2 = PersistentIngredient.objects.filter(user=user2)
+        self.assertEqual(saved2.count(), 1)
+
+    def test_anonymous_user_saves_in_session(self):
+        """#22: Test that the anonymous user's ingredients are saved in the current session."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        persistent_ingredients = self.client.session['persistent_ingredients']
+        self.assertTrue(persistent_ingredients)
+        self.assertEquals(len(persistent_ingredients), 2)
+        self.assertIn("Ing 1", persistent_ingredients)
+        self.assertIn("Ing 2", persistent_ingredients)
+
+    def test_anonymous_user_loads_from_session(self):
+        """#22: Test that the anonymous user's ingredients are loaded from the current session."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+        response = self.client.get(reverse('recipe:index'))
+
+        persistent_ingredients = response.context['persistent_ingredients']
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(persistent_ingredients)
+        self.assertEquals(len(persistent_ingredients), 2)
+        self.assertIn("Ing 1", persistent_ingredients)
+        self.assertIn("Ing 2", persistent_ingredients)
+
+class ViewingPrivateRecipes(TestCase):
+    """Test viewing recipes that are marked is_private."""
+
+    def setUp(self):
+        """Setup the test client before each test."""
+        self.client = Client()
+
+    def test_viewing_private_recipe_for_same_user(self):
+        """Test that a user can view their own recipe."""
+        user1 = User.objects.create_user('test1')
+        self.client.force_login(user1)
+        # create a recipe with two ingredients
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        recipe_one = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions", user=user1)
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r1.save()
+        recipe_two = Recipe.objects.create(title="Recipe2", instructions="recipe2 instructions")
+        r2 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=2)
+        r2.save()
+
+        response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_one.id}))
+        self.assertEqual(response.status_code, 200)
+
+        response2 = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_two.id}))
+        self.assertEqual(response2.status_code, 403)
+
+    def test_guest_cannot_view_private_recipe(self):
+        """Test that a guest cannot view private recipes."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        recipe_one = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
+        r1.save()
+
+        response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_one.id}))
+        self.assertEqual(response.status_code, 403)
