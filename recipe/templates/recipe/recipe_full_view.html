@@ -8,6 +8,7 @@
 {% block content %}
 {% if current_recipe %}
   <div class="content">
+    <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
     <div class="text-center">
