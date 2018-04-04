@@ -79,7 +79,7 @@ def add_private_recipe(request):
                     ingredient = ingredient_form.save(commit=False)
                     ingredient.recipe = recipe
                     ingredient.save()
-            return redirect('recipe:index')
+            return redirect('recipe:recipe_full_view', recipe.id)
 
     else:
         form = RecipeForm()
