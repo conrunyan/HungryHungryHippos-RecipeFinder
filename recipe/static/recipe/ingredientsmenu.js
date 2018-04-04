@@ -11,6 +11,7 @@ $(document).ready(function() {
 
   updateImage($(".update-on-expand"), COLLAPSED_SRC);
   checkPersistentIngredients(PERSISTENT_INGREDIENTS);
+  queryRecipes();
 
   $(".update-on-expand").on('show.bs.collapse', function() {
     updateImage($(this), EXPANDED_SRC);
@@ -29,16 +30,7 @@ $(document).ready(function() {
       panelIsOpen = true;
     } else {
       panelIsOpen = false;
-      var request = new XMLHttpRequest();
-      var params = JSON.stringify(listOfIngredients);
-      request.open('POST', URL_ALG_REQUEST, true);
-      request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-      request.onreadystatechange = function() {
-        if(request.readyState == 4 && request.status == 200) {
-          parseResponse(request.responseText);
-        }
-      };
-      request.send(params);
+      queryRecipes();
     }
   });
 
@@ -117,6 +109,19 @@ $(document).ready(function() {
         addToList(e);
       }
     }
+  };
+
+  function queryRecipes() {
+    var request = new XMLHttpRequest();
+    var params = JSON.stringify(listOfIngredients);
+    request.open('POST', URL_ALG_REQUEST, true);
+    request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    request.onreadystatechange = function() {
+      if(request.readyState == 4 && request.status == 200) {
+        parseResponse(request.responseText);
+      }
+    };
+    request.send(params);
   };
 
 });
