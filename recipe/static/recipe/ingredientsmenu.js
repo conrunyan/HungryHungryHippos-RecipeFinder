@@ -112,6 +112,10 @@ $(document).ready(function() {
   };
 
   function queryRecipes() {
+    if(listOfIngredients.length === 0) {
+      return;
+    }
+    
     var request = new XMLHttpRequest();
     var params = JSON.stringify(listOfIngredients);
     request.open('POST', URL_ALG_REQUEST, true);
