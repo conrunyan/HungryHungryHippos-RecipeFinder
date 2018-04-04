@@ -410,7 +410,6 @@ class PersistentIngredients(TestCase):
         self.assertEqual(saved.count(), 1)
         self.assertTrue(saved.filter(ingredient=ing2))
 
-
     def test_multiple_users_with_same_ingredient(self):
         """#20: Check multiple users with same persistent ingredient."""
         group = Group.objects.create(name="TestGroup")
@@ -433,6 +432,36 @@ class PersistentIngredients(TestCase):
 
         saved2 = PersistentIngredient.objects.filter(user=user2)
         self.assertEqual(saved2.count(), 1)
+
+    def test_anonymous_user_saves_in_session(self):
+        """#22: Test that the anonymous user's ingredients are saved in the current session."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+
+        persistent_ingredients = self.client.session['persistent_ingredients']
+        self.assertTrue(persistent_ingredients)
+        self.assertEquals(len(persistent_ingredients), 2)
+        self.assertIn("Ing 1", persistent_ingredients)
+        self.assertIn("Ing 2", persistent_ingredients)
+
+    def test_anonymous_user_loads_from_session(self):
+        """#22: Test that the anonymous user's ingredients are loaded from the current session."""
+        group = Group.objects.create(name="TestGroup")
+        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
+
+        self.client.post(reverse('recipe:get_recipes'), data='["Ing 1","Ing 2"]', content_type="application/json; charset=utf-8")
+        response = self.client.get(reverse('recipe:index'))
+
+        persistent_ingredients = response.context['persistent_ingredients']
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(persistent_ingredients)
+        self.assertEquals(len(persistent_ingredients), 2)
+        self.assertIn("Ing 1", persistent_ingredients)
+        self.assertIn("Ing 2", persistent_ingredients)
 
 class ViewingPrivateRecipes(TestCase):
     """Test viewing recipes that are marked is_private."""
