@@ -82,6 +82,10 @@ function deleteNext10Button() {
     {
         next_10_div.removeChild(next_10_div.firstChild)
     }
+    // reset index values
+    rec_start_idx = 0;
+    rec_end_idx = 9;
+    num_recs = 0;
 };
 
 // TODO: Write function to kill the button upon new search
