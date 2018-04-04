@@ -70,7 +70,9 @@ $(document).ready(function() {
   function parseResponse(r) {
     let response = JSON.parse(r);
     deleteRecipesFromPage();
-    addRecipesToPage(response['results'], 0, 10); //first 10 recipes are loaded by defualt.
+    deleteNext10Button()
+    addRecipesToPage(response['results'], 0, 10);
+    runNext10(response['results']);
   }
 
   function updateImage(div, src) {
