@@ -119,4 +119,5 @@ def delete_recipe_view(request, id):
     if recipe.user != request.user:
         raise PermissionDenied
 
-    print("IT worked!!")
+    recipe.delete()
+    return redirect('recipe:index')
