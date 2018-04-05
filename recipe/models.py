@@ -81,6 +81,10 @@ class IngredientUtils():
 
         return QuerySet.intersection(*ing_qs_list)
 
+    def _filter_private_recs(self, recipes, user_id):
+        """Returns public recipes and the user's private recipes (if applicable"""
+        pass
+
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
 
