@@ -49,6 +49,8 @@ class IngredientUtils():
 
     Contains methods to help search for recipes by ingredient
     """
+    def __init__(self, user_id=0):
+        self.user_id = user_id
 
     def __str__(self):
         return "Ingredient Tools"
@@ -67,8 +69,9 @@ class IngredientUtils():
         # if ingredients were found...
         if len(recipe_qs) > 0:
             recipes = self._ingredient_intersect(recipe_qs)
-            sliced_recipes = self._get_recipe_range(recipes, start, end)
             # print('Returning:', recipes)
+            recipes = self._filter_private_recs(recipes)
+            sliced_recipes = self._get_recipe_range(recipes, start, end)
             return sliced_recipes
         # return empty queryset
         else:
@@ -80,6 +83,13 @@ class IngredientUtils():
         """Returns a QuerySet of recipes shared between ingredients"""
 
         return QuerySet.intersection(*ing_qs_list)
+
+    def _filter_private_recs(self, recipe_qs):
+        """Returns public recipes and the user's private recipes (if applicable)"""
+        private_q = Q(is_private=False)
+        usr_id_q = Q(user_id=self.user_id)
+        # get public recipes or those that belong to the user
+        return recipe_qs.filter(private_q | usr_id_q)
 
     def _make_qs_list(self, ingredients):
         """Returns a QuerySet of recipes given a list of ingredient names"
@@ -99,7 +109,10 @@ class IngredientUtils():
             # if ingredient found, get recipes
                 if cur_ing_qs:
                     tmp_ing = cur_ing_qs
+                    # get recipe query set, given ingredients
                     tmp_rec = tmp_ing.get_recipes()
+                    # filter out any private recipes that don't belong to the user
+                    tmp_rec = self._filter_private_recs(tmp_rec)
                     recipe_qs.append(tmp_rec)
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):

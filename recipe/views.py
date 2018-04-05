@@ -44,10 +44,13 @@ def get_recipes(request):
     ing = request.body.decode("utf-8")
     ingredients_to_search_by = ing[1:-1].replace('"', "").split(',')
     # save ingredients for the future
+    # get user id, if applicable. Else default to 0
+    usr_id = 0
     if request.user:
         save_ingredients_to_user(request.user, ingredients_to_search_by, request.session)
+        usr_id = request.user.id
     # send ingredients to search algorithm
-    found_recipes = IngredientUtils().find_recipes(ingredients_to_search_by)
+    found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!
     values = found_recipes.values()
     return JsonResponse({'results': list(values)})
