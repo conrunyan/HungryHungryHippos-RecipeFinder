@@ -49,7 +49,6 @@ def get_recipes(request):
     if request.user:
         save_ingredients_to_user(request.user, ingredients_to_search_by, request.session)
         usr_id = request.user.id
-    print('USER ID:', usr_id)
     # send ingredients to search algorithm
     found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!

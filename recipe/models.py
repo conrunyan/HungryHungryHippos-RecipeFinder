@@ -51,7 +51,6 @@ class IngredientUtils():
     """
     def __init__(self, user_id=0):
         self.user_id = user_id
-        print(self.user_id)
 
     def __str__(self):
         return "Ingredient Tools"
@@ -70,11 +69,10 @@ class IngredientUtils():
         # if ingredients were found...
         if len(recipe_qs) > 0:
             recipes = self._ingredient_intersect(recipe_qs)
-            #sliced_recipes = self._get_recipe_range(recipes, start, end)
             # print('Returning:', recipes)
-            #return sliced_recipes
             recipes = self._filter_private_recs(recipes)
-            return recipes
+            sliced_recipes = self._get_recipe_range(recipes, start, end)
+            return sliced_recipes
         # return empty queryset
         else:
             emp_qs = Recipe.objects.none()
