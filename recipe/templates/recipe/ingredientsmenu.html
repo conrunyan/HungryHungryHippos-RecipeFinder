@@ -1,0 +1,50 @@
+<div id="menu">
+  <h2>Choose your ingredients</h2>
+  <hr />
+  <div class="search">
+    <div class="form-group search-bar search-drop-down">
+      <input type="text" placeholder=" Search Ingredients..." id="myInput" class="filterFunction">
+      <div id="searchDropdown" class="dropdown-content">
+        {% if ingredients_list %}
+          {% for ingredient in ingredients_list %}
+            <a class="searched-ingredient">{{ ingredient.name }}</a>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div id="list-ingredients">
+    {% if group_dict %}
+      {% for group, ingredients in group_dict.items %}
+        <div class="list-group">
+          <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-{{ group }}">
+            <div class="col-xs-2 mr-1">
+              <img class="img-fluid update-image" style="height: 1rem;" src="" alt="">
+            </div>
+            <div class="col-xs-10">
+              <h4>{{ group }}</h4>
+            </div>
+          </div>
+          <div id="collapse-{{ group }}" class="collapse update-on-expand">
+            <div>
+              <ul class="mt-2">
+                {% for ingredient in ingredients %}
+                  <div class="single-ingredient pretty p-default p-thick">
+                    <input class="checkbox update-list" type="checkbox" value="{{ ingredient }}" label="{{ingredient}}">
+                    <div class="state p-info-o">
+                      <label class="text-dark checkbox-label"> {{ ingredient }}</label>
+                    </div>
+                  </div>
+                  <br />
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h3>Couldn't get ingredients from the server.</h3>
+    {% endif %}
+  </div>
+</div>

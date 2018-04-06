@@ -1,3 +1,19 @@
-from django.db import models
+"""Tables to extend the user functionality."""
 
-# Create your models here.
+from django.db import models
+from django.contrib.auth.models import User
+
+class PersistentIngredient(models.Model):
+    """Holds the current ingredients a user has selected.
+
+    Allows the user's ingredients to persist across searches and sessions.
+    """
+
+    # Holds the user to which this ingredient points
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Holds the ingredient this user has selected
+    ingredient = models.ForeignKey('recipe.Ingredient', on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Construct a string representation of this ingredient link."""
+        return '{0} : {1}'.format(self.user, self.ingredient)

@@ -117,7 +117,7 @@ class CreateUserFormTest(TestCase):
             'password_verify': 'password'
             })
         self.assertFalse(form.is_valid())
-        self.assertEqual(form['password'].errors[0], "This password is too common.")  
+        self.assertEqual(form['password'].errors[0], "This password is too common.")
 
     def test_invalid_incomplete(self):
         '''When form isn't completely filled out, form is not valid'''
@@ -168,3 +168,16 @@ class CreateUserViewTest(TestCase):
         self.assertContains(response, 'That email is already being used.')
         self.assertContains(response, 'Passwords did not match.')
         self.assertContains(response, 'This password is too common.')
+
+    def test_no_account_creation_on_form_error(self):
+        '''assures that an account isn't created when there are form errors.'''
+        User.objects.create_user('testing','test@test.com','pass')
+        response = self.client.post(reverse('register'), {
+            'user_name' : 'test',
+            'email' : 'test@test.com',
+            'password' : 'password',
+            'password_verify' : 'Blahblerg'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'That email is already being used.')
+        self.assertRaises(User.DoesNotExist, User.objects.get, username="test")

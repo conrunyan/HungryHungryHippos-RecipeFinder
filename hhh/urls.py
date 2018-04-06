@@ -1,4 +1,4 @@
-"""hhh URL Configuration
+"""hhh URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^emailauth/', include('emailauth.urls')),
+    url(r'^scraper/', include('scraper.urls')),
     url(r'^', include('recipe.urls')),
 ]

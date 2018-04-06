@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-center m-5">Recipe Scraper</h1>
+
+{% for error in errors %}
+  <div class="form-group text-danger text-center">{{ error | escape }}</div>
+{% endfor %}
+
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="sample-url">Sample url to scrape:</label>
+    <input type="url" class="form-control" name="sample-url" placeholder="http://www.allrecipes.com" aria-describedby="sample-url-help" required />
+    <small id="sample-url-help" class="form-text text-muted">Only the hostname is grabbed to determine the scraper and website. (Make sure you include the protocol)</small>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="id-start">Starting id:</label>
+      <input type="number" class="form-control" name="id-start" placeholder="" aria-describedby="id-start-help" min="0" required />
+      <small id="id-start-help" class="form-text text-muted">The starting recipe id to scrape.</small>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="id-count">Count:</label>
+      <input type="number" class="form-control" name="id-count" placeholder="" aria-describedby="id-count-help" min="1" max="200" value="10" />
+      <small id="id-count-help" class="form-text text-muted">The number of recipes to scrape.</small>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit Batch</button>
+</form>
+{% endblock %}
