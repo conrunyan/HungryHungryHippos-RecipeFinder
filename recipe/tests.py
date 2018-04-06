@@ -260,17 +260,17 @@ class IngredientSearchTest(TestCase):
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
         ing3 = Ingredient.objects.create(group=group, name="Ing 3")
         # Create fake recipe to populate RecipeIngredient table.
-        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake", is_private=False)
         r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
         r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
         r1.save()
         r2.save()
         # Create real recipe to test against.
-        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real", is_private=False)
         r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
         r3.save()
         # Create real recipe3 to test against.
-        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
+        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real", is_private=False)
         r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
         r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
         r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
