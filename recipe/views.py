@@ -8,9 +8,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import PersistentIngredient
-from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
+from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment
 
 
 def index(request):
@@ -61,8 +61,23 @@ def recipe_full_view(request, id):
     current_recipe = get_object_or_404(Recipe, id=id)
     if current_recipe.is_private and current_recipe.user != request.user:
         raise PermissionDenied
+
+    if (request.method == 'POST' and request.user.is_authenticated()):
+        comment_form = CommentForm(request.POST)
+        comment = comment_form.save(commit=False)
+        comment.recipe = current_recipe
+        comment.user = request.user
+        comment.save()
+
+    comment_form = '' #blank if not logged on
+    comments = Comment.objects.filter(recipe=current_recipe).order_by('-creation_date')
+    if request.user.is_authenticated():
+        comment_form = CommentForm()
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)
-    context = {'current_recipe': current_recipe, 'ingredients': ingredients}
+    context = {'current_recipe': current_recipe,
+               'ingredients': ingredients,
+               'comments': comments,
+               'comment_form': comment_form}
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
