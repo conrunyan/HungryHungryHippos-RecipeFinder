@@ -7,7 +7,7 @@ from django.test import Client
 from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -519,3 +519,22 @@ class ViewingPrivateRecipes(TestCase):
 
         response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_one.id}))
         self.assertEqual(response.status_code, 403)
+
+class RecipeRating(TestCase):
+    """Tests rating recipes for the user."""
+
+    def test_no_ratings_is_none(self):
+        """Test that a recipe with no ratings has a rating of None."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+
+        self.assertIsNone(recipe.get_rating())
+
+    def test_rating_is_an_average(self):
+        """Test that a recipe rating is the average ratings."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        user = User.objects.create_user('test_user')
+        user2 = User.objects.create_user('test_user2')
+        r1 = UserRating.objects.create(recipe=recipe, user=user, value=4.1)
+        r1 = UserRating.objects.create(recipe=recipe, user=user2, value=1.8)
+
+        self.assertAlmostEqual(recipe.get_rating(), 2.95)
