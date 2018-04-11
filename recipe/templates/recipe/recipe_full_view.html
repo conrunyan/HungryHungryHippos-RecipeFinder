@@ -19,14 +19,16 @@
       {% endif %}
     </div>
     <div class="text-center">
-      {% if current_recipe.get_rating %}
-        <p>Rating: {{ current_recipe.get_rating }}</p>
-      {% else %}
-        <p>No Rating</p>
-      {% endif %}
+      <p id="rating">
+        {% if current_recipe.get_rating %}
+          Rating: {{ current_recipe.get_rating }} ({{ current_recipe.get_rating_count }})
+        {% else %}
+          No Rating
+        {% endif %}
+      </p>
 
       {% if user.is_authenticated %}
-        <div class="row">
+        <div id="rating-container" class="row">
           <div class="col-sm-1"></div>
           {% for i in "12345" %}
             <div class="col-sm-2">
@@ -57,4 +59,11 @@
 {% else %}
   <p>Could not load selected recipe.</p>
 {% endif %}
+{% endblock %}
+
+{% block footer %}
+<script>
+  const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
+</script>
+<script src="{% static 'recipe/rating.js' %}"></script>
 {% endblock %}

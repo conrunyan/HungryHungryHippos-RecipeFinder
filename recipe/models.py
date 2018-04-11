@@ -205,6 +205,10 @@ class Recipe(models.Model):
         """Return the average rating for the recipe."""
         return self.userrating_set.all().aggregate(Avg('value'))['value__avg']
 
+    def get_rating_count(self):
+        """Return the number of ratings for the recipe."""
+        return self.userrating_set.all().count()
+
 
 class RecipeIngredient(models.Model):
     """This class is used in the relationship between recipes and ingredients.

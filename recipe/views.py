@@ -1,5 +1,7 @@
 """Holds the views for the index page."""
 
+import json
+
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -10,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, UserRating
 
 
 def index(request):
@@ -65,6 +67,34 @@ def recipe_full_view(request, id):
     context = {'current_recipe': current_recipe, 'ingredients': ingredients}
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
+
+@login_required
+def rate(request, id):
+    """Rate a recipe. Update previous rating if exists or create new rating.
+
+    Return if updating the rating succeded.
+    Return the updated rating for the recipe if everything goes swimmingly.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not POST'})
+
+    recipe = get_object_or_404(Recipe, id=id)
+
+    try:
+        rating = json.loads(request.body)['rating']
+        rating = float(rating)
+    except KeyError:
+        return JsonResponse({'error': 'Rating not sent'})
+    except ValueError:
+        return JsonResponse({'error': 'Rating not float value'})
+    # clamp rating to valid values (1-5)
+    rating = min(5.0, max(1.0, rating))
+
+    UserRating.objects.update_or_create(recipe=recipe, user=request.user, defaults={'value': rating})
+
+    return JsonResponse({'valid': 'True',
+                         'average': recipe.get_rating(),
+                         'count': recipe.get_rating_count()})
 
 @login_required
 def add_private_recipe(request):
