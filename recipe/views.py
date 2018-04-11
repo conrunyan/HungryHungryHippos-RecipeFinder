@@ -125,19 +125,18 @@ def delete_recipe_view(request, id):
     recipe.delete()
     return redirect('recipe:index')
 
-def submit_for_public(request):
+def submit_for_public(request, id):
     """Submits recipe for migration to public, redirecting user to 'submission' screen"""
     
-    # check if method is a POST  
     # check if recipe is owned by user
     #   if yes, check if recipe is already public
     #       if yes, do nothing
     #       if no, submit recipe to be public
     #   if not, display error saying user can't submit a recipe they dont own
 
-    if request.method == 'POST':
+    #if request.method == 'POST':
         
-        context = {}
-        return HttpResponse(render(request, 'recipe/submit_for_public.html', context))
+    context = {}
+    return HttpResponse(render(request, 'recipe/submit_for_public.html', context))
 
  
