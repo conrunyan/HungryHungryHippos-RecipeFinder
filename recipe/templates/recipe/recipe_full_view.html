@@ -18,6 +18,13 @@
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
     </div>
+    <div class="text-center">
+      {% if current_recipe.get_rating %}
+        <p>{{ current_recipe.get_rating }}</p>
+      {% else %}
+        <p>No Rating</p>
+      {% endif %}
+    </div>
     <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
     <h2>{{current_recipe.summary}}</h2>
     <hr />
