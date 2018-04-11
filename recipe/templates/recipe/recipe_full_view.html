@@ -20,9 +20,21 @@
     </div>
     <div class="text-center">
       {% if current_recipe.get_rating %}
-        <p>{{ current_recipe.get_rating }}</p>
+        <p>Rating: {{ current_recipe.get_rating }}</p>
       {% else %}
         <p>No Rating</p>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <div class="row">
+          <div class="col-sm-1"></div>
+          {% for i in "12345" %}
+            <div class="col-sm-2">
+              <button type="button" class="btn btn-primary" value="{{ i }}">{{ i }}</button>
+            </div>
+          {% endfor %}
+          <div class="col-sm-1"></div>
+        </div>
       {% endif %}
     </div>
     <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
