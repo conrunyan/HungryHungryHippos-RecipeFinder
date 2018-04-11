@@ -10,6 +10,7 @@
   <div class="content">
     {% if current_recipe.user.id == user.id %}
         <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
+        <a class="btn btn-dark btn-sm" href="{% url 'recipe:submit_for_public' current_recipe.id %}>Submit for Public</a>
     {% endif %}
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
