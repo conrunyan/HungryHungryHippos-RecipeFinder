@@ -68,7 +68,6 @@ def recipe_full_view(request, id):
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
-@login_required
 def rate(request, id):
     """Rate a recipe. Update previous rating if exists or create new rating.
 
@@ -76,17 +75,22 @@ def rate(request, id):
     Return the updated rating for the recipe if everything goes swimmingly.
     """
     recipe = get_object_or_404(Recipe, id=id)
-    try:
-        user_rating = UserRating.objects.get(recipe=recipe, user=request.user)
-        rating = user_rating.value
-    except UserRating.DoesNotExist:
-        rating = None
+    rating = 0
+    if request.user.is_authenticated:
+        try:
+            user_rating = UserRating.objects.get(recipe=recipe, user=request.user)
+            rating = user_rating.value
+        except UserRating.DoesNotExist:
+            rating = None
 
     if request.method == 'GET':
         return JsonResponse({'valid': 'True',
                              'average': recipe.get_rating(),
                              'user_rating': rating,
                              'count': recipe.get_rating_count()})
+
+    if not request.user.is_authenticated:
+        raise PermissionDenied
 
     try:
         rating = json.loads(request.body)['rating']

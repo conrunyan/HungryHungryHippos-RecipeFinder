@@ -1,24 +1,10 @@
 'use strict'
 
 $(document).ready(function() {
+  let currentUserRating = null;
+  let currentAverageRating = null;
+  let entered = false;
   refreshRating();
-
-
-  $('#rating-container button').click(function() {
-    let selectedRating = $(this).attr('value');
-    updateRating(selectedRating);
-  });
-
-  // need to do it this way since stars are added dynamically
-  $(document).on('click', '.star', function() {
-    let selectedRating = $(this).attr('value');
-    updateRating(selectedRating);
-  });
-
-  // ditto to hover
-  $(document).on('hover', '.star', function() {
-
-  });
 
   function refreshRating() {
     let request = new XMLHttpRequest();
@@ -49,6 +35,9 @@ $(document).ready(function() {
   function parseResponse(r) {
     let response = JSON.parse(r);
     if(response.valid) {
+      currentUserRating = response.user_rating;
+      currentAverageRating = response.average;
+
       updateRatingDisplay(response.user_rating, response.average, response.count);
     }
   };
@@ -58,21 +47,25 @@ $(document).ready(function() {
     if(user_rating) {
       value = user_rating;
     }
+    if(!value) {
+      value = 0;
+    }
 
     const TOTAL_STARS = 5;
     let fullStars = Math.floor(value);
 
-    let html = "";
+    let ratingStars = $("#rating-stars");
+    ratingStars.empty();
     for(var i = 1; i <= fullStars; i++) {
-      html += createFullStar(i, user_rating);
+      ratingStars.append(createFullStar(i, user_rating));
     }
 
     for(var i = fullStars + 1; i <= TOTAL_STARS; i++) {
-      html += createEmptyStar(i);
+      ratingStars.append(createEmptyStar(i));
     }
 
-    $('#rating-stars').html(html);
-    $('#rating-count').html('(' + count + ')');
+    if(count !== null)
+      $('#rating-count').html('(' + count + ')');
   };
 
   function createFullStar(value, shouldBeGold) {
@@ -84,9 +77,36 @@ $(document).ready(function() {
   }
 
   function createStar(value, url) {
-    let html = '<img id="star-' + value + '" class="star" alt="star" src="' + url + '" ';
-    html += 'value="' + value + '" />';
-    return html;
+    let img = $("<img/>", {
+      id: "star-" + value,
+      class: "star",
+      alt: "star",
+      src: url,
+      value: value,
+    });
+
+    if(IS_AUTHENTICATED) {
+      img.click(function() {
+        let selectedRating = $(this).attr('value');
+        updateRating(selectedRating);
+      });
+
+      img.mouseenter(function() {
+        if(entered) {
+          return;
+        }
+        entered = true;
+        let selectedRating = $(this).attr('value');
+        updateRatingDisplay(selectedRating, 0, null);
+      });
+
+      img.mouseleave(function() {
+        entered = false;
+        updateRatingDisplay(currentUserRating, currentAverageRating, null);
+      });
+    }
+
+    return img;
   }
 
   function getCookie(name) {
