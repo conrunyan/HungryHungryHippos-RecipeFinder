@@ -136,7 +136,7 @@ def submit_for_public(request, id):
             return redirect('recipe:recipe_full_view', id)
         else:
             # TODO: Add submission to admin back-log here. For now, make the recipe public
-            # print('SUBMITTED')
+            print('SUBMITTED')
             recipe.is_private = False
             recipe.save()
     # if not, redirect to recipe full_view
