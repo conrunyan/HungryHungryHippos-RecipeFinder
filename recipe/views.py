@@ -127,16 +127,22 @@ def delete_recipe_view(request, id):
 
 def submit_for_public(request, id):
     """Submits recipe for migration to public, redirecting user to 'submission' screen"""
-    
-    # check if recipe is owned by user
-    #   if yes, check if recipe is already public
-    #       if yes, do nothing
-    #       if no, submit recipe to be public
-    #   if not, display error saying user can't submit a recipe they dont own
 
-    #if request.method == 'POST':
-        
-    context = {}
+    recipe = get_object_or_404(Recipe, id=id)
+    # check if recipe is owned by user
+    if recipe.user == request.user:
+        # if yes, check if recipe is already public
+        if not recipe.is_private:
+            return redirect('recipe:recipe_full_view', id)
+        else:
+            # TODO: Add submission to admin back-log here. For now, make the recipe public
+            # print('SUBMITTED')
+            recipe.is_private = False
+            recipe.save()
+    # if not, redirect to recipe full_view
+    else:
+        return redirect('recipe:recipe_full_view', id)
+    context = {'current_recipe': recipe.id,}
     return HttpResponse(render(request, 'recipe/submit_for_public.html', context))
 
  
