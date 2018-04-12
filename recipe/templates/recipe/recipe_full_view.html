@@ -9,7 +9,12 @@
 {% if current_recipe %}
   <div class="content">
     {% if current_recipe.user.id == user.id %}
+
         <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
+        {# Check if recipe is private #}
+        {% if current_recipe.is_private %}
+            <button class="btn btn-dark btn-sm" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
+        {% endif %}
     {% endif %}
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
@@ -38,4 +43,9 @@
 {% else %}
   <p>Could not load selected recipe.</p>
 {% endif %}
+{% endblock %}
+
+{% block footer %}
+  {% load staticfiles %}
+  <script src="{% static 'recipe/submit_confirm.js' %}"></script>
 {% endblock %}
