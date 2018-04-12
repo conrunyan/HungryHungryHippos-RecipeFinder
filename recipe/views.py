@@ -75,10 +75,12 @@ def rate(request, id):
     Return if updating the rating succeded.
     Return the updated rating for the recipe if everything goes swimmingly.
     """
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not POST'})
-
     recipe = get_object_or_404(Recipe, id=id)
+
+    if request.method == 'GET':
+        return JsonResponse({'valid': 'True',
+                             'average': recipe.get_rating(),
+                             'count': recipe.get_rating_count()})
 
     try:
         rating = json.loads(request.body)['rating']

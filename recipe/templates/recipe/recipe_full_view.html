@@ -3,6 +3,7 @@
 {% block head %}
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/full_recipe.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/rating.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -18,14 +19,13 @@
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
     </div>
-    <div class="text-center">
-      <p id="rating">
-        {% if current_recipe.get_rating %}
-          Rating: {{ current_recipe.get_rating }} ({{ current_recipe.get_rating_count }})
-        {% else %}
-          No Rating
-        {% endif %}
-      </p>
+    <div id="rating-container" class="text-center">
+      <div id="rating-stars">
+        <!-- Javascript creates stars -->
+      </div>
+      <div id="rating-count">
+        <!-- Javascript creates count -->
+      </div>
 
       {% if user.is_authenticated %}
         <div id="rating-container" class="row">
@@ -64,6 +64,8 @@
 {% block footer %}
 <script>
   const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
+  const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
+  const IMG_STAR_EMPTY = "{% static 'recipe/images/star-empty.png' %}";
 </script>
 <script src="{% static 'recipe/rating.js' %}"></script>
 {% endblock %}
