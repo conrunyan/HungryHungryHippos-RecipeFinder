@@ -76,10 +76,16 @@ def rate(request, id):
     Return the updated rating for the recipe if everything goes swimmingly.
     """
     recipe = get_object_or_404(Recipe, id=id)
+    try:
+        user_rating = UserRating.objects.get(recipe=recipe, user=request.user)
+        rating = user_rating.value
+    except UserRating.DoesNotExist:
+        rating = None
 
     if request.method == 'GET':
         return JsonResponse({'valid': 'True',
                              'average': recipe.get_rating(),
+                             'user_rating': rating,
                              'count': recipe.get_rating_count()})
 
     try:
@@ -96,6 +102,7 @@ def rate(request, id):
 
     return JsonResponse({'valid': 'True',
                          'average': recipe.get_rating(),
+                         'user_rating': rating,
                          'count': recipe.get_rating_count()})
 
 @login_required

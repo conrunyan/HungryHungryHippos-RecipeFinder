@@ -9,6 +9,17 @@ $(document).ready(function() {
     updateRating(selectedRating);
   });
 
+  // need to do it this way since stars are added dynamically
+  $(document).on('click', '.star', function() {
+    let selectedRating = $(this).attr('value');
+    updateRating(selectedRating);
+  });
+
+  // ditto to hover
+  $(document).on('hover', '.star', function() {
+
+  });
+
   function refreshRating() {
     let request = new XMLHttpRequest();
     request.open('GET', URL_RATE, true);
@@ -38,17 +49,22 @@ $(document).ready(function() {
   function parseResponse(r) {
     let response = JSON.parse(r);
     if(response.valid) {
-      updateRatingDisplay(response.average, response.count);
+      updateRatingDisplay(response.user_rating, response.average, response.count);
     }
   };
 
-  function updateRatingDisplay(value, count) {
+  function updateRatingDisplay(user_rating, average, count) {
+    let value = average;
+    if(user_rating) {
+      value = user_rating;
+    }
+
     const TOTAL_STARS = 5;
     let fullStars = Math.floor(value);
 
     let html = "";
     for(var i = 1; i <= fullStars; i++) {
-      html += createFullStar(i);
+      html += createFullStar(i, user_rating);
     }
 
     for(var i = fullStars + 1; i <= TOTAL_STARS; i++) {
@@ -59,8 +75,8 @@ $(document).ready(function() {
     $('#rating-count').html('(' + count + ')');
   };
 
-  function createFullStar(value) {
-    return createStar(value, IMG_STAR_FULL);
+  function createFullStar(value, shouldBeGold) {
+    return createStar(value, shouldBeGold ? IMG_STAR_FULL : IMG_STAR_FULL_GRAY);
   }
 
   function createEmptyStar(value) {
@@ -68,7 +84,7 @@ $(document).ready(function() {
   }
 
   function createStar(value, url) {
-    let html = '<img class="star" alt="star" src="' + url + '" ';
+    let html = '<img id="star-' + value + '" class="star" alt="star" src="' + url + '" ';
     html += 'value="' + value + '" />';
     return html;
   }
