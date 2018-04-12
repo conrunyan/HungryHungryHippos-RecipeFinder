@@ -10,7 +10,12 @@
 {% if current_recipe %}
   <div class="content">
     {% if current_recipe.user.id == user.id %}
+
         <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
+        {# Check if recipe is private #}
+        {% if current_recipe.is_private %}
+            <button class="btn btn-dark btn-sm" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
+        {% endif %}
     {% endif %}
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
@@ -50,6 +55,7 @@
 {% endblock %}
 
 {% block footer %}
+{% load staticfiles %}
 <script>
   const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
   const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
@@ -62,4 +68,5 @@
   {% endif %}
 </script>
 <script src="{% static 'recipe/rating.js' %}"></script>
+<script src="{% static 'recipe/submit_confirm.js' %}"></script>
 {% endblock %}
