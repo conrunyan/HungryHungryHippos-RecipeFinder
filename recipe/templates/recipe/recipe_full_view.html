@@ -3,6 +3,7 @@
 {% block head %}
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/full_recipe.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/rating.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -22,6 +23,14 @@
       {% if current_recipe.source_url %}
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
+    </div>
+    <div id="rating-container" class="text-center">
+      <div id="rating-stars">
+        <!-- Javascript creates stars -->
+      </div>
+      <div id="rating-count">
+        <!-- Javascript creates count -->
+      </div>
     </div>
     <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
     <h2>{{current_recipe.summary}}</h2>
@@ -46,6 +55,18 @@
 {% endblock %}
 
 {% block footer %}
-  {% load staticfiles %}
-  <script src="{% static 'recipe/submit_confirm.js' %}"></script>
+{% load staticfiles %}
+<script>
+  const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
+  const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
+  const IMG_STAR_FULL_GRAY = "{% static 'recipe/images/star-full-gray.png' %}";
+  const IMG_STAR_EMPTY = "{% static 'recipe/images/star-empty.png' %}";
+  {% if user.is_authenticated %}
+  const IS_AUTHENTICATED = true;
+  {% else %}
+  const IS_AUTHENTICATED = false;
+  {% endif %}
+</script>
+<script src="{% static 'recipe/rating.js' %}"></script>
+<script src="{% static 'recipe/submit_confirm.js' %}"></script>
 {% endblock %}

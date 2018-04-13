@@ -1,5 +1,7 @@
 """Tests the recipe backend and client."""
 
+import json
+
 from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.urls import reverse
@@ -7,7 +9,7 @@ from django.test import Client
 from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -519,3 +521,59 @@ class ViewingPrivateRecipes(TestCase):
 
         response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_one.id}))
         self.assertEqual(response.status_code, 403)
+
+class RecipeRating(TestCase):
+    """Tests rating recipes for the user."""
+
+    def setUp(self):
+        """Create client to make requests."""
+        self.client = Client()
+
+    def test_no_ratings_is_none(self):
+        """Test that a recipe with no ratings has a rating of None."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+
+        self.assertIsNone(recipe.get_rating())
+
+    def test_rating_is_an_average(self):
+        """Test that a recipe rating is the average ratings."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        user = User.objects.create_user('test_user')
+        user2 = User.objects.create_user('test_user2')
+        UserRating.objects.create(recipe=recipe, user=user, value=4.1)
+        UserRating.objects.create(recipe=recipe, user=user2, value=1.8)
+
+        self.assertAlmostEqual(recipe.get_rating(), 2.95)
+
+    def test_rating_count_zero(self):
+        """Test that a recipe with no ratings has a rating count of 0."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+
+        self.assertEqual(recipe.get_rating_count(), 0)
+
+    def test_rating_count(self):
+        """Test that a recipe rating counts ratings."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        user = User.objects.create_user('test_user')
+        user2 = User.objects.create_user('test_user2')
+        UserRating.objects.create(recipe=recipe, user=user, value=4.1)
+        UserRating.objects.create(recipe=recipe, user=user2, value=1.8)
+
+        self.assertEqual(recipe.get_rating_count(), 2)
+
+    def test_adds_new_rating(self):
+        """Test that a user can submit a new rating."""
+        recipe = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        user = User.objects.create_user('test_user')
+        self.client.force_login(user)
+
+        response = self.client.post(reverse('recipe:rate', kwargs={'id':recipe.id}),
+            data='{"rating":"3"}', content_type="application/json; charset=utf-8")
+
+        self.assertEquals(response.status_code, 200)
+
+        result = response.json()
+
+        self.assertEquals(result['valid'], 'True')
+        self.assertEquals(result['average'], 3)
+        self.assertEquals(result['count'], 1)
