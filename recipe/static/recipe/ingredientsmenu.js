@@ -67,6 +67,14 @@ $(document).ready(function() {
     $(".dropdown-content").hide();
   });
 
+  $("#clear-ingredients").click(function() {
+    for (let i in listOfIngredients) {
+      let ing = $('input[type=checkbox][value="'+listOfIngredients[i]+'"]');
+      ing.prop('checked', false);
+    }
+    listOfIngredients = [];
+  });
+
   function parseResponse(r) {
     let response = JSON.parse(r);
     deleteRecipesFromPage();
@@ -114,10 +122,6 @@ $(document).ready(function() {
   };
 
   function queryRecipes() {
-    if(listOfIngredients.length === 0) {
-      return;
-    }
-    
     var request = new XMLHttpRequest();
     var params = JSON.stringify(listOfIngredients);
     request.open('POST', URL_ALG_REQUEST, true);
