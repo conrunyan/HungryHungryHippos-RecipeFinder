@@ -262,7 +262,7 @@ class UserRating(models.Model):
         return '{0} ({1}) : {2}'.format(self.recipe, self.user, self.value)
 
 
-class Favorites(models.Model):
+class Favorite(models.Model):
     """Holds a user's favorite recipes"""
 
     def __str__(self):
