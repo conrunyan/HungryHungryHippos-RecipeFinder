@@ -93,12 +93,12 @@ def rate(request, id):
         raise PermissionDenied
 
     try:
-        rating = json.loads(request.body)['rating']
+        rating = json.loads(request.body.decode("utf-8"))['rating']
         rating = float(rating)
     except KeyError:
         return JsonResponse({'error': 'Rating not sent'})
-    except ValueError:
-        return JsonResponse({'error': 'Rating not float value'})
+    except ValueError as e:
+        return JsonResponse({'error': str(e)})
     # clamp rating to valid values (1-5)
     rating = min(5.0, max(1.0, rating))
 
@@ -187,5 +187,3 @@ def submit_for_public(request, id):
         return redirect('recipe:recipe_full_view', id)
     context = {'current_recipe': recipe.id,}
     return HttpResponse(render(request, 'recipe/submit_for_public.html', context))
-
- 
