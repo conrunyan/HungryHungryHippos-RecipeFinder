@@ -49,6 +49,12 @@ class CommentAdmin(admin.ModelAdmin):
     form = CommentModelForm
 
 
+class FavoritesAdmin(admin.ModelAdmin):
+    """Defines how fovites look in the admin app."""
+    
+    list_display = ('user', 'recipe')
+
+
 admin.site.register(models.Recipe, RecipeAdmin)
 admin.site.register(models.Ingredient)
 admin.site.register(models.RecipeIngredient, RecipeIngredientAdmin)
@@ -56,3 +62,4 @@ admin.site.register(models.Appliance)
 admin.site.register(models.Comment, CommentAdmin)
 admin.site.register(models.Group)
 admin.site.register(models.UserRating)
+admin.site.register(models.Favorites)
