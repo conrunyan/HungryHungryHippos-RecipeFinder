@@ -73,13 +73,15 @@ $(document).ready(function() {
       ing.prop('checked', false);
     }
     listOfIngredients = [];
+    $("#noIngredients").show();
+    deleteRecipesFromPage(listOfIngredients.length);
   });
 
   function parseResponse(r) {
     let response = JSON.parse(r);
-    deleteRecipesFromPage();
-    deleteNext10Button()
-    addRecipesToPage(response['results'], 0, 10);
+    deleteRecipesFromPage(listOfIngredients.length);
+    deleteNext10Button();
+    addRecipesToPage(response['results'], 0, 10, listOfIngredients.length);
     runNext10(response['results']);
   }
 
