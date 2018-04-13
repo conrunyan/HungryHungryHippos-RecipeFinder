@@ -1,0 +1,13 @@
+#rating-container {
+  padding: 10px 0;
+}
+
+#rating-stars img {
+  width: 50px;
+  margin: 0;
+  display: inline;
+}
+
+#rating-count {
+  font-size: 1.5rem;
+}

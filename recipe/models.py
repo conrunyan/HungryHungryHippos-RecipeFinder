@@ -1,7 +1,7 @@
 """Holds the recipe models for the database."""
 
 from django.db import models
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Avg
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -175,9 +175,6 @@ class Recipe(models.Model):
     # The image url to be used to showcase the recipe (used in both search and
     # detailed views)
     image_url = models.CharField(max_length=200, null=True, blank=True)
-    # The user-given rating of the recipe (on a scale from 0.0 - 5.0 where 5.0
-    # is 5 stars)
-    rating = models.FloatField(null=True, blank=True, editable=False)
     # The detailed instructions to make the recipe
     instructions = models.TextField()
     # The date this recipe object was created
@@ -203,6 +200,14 @@ class Recipe(models.Model):
     def get_appliances(self):
         """Return a queryset of the appliances required by this recipe."""
         return self.appliances.all()
+
+    def get_rating(self):
+        """Return the average rating for the recipe."""
+        return self.userrating_set.all().aggregate(Avg('value'))['value__avg']
+
+    def get_rating_count(self):
+        """Return the number of ratings for the recipe."""
+        return self.userrating_set.all().count()
 
 
 class RecipeIngredient(models.Model):
@@ -240,3 +245,18 @@ class Comment(models.Model):
     def __str__(self):
         """Return a string to identify the object in the admin app."""
         return str(self.recipe)
+
+
+class UserRating(models.Model):
+    """Holds a rating given by a user to a recipe."""
+
+    # Holds the recipe this rating is for
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    # Holds the user that submitted this rating
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Holds the rating this user gave (ranges from 1.0 to 5.0)
+    value = models.FloatField()
+
+    def __str__(self):
+        """Construct a string representation of this rating link."""
+        return '{0} ({1}) : {2}'.format(self.recipe, self.user, self.value)
