@@ -71,6 +71,7 @@ button:hover {
 
 #menu {
   font-family: "Raleway";
+  padding-bottom: 100px;
 }
 
 #menu hr {
@@ -131,6 +132,10 @@ button:hover {
 }
 
 #list-ingredients {
-  margin-bottom: 100px;
+  margin-bottom: 50px;
   margin-top: 50px;
+}
+
+#clear-ingredients {
+  font-size: 14px;
 }
