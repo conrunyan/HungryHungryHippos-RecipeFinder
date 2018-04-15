@@ -67,11 +67,21 @@ $(document).ready(function() {
     $(".dropdown-content").hide();
   });
 
+  $("#clear-ingredients").click(function() {
+    for (let i in listOfIngredients) {
+      let ing = $('input[type=checkbox][value="'+listOfIngredients[i]+'"]');
+      ing.prop('checked', false);
+    }
+    listOfIngredients = [];
+    $("#noIngredients").show();
+    deleteRecipesFromPage(listOfIngredients.length);
+  });
+
   function parseResponse(r) {
     let response = JSON.parse(r);
-    deleteRecipesFromPage();
-    deleteNext10Button()
-    addRecipesToPage(response['results'], 0, 10);
+    deleteRecipesFromPage(listOfIngredients.length);
+    deleteNext10Button();
+    addRecipesToPage(response['results'], 0, 10, listOfIngredients.length);
     runNext10(response['results']);
   }
 
@@ -114,10 +124,6 @@ $(document).ready(function() {
   };
 
   function queryRecipes() {
-    if(listOfIngredients.length === 0) {
-      return;
-    }
-    
     var request = new XMLHttpRequest();
     var params = JSON.stringify(listOfIngredients);
     request.open('POST', URL_ALG_REQUEST, true);

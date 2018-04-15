@@ -1,5 +1,7 @@
 """Holds the views for the index page."""
 
+import json
+
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -10,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating
 
 
 def index(request):
@@ -81,6 +83,47 @@ def recipe_full_view(request, id):
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
+def rate(request, id):
+    """Rate a recipe. Update previous rating if exists or create new rating.
+
+    Return if updating the rating succeded.
+    Return the updated rating for the recipe if everything goes swimmingly.
+    """
+    recipe = get_object_or_404(Recipe, id=id)
+    rating = 0
+    if request.user.is_authenticated:
+        try:
+            user_rating = UserRating.objects.get(recipe=recipe, user=request.user)
+            rating = user_rating.value
+        except UserRating.DoesNotExist:
+            rating = None
+
+    if request.method == 'GET':
+        return JsonResponse({'valid': 'True',
+                             'average': recipe.get_rating(),
+                             'user_rating': rating,
+                             'count': recipe.get_rating_count()})
+
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
+    try:
+        rating = json.loads(request.body.decode("utf-8"))['rating']
+        rating = float(rating)
+    except KeyError:
+        return JsonResponse({'error': 'Rating not sent'})
+    except ValueError as e:
+        return JsonResponse({'error': str(e)})
+    # clamp rating to valid values (1-5)
+    rating = min(5.0, max(1.0, rating))
+
+    UserRating.objects.update_or_create(recipe=recipe, user=request.user, defaults={'value': rating})
+
+    return JsonResponse({'valid': 'True',
+                         'average': recipe.get_rating(),
+                         'user_rating': rating,
+                         'count': recipe.get_rating_count()})
+
 @login_required
 def add_private_recipe(request):
     """Create a view with a form for adding a recipe."""
@@ -139,3 +182,23 @@ def delete_recipe_view(request, id):
 
     recipe.delete()
     return redirect('recipe:index')
+
+def submit_for_public(request, id):
+    """Submits recipe for migration to public, redirecting user to 'submission' screen"""
+
+    recipe = get_object_or_404(Recipe, id=id)
+    # check if recipe is owned by user
+    if recipe.user == request.user:
+        # if yes, check if recipe is already public
+        if not recipe.is_private:
+            return redirect('recipe:recipe_full_view', id)
+        else:
+            # TODO: Add submission to admin back-log here. For now, make the recipe public
+            print('SUBMITTED')
+            recipe.is_private = False
+            recipe.save()
+    # if not, redirect to recipe full_view
+    else:
+        return redirect('recipe:recipe_full_view', id)
+    context = {'current_recipe': recipe.id,}
+    return HttpResponse(render(request, 'recipe/submit_for_public.html', context))

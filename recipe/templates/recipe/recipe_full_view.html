@@ -3,13 +3,19 @@
 {% block head %}
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'recipe/full_recipe.css' %}" />
+  <link rel="stylesheet" href="{% static 'recipe/rating.css' %}" />
 {% endblock %}
 
 {% block content %}
 {% if current_recipe %}
   <div class="content">
     {% if current_recipe.user.id == user.id %}
+
         <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
+        {# Check if recipe is private #}
+        {% if current_recipe.is_private %}
+            <button class="btn btn-dark btn-sm" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
+        {% endif %}
     {% endif %}
     <img src="{{current_recipe.image_url}}" />
     <h1>{{current_recipe.title}}</h1>
@@ -17,6 +23,32 @@
       {% if current_recipe.source_url %}
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
+    </div>
+    <div id="share-buttons" class="text-center">
+      <!-- Facebook -->
+      <a href="http://www.facebook.com/sharer.php?u={{request.build_absolute_uri}}" target="_blank">
+          <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="Facebook" />
+      </a>
+      <!-- Google+ -->
+      <a href="https://plus.google.com/share?url={{request.build_absolute_uri}}" target="_blank">
+          <img src="https://simplesharebuttons.com/images/somacro/google.png" alt="Google" />
+      </a>
+      <!-- Pinterest -->
+      <a href="javascript:void((function()%7Bvar%20e=document.createElement('script');e.setAttribute('type','text/javascript');e.setAttribute('charset','UTF-8');e.setAttribute('src','http://assets.pinterest.com/js/pinmarklet.js?r='+Math.random()*99999999);document.body.appendChild(e)%7D)());">
+        <img src="https://simplesharebuttons.com/images/somacro/pinterest.png" alt="Pinterest" />
+      </a>
+      <!-- Email -->
+      <a href="mailto:?Subject=Yummy Recipe&amp;Body=I%20saw%20this%20and%20thought%20of%20you!%20 {{request.build_absolute_uri}}">
+          <img src="https://simplesharebuttons.com/images/somacro/email.png" alt="Email" />
+      </a>
+    </div>
+    <div id="rating-container" class="text-center">
+      <div id="rating-stars">
+        <!-- Javascript creates stars -->
+      </div>
+      <div id="rating-count">
+        <!-- Javascript creates count -->
+      </div>
     </div>
     <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
     <h2>{{current_recipe.summary}}</h2>
@@ -56,4 +88,21 @@
 {% else %}
   <p>Could not load selected recipe.</p>
 {% endif %}
+{% endblock %}
+
+{% block footer %}
+{% load staticfiles %}
+<script>
+  const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
+  const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
+  const IMG_STAR_FULL_GRAY = "{% static 'recipe/images/star-full-gray.png' %}";
+  const IMG_STAR_EMPTY = "{% static 'recipe/images/star-empty.png' %}";
+  {% if user.is_authenticated %}
+  const IS_AUTHENTICATED = true;
+  {% else %}
+  const IS_AUTHENTICATED = false;
+  {% endif %}
+</script>
+<script src="{% static 'recipe/rating.js' %}"></script>
+<script src="{% static 'recipe/submit_confirm.js' %}"></script>
 {% endblock %}

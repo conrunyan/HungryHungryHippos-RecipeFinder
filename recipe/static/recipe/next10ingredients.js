@@ -1,5 +1,5 @@
 'use strict'
-// outlines a class that will keep track of which recipes it's grabbed, hold on to the recipes, 
+// outlines a class that will keep track of which recipes it's grabbed, hold on to the recipes,
 // and interface with Kayson's "addRecipesToPage" function, incrementing on the
 // next 10 available recipes (if applicable)
 
@@ -30,7 +30,7 @@ function getNextIndices() {
     let next_start_idx = rec_start_idx + 10;
     let next_end_idx = rec_end_idx + 10;
     let next_indices = [0, 0];
-    // check if last ending index was the last item in the 
+    // check if last ending index was the last item in the
     // recipes list
     if (rec_end_idx == num_recs - 1)
     {
@@ -38,7 +38,7 @@ function getNextIndices() {
         next_indices[START] = rec_end_idx;
         next_indices[END] = rec_end_idx;
     }
-    // else if the ending index is greater than rec_nums, return the position of 
+    // else if the ending index is greater than rec_nums, return the position of
         //rec_nums-1 as the ending index, and rec_start_idx as the staring index
     else if (rec_end_idx > num_recs)
     {
@@ -52,7 +52,7 @@ function getNextIndices() {
         next_indices[START] = next_start_idx;
         next_indices[END] = next_end_idx;
     }
-    // store used indices in the rec_start_idx and rec_end_idx values 
+    // store used indices in the rec_start_idx and rec_end_idx values
     rec_start_idx = next_indices[START];
     rec_end_idx = next_indices[END];
     // show or hide button based on recipe status
@@ -61,9 +61,9 @@ function getNextIndices() {
 };
 
 function addRemoveButton() {
-    // if number of recipes is less than 10, or the last recipe displayed was the 
+    // if number of recipes is less than 10, or the last recipe displayed was the
     // last recipe in the list, don't display the button
-    
+
     if (num_recs < 10 || rec_end_idx == num_recs - 1)
     {
         cur_button.style = "display: none";
@@ -106,7 +106,7 @@ function runNext10(recipes){
     next_button.setAttribute('onclick', 'getNext10Recs(cur_recipes);');
     button_div.appendChild(next_button);
     cur_button = next_button;
-    console.log(next_button);
+    // console.log(next_button);
     // add button to next_10_button_div
 
     // determine if button is shown or not.

@@ -1,6 +1,6 @@
 'use strict'
 
-function addRecipesToPage(recipes, start_idx, end_idx){
+function addRecipesToPage(recipes, start_idx, end_idx, listIngLength){
     //get existing div
     let recipes_div = document.getElementById('found_recipes');
 
@@ -9,10 +9,17 @@ function addRecipesToPage(recipes, start_idx, end_idx){
         end_idx = recipes.length;
     }
 
+    if(recipes.length === 0 && listIngLength !== 0) {
+      let recipes_div = document.getElementById('found_recipes');
+      let note = document.createElement('p');
+      note.textContent = "No recipes could be found that matched the ingredients you searched";
+      recipes_div.appendChild(note);
+    }
+
     //create HTML layout for each recipe (reflects myRecipes.html)
     for(let i = start_idx; i < end_idx; i++){
         let recipe = recipes[i];
-        
+
         //add hr tag to recipe
         recipes_div.appendChild(document.createElement('hr'));
 
@@ -43,13 +50,16 @@ function addRecipesToPage(recipes, start_idx, end_idx){
     }
 }
 
-function deleteRecipesFromPage(){
+function deleteRecipesFromPage(listLength){
     let recipes_div = document.getElementById('found_recipes');
     while(recipes_div.firstChild){
         recipes_div.removeChild(recipes_div.firstChild);
     }
     //add header
-    let header = document.createElement('h1');
-    header.textContent = "Recipes";
-    recipes_div.appendChild(header);
+    if(listLength !== 0) {
+      let header = document.createElement('h1');
+      header.setAttribute('id', 'recipe-header');
+      header.textContent = "Recipes";
+      recipes_div.appendChild(header);
+    }
 }
