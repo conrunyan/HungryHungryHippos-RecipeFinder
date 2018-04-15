@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core import exceptions
 
-from .models import Recipe, RecipeIngredient, Ingredient
+from .models import Recipe, RecipeIngredient, Ingredient, Comment
 
 import re
 
@@ -71,3 +71,11 @@ class RecipeIngredientForm(forms.ModelForm):
 
 RecipeIngredientFormSet = forms.inlineformset_factory(Recipe, RecipeIngredient,
                         form=RecipeIngredientForm, extra=10, min_num=1, validate_min=True, can_delete=False)
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('content',)
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Comment'})
+        }
