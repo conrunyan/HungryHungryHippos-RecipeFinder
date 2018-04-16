@@ -82,7 +82,8 @@ class IngredientUtils():
     def _ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of recipes shared between ingredients"""
 
-        return QuerySet.intersection(*ing_qs_list)
+        #return QuerySet.intersection(*ing_qs_list)
+        return QuerySet.union(*ing_qs_list)
 
     def _filter_private_recs(self, recipe_qs):
         """Returns public recipes and the user's private recipes (if applicable)"""
@@ -101,6 +102,7 @@ class IngredientUtils():
         """
 
         recipe_qs = []
+        recipe_or = Q()
         # loop over ingredients, finding recipes associated with
         # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
@@ -116,7 +118,7 @@ class IngredientUtils():
                     recipe_qs.append(tmp_rec)
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
-                continue
+               continue
         # return query set of recipes
         return recipe_qs
 
