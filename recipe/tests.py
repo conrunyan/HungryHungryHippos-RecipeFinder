@@ -211,7 +211,7 @@ class IngredientSearchTest(TestCase):
         r5.save()
         r6.save()
 
-        expected_size = 1
+        expected_size = 3 
         ing_utils = IngredientUtils()
 
         # save ingredient QS's in a list

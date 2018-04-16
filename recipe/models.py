@@ -71,8 +71,9 @@ class IngredientUtils():
             recipes = self._ingredient_intersect(recipe_qs)
             # print('Returning:', recipes)
             recipes = self._filter_private_recs(recipes)
-            sliced_recipes = self._get_recipe_range(recipes, start, end)
-            return sliced_recipes
+            #sliced_recipes = self._get_recipe_range(recipes, start, end)
+            #return sliced_recipes
+            return recipes
         # return empty queryset
         else:
             emp_qs = Recipe.objects.none()
@@ -130,6 +131,15 @@ class IngredientUtils():
         """
         return recipe_list.order_by('title')[start:end]
 
+    def _split_recipes(self, ing_list, recipe_qs):
+        """Returns a list of ingredients, each element in the list containing a Recipe QuerySet
+        
+        Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
+        Buckets are classified by a percentage of ingredients the recipes contain:
+            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe, 
+            all ingredients, except sausage, are passed in the ingredients list. This recipe would be placed in the 4/5 (80%) bucket
+                   
+        """
 
 class Appliance(models.Model):
     """This is an appliance that is required to make a recipe.
