@@ -113,8 +113,13 @@ $(document).ready(function() {
     let response = JSON.parse(r);
     deleteRecipesFromPage(allFilters.length);
     deleteNext10Button();
-    addRecipesToPage(response['results'], 0, 10, allFilters.length);
-    runNext10(response['results']);
+    let filters = {
+      'appliances': listOfAppliances,
+      'difficulty': listOfDifficulties,
+      'time': listOfTimes
+    };
+    addRecipesToPage(response['results'], 0, 10, allFilters.length, filters);
+    runNext10(response['results'], allFilters.length, filters);
   }
 
   function updateImage(div, src) {
@@ -131,7 +136,7 @@ $(document).ready(function() {
       if (index !== -1) list.splice(index, 1);
       let index2 = allFilters.indexOf(element.prop("value"));
       if (index2 !== -1) allFilters.splice(index, 1);
-      if (list.length == 0) {
+      if (allFilters.length === 0) {
         document.getElementById("noIngredients").style.display = 'block';
       }
     }

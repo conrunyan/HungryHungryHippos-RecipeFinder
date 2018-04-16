@@ -59,8 +59,12 @@ def get_recipes(request):
     # send ingredients to search algorithm
     found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!
-    values = found_recipes.values()
-    return JsonResponse({'results': list(values)})
+    values = list(found_recipes.values())
+
+    for recipe in values:
+        recipe['appliances'] = list(Appliance.objects.filter(recipe=recipe['id']).values('name'))
+
+    return JsonResponse({'results': values})
 
 
 def recipe_full_view(request, id):
