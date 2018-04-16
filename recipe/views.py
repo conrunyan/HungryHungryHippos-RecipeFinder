@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, UserRating
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, UserRating, Favorite
 
 
 def index(request):
@@ -108,6 +108,19 @@ def rate(request, id):
                          'average': recipe.get_rating(),
                          'user_rating': rating,
                          'count': recipe.get_rating_count()})
+
+@login_required
+def favorite(request, id):
+    if request.body:
+        body = request.body.decode("utf-8")
+        isFavorite = json.loads(body)['isFavorite']
+        recipe = get_object_or_404(Recipe, id=id)
+        if not isFavorite:
+            faved = Favorite.objects.filter(recipe=recipe, user=request.user)
+            faved.delete()
+        else:
+            fav = Favorite.objects.create(recipe=recipe, user=request.user)
+    return redirect('recipe:recipe_full_view', id=id)
 
 @login_required
 def add_private_recipe(request):
