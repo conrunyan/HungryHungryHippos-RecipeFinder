@@ -46,8 +46,95 @@
     {% else %}
       <h3>Couldn't get ingredients from the server.</h3>
     {% endif %}
+    {# <h2 style="margin-top:50px;">Additional Filters</h2> #}
+    <hr />
+    {# Appliances Filter #}
+      {% if appliances %}
+        <div class="list-group">
+          <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-appliance">
+            <div class="col-xs-2 mr-1">
+              <img class="img-fluid update-image" style="height: 1rem;" src="" alt="">
+            </div>
+            <div class="col-xs-10">
+              <h4>Appliances</h4>
+            </div>
+          </div>
+        </div>
+        <div id="collapse-appliance" class="collapse update-on-expand">
+          <div>
+            <ul class="mt-2">
+              {% for app in appliances %}
+                <div class="single-ingredient pretty p-default p-thick">
+                  <input class="checkbox update-appliance" type="checkbox" value="{{app}}" label="{{app}}">
+                  <div class="state p-info-o">
+                    <label class="text-dark checkbox-label">{{app}}</label>
+                  </div>
+                </div>
+                <br />
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+    {% endif %}
+    {# Difficulty #}
+    {% if difficulties %}
+      <div class="list-group">
+        <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-difficulties">
+          <div class="col-xs-2 mr-1">
+            <img class="img-fluid update-image" style="height: 1rem;" src="" alt="">
+          </div>
+          <div class="col-xs-10">
+            <h4>Difficulty</h4>
+          </div>
+        </div>
+      </div>
+      <div id="collapse-difficulties" class="collapse update-on-expand">
+        <div>
+          <ul class="mt-2">
+            {% for diff in difficulties %}
+              <div class="single-ingredient pretty p-default p-thick">
+                <input class="checkbox update-difficulty" type="checkbox" value="{{diff}}" label="{{diff}}">
+                <div class="state p-info-o">
+                  <label class="text-dark checkbox-label">{{diff}}</label>
+                </div>
+              </div>
+              <br />
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+  {% endif %}
+    {# Time #}
+    {% if time %}
+      <div class="list-group">
+        <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-times">
+          <div class="col-xs-2 mr-1">
+            <img class="img-fluid update-image" style="height: 1rem;" src="" alt="">
+          </div>
+          <div class="col-xs-10">
+            <h4>Time</h4>
+          </div>
+        </div>
+      </div>
+      <div id="collapse-times" class="collapse update-on-expand">
+        <div>
+          <ul class="mt-2">
+            {% for t in time %}
+              <div class="single-ingredient pretty p-default p-thick">
+                <input class="checkbox update-time" type="checkbox" value="{{t}}" label="{{t}}">
+                <div class="state p-info-o">
+                  <label class="text-dark checkbox-label">Less than {{t}} minutes</label>
+                </div>
+              </div>
+              <br />
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+    <hr />
   </div>
   <div>
-    <button id="clear-ingredients" type="button" class="btn btn-dark btn-md">Clear Ingredients</button>
+    <button id="clear-ingredients" type="button" class="btn btn-dark btn-md">Clear All</button>
   </div>
 </div>
