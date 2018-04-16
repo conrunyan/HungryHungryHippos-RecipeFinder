@@ -65,9 +65,10 @@ def recipe_full_view(request, id):
         raise PermissionDenied
 
     isFavorite = 0
-    favorites = Favorite.objects.filter(recipe=current_recipe, user=request.user)
-    if (favorites.count() != 0):
-        isFavorite = 1
+    if request.user.is_authenticated:
+        favorites = Favorite.objects.filter(recipe=current_recipe, user=request.user)
+        if (favorites.count() != 0):
+            isFavorite = 1
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)
     context = {'current_recipe': current_recipe, 'ingredients': ingredients, 'isFavorite': isFavorite}
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))

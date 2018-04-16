@@ -94,5 +94,6 @@ def profile(request):
     """View for when the user goes to the Profile page."""
     user = User.objects.get(username=request.user)
     users_recipes = Recipe.objects.filter(user=request.user)[:3]
-    context = { 'user' : user, 'users_recipes' : users_recipes }
+    users_favorites = Favorite.objects.filter(user=request.user)[:3]
+    context = { 'user' : user, 'users_recipes' : users_recipes, 'users_favorites' : users_favorites}
     return HttpResponse(render(request, 'accounts/profile.html', context))

@@ -11,11 +11,11 @@
   {% if favorites %}
     {% for fav in favorites %}
       <hr />
-      <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' recipe.id %}">
-        {# <img src="{{fav.image_url}}"/> #}
+      <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' fav.recipe.id %}">
+        <img src="{{fav.recipe.image_url}}"/>
         <div>
-          {# <h3>{{fav.title}}</h3> #}
-          {# <p>{{fav.summary}}</p> #}
+          <h3>{{fav.recipe.title}}</h3>
+          <p>{{fav.recipe.summary}}</p>
         </div>
       </a>
     {% endfor %}
