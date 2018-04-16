@@ -3,23 +3,26 @@
 $(document).ready(function() {
   let NOT_FAVORITE = "https://d30y9cdsu7xlg0.cloudfront.net/png/773084-200.png";
   let FAVORITE = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png";
-  let favorited = false;
+  let favorited = IS_FAVORITE;
 
-  updateImage($("#favorite"), NOT_FAVORITE)
+  updateImage($("#favorite"))
 
   $("#favorite").click(function() {
-    if (favorited) {
-      updateImage($(this), NOT_FAVORITE);
-      favorited = false;
+    if (favorited === 1) {
+      favorited = 0;
+      updateImage($(this));
     } else {
-      updateImage($(this), FAVORITE);
-      favorited = true;
+      favorited = 1;
+      updateImage($(this));
     }
     let value = URL_RATE;
     parseRequest();
   });
 
-  function updateImage(div, src) {
+  function updateImage(div) {
+    let src;
+    if (favorited) { src = FAVORITE; }
+    else { src = NOT_FAVORITE; }
     div.attr("src", src);
   }
 

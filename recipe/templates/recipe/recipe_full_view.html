@@ -83,6 +83,7 @@
   const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
   const IMG_STAR_FULL_GRAY = "{% static 'recipe/images/star-full-gray.png' %}";
   const IMG_STAR_EMPTY = "{% static 'recipe/images/star-empty.png' %}";
+  const IS_FAVORITE = {{ isFavorite }};
   {% if user.is_authenticated %}
   const IS_AUTHENTICATED = true;
   {% else %}

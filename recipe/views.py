@@ -63,8 +63,13 @@ def recipe_full_view(request, id):
     current_recipe = get_object_or_404(Recipe, id=id)
     if current_recipe.is_private and current_recipe.user != request.user:
         raise PermissionDenied
+
+    isFavorite = 0
+    favorites = Favorite.objects.filter(recipe=current_recipe, user=request.user)
+    if (favorites.count() != 0):
+        isFavorite = 1
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)
-    context = {'current_recipe': current_recipe, 'ingredients': ingredients}
+    context = {'current_recipe': current_recipe, 'ingredients': ingredients, 'isFavorite': isFavorite}
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
@@ -115,7 +120,7 @@ def favorite(request, id):
         body = request.body.decode("utf-8")
         isFavorite = json.loads(body)['isFavorite']
         recipe = get_object_or_404(Recipe, id=id)
-        if not isFavorite:
+        if (isFavorite == 0):
             faved = Favorite.objects.filter(recipe=recipe, user=request.user)
             faved.delete()
         else:
