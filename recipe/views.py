@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating, Appliance
 
 
 def index(request):
@@ -31,8 +31,13 @@ def index(request):
         persistent_ingredients = get_ingredient_objs_of_user(request.user, request.session)
         persistent_ingredients = get_ingredient_names(persistent_ingredients)
 
+    appliances = Appliance.objects.order_by("name")
+    difficulties = ["Easy", "Medium", "Hard"]
+    # time = ["0-30 min", "31-60 min", "1+ hr"]
+    time = [30, 60, 120]
+
     context = {"groups": groups, "group_dict": group_dict, "ingredientsAreSelected": ingredientsAreSelected,
-               "persistent_ingredients": persistent_ingredients, "ingredients_list": ingredients}
+               "persistent_ingredients": persistent_ingredients, "ingredients_list": ingredients, "appliances": appliances, "difficulties": difficulties, "time": time}
     return HttpResponse(render(request, 'recipe/index.html', context))
 
 
