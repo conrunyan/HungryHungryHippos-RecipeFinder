@@ -75,10 +75,13 @@
     {{comment_form.content}}
     <button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit Comment</button>
   </form>
+  {% else %}
+    <p> Please log in to post a comment. </p>
   {% endif %}
 
+
   <!-- Comments -->
-  <h2> Comments </h2> 
+  <h2> Comments </h2>
   {% for comment in comments %}
     <div>
       {{comment.content}}
