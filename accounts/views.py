@@ -85,7 +85,7 @@ def myrecipes_view(request):
 def favorite_recipes(request):
     """View for the Favorites page."""
     favorites = Favorite.objects.filter(user=request.user)
-    print(favorites)
+    
     context = {"favorites" : favorites}
     return HttpResponse(render(request, 'recipe/favorites.html', context))
 
