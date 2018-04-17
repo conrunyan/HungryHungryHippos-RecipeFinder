@@ -10,9 +10,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import PersistentIngredient
-from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet
+from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, UserRating, Favorite
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating, Appliance, Favorite
 
 
 def index(request):
@@ -31,8 +31,13 @@ def index(request):
         persistent_ingredients = get_ingredient_objs_of_user(request.user, request.session)
         persistent_ingredients = get_ingredient_names(persistent_ingredients)
 
+    appliances = Appliance.objects.order_by("name")
+    difficulties = ["Easy", "Medium", "Hard"]
+    # time = ["0-30 min", "31-60 min", "1+ hr"]
+    time = [30, 60, 120]
+
     context = {"groups": groups, "group_dict": group_dict, "ingredientsAreSelected": ingredientsAreSelected,
-               "persistent_ingredients": persistent_ingredients, "ingredients_list": ingredients}
+               "persistent_ingredients": persistent_ingredients, "ingredients_list": ingredients, "appliances": appliances, "difficulties": difficulties, "time": time}
     return HttpResponse(render(request, 'recipe/index.html', context))
 
 
@@ -54,8 +59,12 @@ def get_recipes(request):
     # send ingredients to search algorithm
     found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!
-    values = found_recipes.values()
-    return JsonResponse({'results': list(values)})
+    values = list(found_recipes.values())
+
+    for recipe in values:
+        recipe['appliances'] = list(Appliance.objects.filter(recipe=recipe['id']).values('name'))
+
+    return JsonResponse({'results': values})
 
 
 def recipe_full_view(request, id):
@@ -69,8 +78,25 @@ def recipe_full_view(request, id):
         favorites = Favorite.objects.filter(recipe=current_recipe, user=request.user)
         if (favorites.count() != 0):
             isFavorite = 1
+
+    if (request.method == 'POST' and request.user.is_authenticated()):
+        comment_form = CommentForm(request.POST)
+        comment = comment_form.save(commit=False)
+        comment.recipe = current_recipe
+        comment.user = request.user
+        comment.save()
+
+    comment_form = '' #blank if not logged on
+    comments = Comment.objects.filter(recipe=current_recipe).order_by('-creation_date')
+    if request.user.is_authenticated():
+        comment_form = CommentForm()
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)
-    context = {'current_recipe': current_recipe, 'ingredients': ingredients, 'isFavorite': isFavorite}
+    context = {'current_recipe': current_recipe,
+               'ingredients': ingredients,
+               'comments': comments,
+               'comment_form': comment_form,
+               'isFavorite': isFavorite}
+
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
