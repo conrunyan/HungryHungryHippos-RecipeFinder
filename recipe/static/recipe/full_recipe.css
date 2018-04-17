@@ -73,3 +73,9 @@ border: 0;
 box-shadow: 0;
 display: inline;
 }
+
+#favorite {
+  width: 45px;
+  height: 45px;
+  display: block;
+}

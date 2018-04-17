@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
-from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating, Appliance
+from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating, Appliance, Favorite
 
 
 def index(request):
@@ -73,6 +73,12 @@ def recipe_full_view(request, id):
     if current_recipe.is_private and current_recipe.user != request.user:
         raise PermissionDenied
 
+    isFavorite = 0
+    if request.user.is_authenticated:
+        favorites = Favorite.objects.filter(recipe=current_recipe, user=request.user)
+        if (favorites.count() != 0):
+            isFavorite = 1
+
     if (request.method == 'POST' and request.user.is_authenticated()):
         comment_form = CommentForm(request.POST)
         comment = comment_form.save(commit=False)
@@ -88,7 +94,9 @@ def recipe_full_view(request, id):
     context = {'current_recipe': current_recipe,
                'ingredients': ingredients,
                'comments': comments,
-               'comment_form': comment_form}
+               'comment_form': comment_form,
+               'isFavorite': isFavorite}
+
     return HttpResponse(render(request, 'recipe/recipe_full_view.html', context))
 
 
@@ -132,6 +140,19 @@ def rate(request, id):
                          'average': recipe.get_rating(),
                          'user_rating': rating,
                          'count': recipe.get_rating_count()})
+
+@login_required
+def favorite(request, id):
+    if request.body:
+        body = request.body.decode("utf-8")
+        isFavorite = json.loads(body)['isFavorite']
+        recipe = get_object_or_404(Recipe, id=id)
+        if (isFavorite == 0):
+            faved = Favorite.objects.filter(recipe=recipe, user=request.user)
+            faved.delete()
+        else:
+            fav = Favorite.objects.create(recipe=recipe, user=request.user)
+    return redirect('recipe:recipe_full_view', id=id)
 
 @login_required
 def add_private_recipe(request):

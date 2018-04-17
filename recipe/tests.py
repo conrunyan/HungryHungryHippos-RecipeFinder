@@ -9,7 +9,7 @@ from django.test import Client
 from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating, Favorite
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -521,6 +521,37 @@ class ViewingPrivateRecipes(TestCase):
 
         response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':recipe_one.id}))
         self.assertEqual(response.status_code, 403)
+
+class FavoritesPage(TestCase):
+    """Tests that the favorites page doesn't fail."""
+
+    def setUp(self):
+        """Create client to make requests."""
+        self.client = Client()
+
+    def test_guest_cannot_access_page(self):
+        """Test that a user cannot acccess the Favorites page if they are not logged in."""
+        user1 = User.objects.create_user('test1')
+        response = self.client.get(reverse('favorites'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_no_favorited_recipes(self):
+        """Test the favorites page when there are no favorited recipes."""
+        user1 = User.objects.create_user('test1')
+        self.client.force_login(user1)
+        response = self.client.get(reverse('favorites'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_some_favorited_recipes(self):
+        """Test that the Favorites page displays the correct number of recipes."""
+        user1 = User.objects.create_user('test1')
+        self.client.force_login(user1)
+        recipe1 = Recipe.objects.create(title="Recipe1", instructions="recipe1 instructions")
+        recipe2 = Recipe.objects.create(title="Recipe2", instructions="recipe2 instructions")
+        fav1 = Favorite.objects.create(recipe=recipe1, user=user1)
+        fav2 = Favorite.objects.create(recipe=recipe2, user=user1)
+        response = self.client.get(reverse('favorites'))
+        self.assertIs(response.context['favorites'].count(), 2)
 
 class RecipeRating(TestCase):
     """Tests rating recipes for the user."""
