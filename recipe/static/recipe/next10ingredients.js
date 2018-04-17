@@ -10,8 +10,10 @@ let START = 0;
 let END = 1;
 let cur_recipes;
 let cur_button;
+let g_filterLength = 0;
+let g_filters = {};
 
-function getNext10Recs(found_recipes) {
+function getNext10Recs(found_recipes, ingLength, filters) {
     // check if incrementing another 10 recipes will exceed the bounds of
     // the recipe list
     let indices = getNextIndices();
@@ -19,7 +21,7 @@ function getNext10Recs(found_recipes) {
     let start_idx = indices[START];
     let end_idx = indices[END];
     // call Kayson's function
-    addRecipesToPage(found_recipes, start_idx, end_idx);
+    addRecipesToPage(found_recipes, start_idx, end_idx, ingLength, filters);
 };
 
 function getNextIndices() {
@@ -90,10 +92,12 @@ function deleteNext10Button() {
 
 // TODO: Write function to kill the button upon new search
 
-function runNext10(recipes){
+function runNext10(recipes, filterLength, filters){
 
     num_recs = recipes.length;
     cur_recipes = recipes;
+    g_filterLength = filterLength;
+    g_filters = filters;
 
     // create button to add, if needed
     let button_div = document.getElementById('next_10_button_div');
@@ -103,7 +107,7 @@ function runNext10(recipes){
     next_button.id = 'next_10_button';
     next_button.textContent = "See More...";
     //button.style = 'display: none';
-    next_button.setAttribute('onclick', 'getNext10Recs(cur_recipes);');
+    next_button.setAttribute('onclick', 'getNext10Recs(cur_recipes, g_filterLength, g_filters);');
     button_div.appendChild(next_button);
     cur_button = next_button;
     // console.log(next_button);

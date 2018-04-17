@@ -7,6 +7,10 @@ $(document).ready(function() {
   let EXPANDED_SRC = "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/up4-256.png";
 
   var listOfIngredients = [];
+  var listOfAppliances = [];
+  var listOfDifficulties = [];
+  var listOfTimes = [];
+  var allFilters = [];
   var panelIsOpen = false;
 
   updateImage($(".update-on-expand"), COLLAPSED_SRC);
@@ -22,7 +26,19 @@ $(document).ready(function() {
   });
 
   $(".update-list").change(function() {
-    addToList($(this));
+    addToList($(this), listOfIngredients);
+  });
+
+  $(".update-appliance").change(function() {
+    addToList($(this), listOfAppliances);
+  });
+
+  $(".update-difficulty").change(function() {
+    addToList($(this), listOfDifficulties);
+  });
+
+  $(".update-time").change(function() {
+    addToList($(this), listOfTimes);
   });
 
   $("#run-search").click(function() {
@@ -63,7 +79,7 @@ $(document).ready(function() {
     var ing = $(this).text();
     var val = $('input[value="'+ing+'"]');
     val.prop('checked', true);
-    addToList(val);
+    addToList(val, listOfIngredients);
     $(".dropdown-content").hide();
   });
 
@@ -72,31 +88,55 @@ $(document).ready(function() {
       let ing = $('input[type=checkbox][value="'+listOfIngredients[i]+'"]');
       ing.prop('checked', false);
     }
+    for (let i in listOfAppliances) {
+      let app = $('input[type=checkbox][value="'+listOfAppliances[i]+'"]');
+      app.prop('checked', false);
+    }
+    for (let i in listOfDifficulties) {
+      let diff = $('input[type=checkbox][value="'+listOfDifficulties[i]+'"]');
+      diff.prop('checked', false);
+    }
+    for (let i in listOfTimes) {
+      let t = $('input[type=checkbox][value="'+listOfTimes[i]+'"]');
+      t.prop('checked', false);
+    }
     listOfIngredients = [];
+    listOfAppliances = [];
+    listOfDifficulties = [];
+    listOfTimes = [];
+    allFilters = [];
     $("#noIngredients").show();
     deleteRecipesFromPage(listOfIngredients.length);
   });
 
   function parseResponse(r) {
     let response = JSON.parse(r);
-    deleteRecipesFromPage(listOfIngredients.length);
+    deleteRecipesFromPage(allFilters.length);
     deleteNext10Button();
-    addRecipesToPage(response['results'], 0, 10, listOfIngredients.length);
-    runNext10(response['results']);
+    let filters = {
+      'appliances': listOfAppliances,
+      'difficulty': listOfDifficulties,
+      'time': listOfTimes
+    };
+    addRecipesToPage(response['results'], 0, 10, allFilters.length, filters);
+    runNext10(response['results'], allFilters.length, filters);
   }
 
   function updateImage(div, src) {
     div.siblings().find(".update-image").attr("src", src);
   };
 
-  function addToList(element) {
+  function addToList(element, list) {
     if (element.prop("checked")) {
-      listOfIngredients.push(element.prop("value"));
+      list.push(element.prop("value"));
+      allFilters.push(element.prop("value"));
       document.getElementById("noIngredients").style.display = 'none';
     } else {
-      var index = listOfIngredients.indexOf(element.prop("value"));
-      if (index !== -1) listOfIngredients.splice(index, 1);
-      if (listOfIngredients.length == 0) {
+      let index = list.indexOf(element.prop("value"));
+      if (index !== -1) list.splice(index, 1);
+      let index2 = allFilters.indexOf(element.prop("value"));
+      if (index2 !== -1) allFilters.splice(index, 1);
+      if (allFilters.length === 0) {
         document.getElementById("noIngredients").style.display = 'block';
       }
     }
@@ -118,7 +158,7 @@ $(document).ready(function() {
       var e = $("input[type='checkbox'][value='" + ingredient + "']");
       if(e) {
         e.prop('checked', true);
-        addToList(e);
+        addToList(e, listOfIngredients);
       }
     }
   };
