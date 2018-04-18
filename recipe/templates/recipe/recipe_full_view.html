@@ -73,9 +73,9 @@
 
   <!-- Comment Form -->
   <div class="content">
+    <hr />
     {% if user.is_authenticated %}
       <form method="post" class="form-signin">
-        <hr />
         <h1 class="text-left">Comment</h1>
         {% csrf_token %}
         <div class="comment-content">
