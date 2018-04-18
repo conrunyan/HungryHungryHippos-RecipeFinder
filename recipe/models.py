@@ -66,8 +66,10 @@ class IngredientUtils():
         """
 
         recipe_qs = self._make_qs_list(ingredients)
+        # TODO: Recipe sorting needs to happen in the _make_qs function
         # if ingredients were found...
         if len(recipe_qs) > 0:
+            # sorting of recipes has to happen here
             recipes = self._ingredient_intersect(recipe_qs)
             # print('Returning:', recipes)
             recipes = self._filter_private_recs(recipes)
@@ -132,7 +134,7 @@ class IngredientUtils():
         return recipe_list.order_by('title')[start:end]
 
     def _split_recipes(self, ing_list, recipe_qs):
-        """Returns a list of ingredients, each element in the list containing a Recipe QuerySet
+        """Returns a list of recipes, each element in the list containing a Recipe QuerySet
         
         Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
         Buckets are classified by a percentage of ingredients the recipes contain:
@@ -220,6 +222,30 @@ class Recipe(models.Model):
     def get_rating_count(self):
         """Return the number of ratings for the recipe."""
         return self.userrating_set.all().count()
+
+    def get_perc_ingredients(self, usr_ingredients):
+        """Returns a percentage (i.e. 80 for 80%) ingredients needed.
+
+        Determines the percentage of needed ingredients (what the recipe calls for)
+        based on the ingredients specified by the user.
+        """
+
+        INGR_NAME_POS = 2
+        # convert recipe ingredients to a list of names
+        pre_ingr_list = list(self.ingredients.values_list())
+        ingr_list = [ing[INGR_NAME_POS] for ing in pre_ingr_list]
+        
+        # convert user ingredient list and recipe ingredient lists to sets, then perform
+        # a bitwise AND on these sets (will only return the ingredients they share)
+        cur_rec_ings = set(ingr_list)
+        usr_rec_ings = set(usr_ingredients)
+        shared_ings = cur_rec_ings & usr_rec_ings
+        # get number of ingredients shared, and required by recipe
+        num_shared = len(shared_ings)
+        num_rec_ings = len(ingr_list)
+        # return the ratio of number of ingredients passed to number of ingredients called for
+        # NOTE: Truncates the decimals
+        return int((num_shared/num_rec_ings) * 100)
 
 
 class RecipeIngredient(models.Model):
