@@ -117,6 +117,10 @@ class RecipeModelTest(TestCase):
 
         self.assertIsNone(recipe.source_url)
 
+    def test_get_perc_ingredients(self):
+        """Tests get_perc_ingredients"""
+        # TODO: Write test case for this
+
 
 class RecipeIngredientModelTest(TestCase):
     """Tests the RecipeIngredient model and methods."""

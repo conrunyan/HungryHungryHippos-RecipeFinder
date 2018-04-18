@@ -104,6 +104,9 @@ class IngredientUtils():
         the various Ingredients.
         """
 
+        # TODO: Thoughts... Probably re-write this function to return a set of
+        # recipe buckets, split by percentages of relevant recipes
+
         recipe_qs = []
         recipe_or = Q()
         # loop over ingredients, finding recipes associated with
