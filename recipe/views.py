@@ -5,8 +5,8 @@ import json
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import PersistentIngredient
@@ -85,6 +85,8 @@ def recipe_full_view(request, id):
         comment.recipe = current_recipe
         comment.user = request.user
         comment.save()
+        return HttpResponseRedirect('#')
+
 
     comment_form = '' #blank if not logged on
     comments = Comment.objects.filter(recipe=current_recipe).order_by('-creation_date')
