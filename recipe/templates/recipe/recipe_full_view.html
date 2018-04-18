@@ -72,28 +72,36 @@
   </div>
 
   <!-- Comment Form -->
-  {% if user.is_authenticated %}
-  <form method="post" class="form-signin">
-    {% csrf_token %}
-    {{comment_form.content}}
-    <button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit Comment</button>
-  </form>
-  {% else %}
-    <h3> Please log in to post a comment. </h3>
-  {% endif %}
+  <div class="content">
+    <hr />
+    {% if user.is_authenticated %}
+      <form method="post" class="form-signin">
+        <h1 class="text-left">Comment</h1>
+        {% csrf_token %}
+        <div class="comment-content">
+          {{comment_form.content}}
+        </div>
+        <button type="submit" class="btn btn-dark btn-md mt-5">Submit Comment</button>
+      </form>
+    {% else %}
+      <h3> Please log in to post a comment. </h3>
+    {% endif %}
 
 
-  <!-- Comments -->
-  <h2> Comments </h2>
-  {% for comment in comments %}
-    <div>
-      {{comment.content}}
-    </div>
-  {% endfor %}
+    <!-- Comments -->
+    <hr />
+    {% for comment in comments %}
+      <div class="single-comment">
+        <h4>{{comment.user}}</h4>
+        <h5>{{comment.creation_date|date}}</h5>
+        {{comment.content}}
+      </div>
+    {% endfor %}
 
-{% else %}
-  <p>Could not load selected recipe.</p>
-{% endif %}
+    {% else %}
+      <p>Could not load selected recipe.</p>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block footer %}
