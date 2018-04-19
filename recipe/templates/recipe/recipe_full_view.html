@@ -53,14 +53,32 @@
         <!-- Javascript creates count -->
       </div>
     </div>
-    <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
-    <h2>{{current_recipe.summary}}</h2>
+    <p class="text-center">Time:
+      {% if current_recipe.time != None %}
+        {{current_recipe.time}} minutes
+      {% endif %}
+      <span class="spacing"></span> Difficulty:
+      {% if current_recipe.get_difficulty_display != None %}
+        {{current_recipe.get_difficulty_display}}
+      {% endif %}
+    </p>
+    {% if current_recipe.summary != None %}
+      <h2>{{current_recipe.summary}}</h2>
+    {% endif %}
     <hr />
     {% if ingredients %}
       <div class="ingredients-list">
         {% for ingredient in ingredients %}
           <div>
-            {{ingredient.amount}} {{ingredient.unit}} {{ingredient.ingredient}}
+            {% if ingredient.amount != None %}
+              {{ingredient.amount}}
+            {% endif %}
+            {% if ingredient.unit != None %}
+              {{ingredient.unit}}
+            {% endif %}
+            {% if ingredient.ingredient != None %}
+              {{ingredient.ingredient}}
+            {% endif %}
           </div>
         {% endfor %}
       </div>
