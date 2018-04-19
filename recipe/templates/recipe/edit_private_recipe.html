@@ -43,7 +43,7 @@
             {% for ingredient_field in ingredient_form %}
                 <!-- Ingredient form field errors -->
                 {% for ingredient_error in ingredient_field.errors %}
-                    <span class="form-group has-errors text-danger">{{ingredient_error|escape}}</span>
+                    <p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
                 {% endfor %}
 
                 <!-- Ingredient field -->
@@ -69,19 +69,20 @@
   <script type="text/javascript">
     $(document).ready(function() {
       // Select all single select
-      choose = $('select:not([multiple])');
+      choose = $(".drop-down-ingredient-search");
       // Activate Chosen library
       choose.chosen();
       // Hacks to make menus show up above other elements. It has some issues...
       choose.parent().css('overflow', 'visible');
       choose.closest('.form-row').css('overflow', 'visible');
-
+    });
+  </script>
+  <script>
       $(document).on('click', '#cancel', function(){
           return confirm('Any unsaved changes will be discarded.');
       })
       $(document).on('click', '#delete', function(){
           return confirm('This item will not be recoverable.\nAre you sure you still want to delete this?');
       })
-    });
   </script>
 {% endblock %}

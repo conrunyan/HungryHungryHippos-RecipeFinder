@@ -43,7 +43,7 @@
 			{% for ingredient_field in ingredient_form %}
 				<!-- Ingredient form field errors -->
 				{% for ingredient_error in ingredient_field.errors %}
-					<span class="form-group has-errors text-danger">{{ingredient_error|escape}}</span>
+					<p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
 				{% endfor %}
 
 				<!-- Ingredient field -->
@@ -53,7 +53,7 @@
 			{% endfor %}
 		</div>
 	{% endfor %}
-	<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
+	<button type="submit" class="btn btn-dark btn-lg mt-5">Submit</button>
 </form>
 
 {% endblock %}
@@ -66,7 +66,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
   // Select all single select
-  choose = $('select:not([multiple])');
+  choose = $(".drop-down-ingredient-search");
   // Activate Chosen library
   choose.chosen();
   // Hacks to make menus show up above other elements. It has some issues...
