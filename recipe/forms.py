@@ -51,7 +51,7 @@ class RecipeForm(forms.ModelForm):
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.ModelChoiceField(widget=forms.Select(attrs={
-                                        'placeholder': 'Ingredient'}),
+                                        'placeholder': 'Ingredient', 'class':'drop-down-ingredient-search'}),
                                         empty_label='--Ingredient--',
                                         queryset=Ingredient.objects)
 
