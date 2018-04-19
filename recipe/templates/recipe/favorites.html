@@ -12,7 +12,7 @@
     {% for fav in favorites %}
       <hr />
       <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' fav.recipe.id %}">
-        <img src="{{fav.recipe.image_url}}"/>
+        <img alt="recipe image" src="{{fav.recipe.image_url}}"/>
         <div>
           <h3>{{fav.recipe.title}}</h3>
           <p>{{fav.recipe.summary}}</p>

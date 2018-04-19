@@ -21,7 +21,7 @@
     <div class="top-three">
       {% for recipe in users_recipes %}
       <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' recipe.id %}">
-        <img src="{{recipe.image_url}}"/>
+        <img alt="recipe image" src="{{recipe.image_url}}"/>
         <div>
           <h3>{{recipe.title}}</h3>
           <p>{{recipe.summary}}</p>
@@ -39,7 +39,7 @@
     <div class="top-three">
       {% for fav in users_favorites %}
       <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' fav.recipe.id %}">
-        <img src="{{fav.recipe.image_url}}"/>
+        <img alt="recipe image" src="{{fav.recipe.image_url}}"/>
         <div>
           <h3>{{fav.recipe.title}}</h3>
           <p>{{fav.recipe.summary}}</p>

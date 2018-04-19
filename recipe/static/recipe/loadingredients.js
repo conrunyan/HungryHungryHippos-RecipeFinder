@@ -42,6 +42,7 @@ function addRecipesToPage(recipes, start_idx, end_idx, listIngLength, filters){
         //add img tag to a
         let img = document.createElement('img');
         img.setAttribute('src', recipe.image_url);
+        img.setAttribute('alt', "recipe image");
         a.appendChild(img);
 
         //add div tag to a
