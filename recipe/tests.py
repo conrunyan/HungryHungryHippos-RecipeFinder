@@ -9,7 +9,8 @@ from django.test import Client
 from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating, Comment
+from .forms import CommentForm
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -577,3 +578,62 @@ class RecipeRating(TestCase):
         self.assertEquals(result['valid'], 'True')
         self.assertEquals(result['average'], 3)
         self.assertEquals(result['count'], 1)
+
+class TestCommentForm(TestCase):
+    """Tests rating recipes for the user."""
+
+    def test_init(self):
+        commentForm = CommentForm(data={'content': "This is a comment!"})
+        self.assertTrue(commentForm.is_valid())
+
+    def test_init_without_content(self):
+        commentForm = CommentForm(data={})
+        self.assertFalse(commentForm.is_valid())
+
+class TestFullViewAddComment(TestCase):
+
+    def setUp(self):
+        """Create client to make requests."""
+        self.user = User.objects.create_user("test_user")
+        self.content = "This is a comment!"
+        self.client = Client()
+        self.recipe = Recipe.objects.create(title="Recipe", instructions="real", user=self.user, is_private=False)
+        self.private_recipe = Recipe.objects.create(title="Recipe", instructions="real", user=self.user)
+
+    def test_successful_comment(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
+
+    def test_user_not_logged_in(self):
+        response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please log in to post a comment.")
+
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 403)
+
+    def test_no_context(self):
+        self.client.force_login(self.user)
+        comment_form = CommentForm(data={'content':self.content})
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Comment.objects.all().exists())
+
+    def test_private_recipe_with_same_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
+
+    def test_private_recipe_with_different_user(self):
+        self.client.force_login(User.objects.create_user('hacker_man'))
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.private_recipe.id}), data={'content':self.content})
+        self.assertFalse(Comment.objects.all().exists())
+        self.assertEqual(response.status_code, 403)
+
