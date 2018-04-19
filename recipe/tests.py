@@ -637,7 +637,7 @@ class TestFullViewAddComment(TestCase):
         self.assertFalse(Comment.objects.all().exists())
         self.assertEqual(response.status_code, 403)
 
-class TesRecipeForm(TestCase):
+class TestRecipeForm(TestCase):
     """Tests the add Recipe Form."""
 
     def test_init_easy_difficulty(self):
@@ -732,3 +732,26 @@ class TesRecipeForm(TestCase):
                                       'time': 10,
                                       'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg"})
         self.assertFalse(recipeForm.is_valid())
+
+class TestRecipeIngredientForm(TestCase):
+    """Tests the add Recipe Form."""
+
+    def setUp(self):
+        group = Group.objects.create(name="TestGroup")
+        self.ingredient = Ingredient.objects.create(group=group, name="Ing 1")
+
+    def test_init(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'amount': '3', 'unit': 'cups'})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_unit(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'amount': '3'})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_amount(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'unit': 'cups'})
+        self.assertFalse(recipeIngredientForm.is_valid())
+
+    def test_init_without_ingredient(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'amount': '3', 'unit': 'cups'})
+        self.assertTrue(recipeIngredientForm.is_valid())
