@@ -1,0 +1,37 @@
+.marquee {
+  height: 50px;
+  width: 100%;
+
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee div {
+  display: block;
+  width: 400%;
+  height: 50px;
+
+  position: absolute;
+  overflow: hidden;
+
+  animation: marquee 30s linear infinite;
+}
+
+.marquee div:hover {
+  animation-play-state: paused;
+}
+
+.marquee img {
+  display: inline;
+  float: left;
+  height: 50px;
+}
+
+.marquee img:hover {
+  filter: sepia(100%);
+}
+
+@keyframes marquee {
+  0% { left: 0; }
+  100% { left: -100%; }
+}
