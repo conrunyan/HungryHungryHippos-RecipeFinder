@@ -10,7 +10,7 @@ from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
 from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating, Comment
-from .forms import CommentForm
+from .forms import CommentForm, RecipeForm, RecipeIngredientForm
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -580,7 +580,7 @@ class RecipeRating(TestCase):
         self.assertEquals(result['count'], 1)
 
 class TestCommentForm(TestCase):
-    """Tests rating recipes for the user."""
+    """Tests the comment form"""
 
     def test_init(self):
         commentForm = CommentForm(data={'content': "This is a comment!"})
@@ -637,3 +637,98 @@ class TestFullViewAddComment(TestCase):
         self.assertFalse(Comment.objects.all().exists())
         self.assertEqual(response.status_code, 403)
 
+class TesRecipeForm(TestCase):
+    """Tests the add Recipe Form."""
+
+    def test_init_easy_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_medium_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "M",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_hard_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "H",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_invalid_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "Z",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_title(self):
+        recipeForm = RecipeForm(data={'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_summary(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_time(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_image_url(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_invalid_image_url(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://google.com",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_instructions(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg"})
+        self.assertFalse(recipeForm.is_valid())
