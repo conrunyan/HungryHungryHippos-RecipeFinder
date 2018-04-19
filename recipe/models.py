@@ -43,6 +43,13 @@ class Ingredient(models.Model):
         """Return a QuerySet of associated Recipes."""
         return self.recipe_set.values()
 
+    def get_recipe_ids(self):
+        """Returns a list of associated Recipe IDs"""
+        my_recs = list(self.get_recipes())
+        # get just the ids from each record
+        rec_ids = [rec['id'] for rec in my_recs]
+        return rec_ids
+
 
 class IngredientUtils():
     """Class of ingredient helper functions.
@@ -108,25 +115,33 @@ class IngredientUtils():
         # recipe buckets, split by percentages of relevant recipes
 
         recipe_qs = []
+        recipe_dict = {}
         recipe_or = Q()
         # loop over ingredients, finding recipes associated with
         # each ingredient, then storing them in a list of QuerySets
         for ing in ingredients:
             try:
-                cur_ing_qs = Ingredient.objects.get(name=ing)
+                cur_ing = Ingredient.objects.get(name=ing)
+                rec_ids = cur_ing.get_recipe_ids()
+                cur_ing_recs = Recipe.objects.filter(id__in=(rec_ids))
             # if ingredient found, get recipes
-                if cur_ing_qs:
-                    tmp_ing = cur_ing_qs
-                    # get recipe query set, given ingredients
-                    tmp_rec = tmp_ing.get_recipes()
+                if len(cur_ing_recs) > 0:
+                    # get recipe percentages
+                    for rec in cur_ing_recs:
+                        tmp_perc = rec.get_perc_ingredients(ingredients)
+                        # filter recipe
+                        filtered_rec = self._filter_private_recs(rec)
+                        # add to recipe percent buckets.
+                        if tmp_perc in recipe_dict:
+                            recipe_dict[tmp_perc].append(filtered_rec)
+                        else:
+                            recipe_dict[tmp_perc] = [filtered_rec]
                     # filter out any private recipes that don't belong to the user
-                    tmp_rec = self._filter_private_recs(tmp_rec)
-                    recipe_qs.append(tmp_rec)
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
                continue
         # return query set of recipes
-        return recipe_qs
+        return recipe_dict
 
     def _get_recipe_range(self, recipe_list, start, end):
         """Returns a slice of a Recipe QuerySet
