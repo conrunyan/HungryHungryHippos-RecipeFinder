@@ -5,7 +5,6 @@ from django.db.models import Q, QuerySet, Avg
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-
 class Group(models.Model):
     """This represents a food category.
 
@@ -76,10 +75,6 @@ class IngredientUtils():
         # TODO: Recipe sorting needs to happen in the _make_qs function
         # if ingredients were found...
         if len(recipe_qs) > 0:
-            # sorting of recipes has to happen here
-            recipes = self._ingredient_intersect(recipe_qs)
-            # print('Returning:', recipes)
-            recipes = self._filter_private_recs(recipes)
             #sliced_recipes = self._get_recipe_range(recipes, start, end)
             #return sliced_recipes
             return recipes
@@ -95,30 +90,31 @@ class IngredientUtils():
         #return QuerySet.intersection(*ing_qs_list)
         return QuerySet.union(*ing_qs_list)
 
-    def _filter_private_recs(self, recipe_qs):
+    def _filter_private_recs(self, recipe):
         """Returns public recipes and the user's private recipes (if applicable)"""
-        private_q = Q(is_private=False)
-        usr_id_q = Q(user_id=self.user_id)
-        # get public recipes or those that belong to the user
-        return recipe_qs.filter(private_q | usr_id_q)
+        #private_q = Q(is_private=False)
+        #usr_id_q = Q(user_id=self.user_id)
+        ## get public recipes or those that belong to the user
+        if not recipe.is_private or recipe.user_id == self.user_id:
+            return recipe
+        else:
+            return None
 
     def _make_qs_list(self, ingredients):
-        """Returns a QuerySet of recipes given a list of ingredient names"
+        """Returns a list of QuerySets of recipes given a list of ingredient names"
 
         Given a list of Ingredients, this function will search for recipes
-        linked to each ingredient, then perform a set intersection.
-        and return a list of QuerySets containing only shared Recipes between
-        the various Ingredients.
+        linked to each ingredient, then sorts them.
+        Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
+        Buckets are classified by a percentage of ingredients the recipes contain:
+            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe, 
+            all ingredients, except sausage, are passed in the ingredients list. This recipe would be placed in the 4/5 (80%) bucket
         """
 
-        # TODO: Thoughts... Probably re-write this function to return a set of
-        # recipe buckets, split by percentages of relevant recipes
-
-        recipe_qs = []
         recipe_dict = {}
-        recipe_or = Q()
+        used_recs = [] # list of rec ids that were actually used
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets
+        # each ingredient, then sorting them by percent of ingredients
         for ing in ingredients:
             try:
                 cur_ing = Ingredient.objects.get(name=ing)
@@ -129,18 +125,20 @@ class IngredientUtils():
                     # get recipe percentages
                     for rec in cur_ing_recs:
                         tmp_perc = rec.get_perc_ingredients(ingredients)
-                        # filter recipe
+                        # filter recipe (skip if private and not the user's)
                         filtered_rec = self._filter_private_recs(rec)
-                        # add to recipe percent buckets.
-                        if tmp_perc in recipe_dict:
-                            recipe_dict[tmp_perc].append(filtered_rec)
-                        else:
-                            recipe_dict[tmp_perc] = [filtered_rec]
-                    # filter out any private recipes that don't belong to the user
+                        if filtered_rec is not None:
+                            # add to recipe percent buckets.
+                            rec_to_save = Recipe.objects.filter(id=filtered_rec.id).values()
+                            if tmp_perc in recipe_dict:
+                                # remove duplicates
+                                if rec_to_save not in recipe_dict[tmp_perc]:
+                                    recipe_dict[tmp_perc].append(rec_to_save)
+                            else:
+                                recipe_dict[tmp_perc] = [rec_to_save]
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
                continue
-        # return query set of recipes
         return recipe_dict
 
     def _get_recipe_range(self, recipe_list, start, end):
@@ -151,15 +149,15 @@ class IngredientUtils():
         """
         return recipe_list.order_by('title')[start:end]
 
-    def _split_recipes(self, ing_list, recipe_qs):
-        """Returns a list of recipes, each element in the list containing a Recipe QuerySet
-        
-        Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
-        Buckets are classified by a percentage of ingredients the recipes contain:
-            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe, 
-            all ingredients, except sausage, are passed in the ingredients list. This recipe would be placed in the 4/5 (80%) bucket
-                   
-        """
+    def _dict_to_list(self, dict):
+        """Converts dictionary of recipes into a sorted list"""
+        keys = sorted(dict.keys())
+        out_lst = []
+        # for each list of QS's, append it to the out_lst of recipes
+        for key in keys:
+            out_lst += 
+
+
 
 class Appliance(models.Model):
     """This is an appliance that is required to make a recipe.
