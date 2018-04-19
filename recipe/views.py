@@ -54,8 +54,8 @@ def get_recipes(request):
     # send ingredients to search algorithm
     found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
     # convert queryset to JSON!!!
-    values = found_recipes.values()
-    return JsonResponse({'results': list(values)})
+    #values = found_recipes.values()
+    return JsonResponse({'results': found_recipes})
 
 
 def recipe_full_view(request, id):

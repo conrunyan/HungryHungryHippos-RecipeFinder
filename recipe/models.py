@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q, QuerySet, Avg
 from django.contrib.auth.models import User
 from django.utils import timezone
+from itertools import chain
 
 class Group(models.Model):
     """This represents a food category.
@@ -72,17 +73,17 @@ class IngredientUtils():
         """
 
         recipe_qs = self._make_qs_list(ingredients)
-        # TODO: Recipe sorting needs to happen in the _make_qs function
+        recipe_list = self._dict_to_qs(recipe_qs)
         # if ingredients were found...
-        if len(recipe_qs) > 0:
-            #sliced_recipes = self._get_recipe_range(recipes, start, end)
-            #return sliced_recipes
-            return recipes
+        if len(recipe_list) > 0:
+            # slice recipe list
+            recipe_list = recipe_list[start:end]
         # return empty queryset
         else:
             emp_qs = Recipe.objects.none()
+            recipe_list = list(emp_qs.values())
             # print('Returning:', emp_qs)
-            return emp_qs
+        return recipe_list
 
     def _ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of recipes shared between ingredients"""
@@ -101,7 +102,7 @@ class IngredientUtils():
             return None
 
     def _make_qs_list(self, ingredients):
-        """Returns a list of QuerySets of recipes given a list of ingredient names"
+        """Returns a Dictionary of QuerySets of recipes given a list of ingredient names"
 
         Given a list of Ingredients, this function will search for recipes
         linked to each ingredient, then sorts them.
@@ -129,7 +130,7 @@ class IngredientUtils():
                         filtered_rec = self._filter_private_recs(rec)
                         if filtered_rec is not None:
                             # add to recipe percent buckets.
-                            rec_to_save = Recipe.objects.filter(id=filtered_rec.id).values()
+                            rec_to_save = list(Recipe.objects.filter(id=filtered_rec.id).values())
                             if tmp_perc in recipe_dict:
                                 # remove duplicates
                                 if rec_to_save not in recipe_dict[tmp_perc]:
@@ -139,6 +140,7 @@ class IngredientUtils():
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
                continue
+
         return recipe_dict
 
     def _get_recipe_range(self, recipe_list, start, end):
@@ -149,13 +151,19 @@ class IngredientUtils():
         """
         return recipe_list.order_by('title')[start:end]
 
-    def _dict_to_list(self, dict):
+    def _dict_to_qs(self, dict):
         """Converts dictionary of recipes into a sorted list"""
         keys = sorted(dict.keys())
+        keys.sort(reverse=True)
         out_lst = []
+        
         # for each list of QS's, append it to the out_lst of recipes
+        # from greatest to least
         for key in keys:
-            out_lst += 
+            out_lst += dict[key]
+        # Found this nifty tool on StackOverflow :)
+        new_qs = list(chain(*out_lst))
+        return new_qs
 
 
 
