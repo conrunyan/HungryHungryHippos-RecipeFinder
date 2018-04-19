@@ -16,7 +16,13 @@ $(document).ready(function() {
       updateImage($(this));
     }
     let value = URL_RATE;
-    parseRequest();
+    parseRequest($(this));
+  });
+
+  $("#favorite").hover(function() {
+    hoverImage($(this));
+  }, function() {
+    hoverImage($(this));
   });
 
   function updateImage(div) {
@@ -26,7 +32,16 @@ $(document).ready(function() {
     div.attr("src", src);
   }
 
-  function parseRequest() {
+  function hoverImage(div) {
+    let src = div.attr("src");
+    if (src === FAVORITE) {
+      div.attr("src", NOT_FAVORITE);
+    } else {
+      div.attr("src", FAVORITE);
+    }
+  }
+
+  function parseRequest(div) {
     let body = JSON.stringify({'isFavorite': favorited});
     let request = new XMLHttpRequest();
     request.open('POST', URL_FAV, true);
@@ -34,7 +49,7 @@ $(document).ready(function() {
     request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     request.onreadystatechange = function() {
       if(request.readyState == 4 && request.status == 200) {
-        // parseResponse(request.responseText);
+        hoverImage(div);
       }
     };
     request.send(body);

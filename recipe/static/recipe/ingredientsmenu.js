@@ -79,6 +79,7 @@ $(document).ready(function() {
     var ing = $(this).text();
     var val = $('input[value="'+ing+'"]');
     val.prop('checked', true);
+    $('#myInput').val("");
     addToList(val, listOfIngredients);
     $(".dropdown-content").hide();
   });
