@@ -322,3 +322,16 @@ class UserRating(models.Model):
     def __str__(self):
         """Construct a string representation of this rating link."""
         return '{0} ({1}) : {2}'.format(self.recipe, self.user, self.value)
+
+
+class Favorite(models.Model):
+    """Holds a user's favorite recipes"""
+
+    def __str__(self):
+        """Return a string representing the user and the recipe"""
+        return 'Recipe: {0} -- User: {1}'.format(self.recipe, self.user)
+
+    # Recipe that the user is favoriting
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    # User that has the favorite
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

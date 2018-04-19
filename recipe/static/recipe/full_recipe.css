@@ -1,5 +1,6 @@
 .content {
   font-family: "Raleway";
+  margin-bottom: 50px;
 }
 
 .content img {
@@ -72,4 +73,27 @@ padding: 5px;
 border: 0;
 box-shadow: 0;
 display: inline;
+}
+
+#favorite {
+  width: 45px;
+  height: 45px;
+  display: block;
+}
+
+.comment-content {
+  width: 40%;
+  min-width: 200px;
+}
+
+.single-comment {
+  margin-bottom: 40px;
+}
+
+.single-comment h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.single-comment h5 {
+  font-size: .75rem;
 }

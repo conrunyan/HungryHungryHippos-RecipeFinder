@@ -7,7 +7,7 @@ from emailauth import models as EA_models
 
 from .forms import CreateUserForm, LoginForm
 from emailauth.views import sendAuthEmail
-from recipe.models import Recipe, RecipeIngredient
+from recipe.models import Recipe, RecipeIngredient, Favorite
 
 
 def login_view(request):
@@ -78,13 +78,22 @@ def logout_view(request):
 def myrecipes_view(request):
     """View for when the user goes to the My Recipes page."""
     my_recipes = Recipe.objects.filter(user=request.user)
-    context = {"my_recipes" : my_recipes }
+    context = {"my_recipes" : my_recipes}
     return HttpResponse(render(request, 'recipe/myRecipes.html', context))
+
+@login_required
+def favorite_recipes(request):
+    """View for the Favorites page."""
+    favorites = Favorite.objects.filter(user=request.user)
+    
+    context = {"favorites" : favorites}
+    return HttpResponse(render(request, 'recipe/favorites.html', context))
 
 @login_required
 def profile(request):
     """View for when the user goes to the Profile page."""
     user = User.objects.get(username=request.user)
     users_recipes = Recipe.objects.filter(user=request.user)[:3]
-    context = { 'user' : user, 'users_recipes' : users_recipes }
+    users_favorites = Favorite.objects.filter(user=request.user)[:3]
+    context = { 'user' : user, 'users_recipes' : users_recipes, 'users_favorites' : users_favorites}
     return HttpResponse(render(request, 'accounts/profile.html', context))
