@@ -15,6 +15,7 @@
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
+  margin-left: 30px;
 }
 
 .content h2 {
@@ -77,6 +78,16 @@ hr {
   color: #263238;
 }
 
+.fa-edit {
+  color: #263238;
+  vertical-align: baseline;
+  padding: 20px;
+}
+
+.fa-edit:hover {
+  color: #00acc1;
+}
+
 #share-buttons img {
 width: 35px;
 padding: 5px;
@@ -89,6 +100,11 @@ display: inline;
   width: 45px;
   height: 45px;
   display: block;
+}
+
+.submit-public {
+  margin:0 auto;
+  display:block;
 }
 
 .comment-content {
