@@ -10,7 +10,11 @@
 {% if current_recipe %}
   <div class="content">
     <img alt="recipe image" src="{{current_recipe.image_url}}" />
-    <h1>{{current_recipe.title}} <a href="{% url 'recipe:edit_private_recipe' current_recipe.id %}"><i class="fas fa-edit fa-xs"></i></a> </h1>
+    <h1>{{current_recipe.title}}
+      {% if current_recipe.user.id == user.id %}
+        <a href="{% url 'recipe:edit_private_recipe' current_recipe.id %}"><i class="fas fa-edit fa-xs"></i></a>
+      {% endif %}
+    </h1>
     <div class="text-center">
       {% if current_recipe.source_url %}
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
