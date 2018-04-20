@@ -76,12 +76,14 @@
     {% block footer %}
     {% endblock %}
 
-    <div class="marquee">
-      <div>
-        {% for i in "1234567890123456789012345678901234567890" %}
-        <img src="{% static 'hippo_marquee.png' %}" />
-        {% endfor %}
+    <footer>
+      <div class="marquee">
+        <div>
+          {% for i in "1234567890123456789012345678901234567890" %}
+          <img src="{% static 'hippo_marquee.png' %}" />
+          {% endfor %}
+        </div>
       </div>
-    </div>
+    </footer>
   </body>
 </html>
