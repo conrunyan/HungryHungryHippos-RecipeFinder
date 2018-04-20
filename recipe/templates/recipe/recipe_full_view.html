@@ -9,24 +9,21 @@
 {% block content %}
 {% if current_recipe %}
   <div class="content">
-    {% if current_recipe.user.id == user.id %}
-
-        <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
-        {# Check if recipe is private #}
-        {% if current_recipe.is_private %}
-            <button class="btn btn-dark btn-sm" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
-        {% endif %}
-    {% endif %}
     <img alt="recipe image" src="{{current_recipe.image_url}}" />
-    <h1>{{current_recipe.title}}</h1>
-    {% if user.is_authenticated %}
-      <img id="favorite" src="" class="img-fluid update-image"/>
-    {% endif %}
+    <h1>{{current_recipe.title}} <a href="{% url 'recipe:edit_private_recipe' current_recipe.id %}"><i class="fas fa-edit fa-xs"></i></a> </h1>
     <div class="text-center">
       {% if current_recipe.source_url %}
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
     </div>
+    {% if user.is_authenticated %}
+      <img id="favorite" src="" class="img-fluid update-image"/>
+    {% endif %}
+    {% if current_recipe.user.id == user.id %}
+        {% if current_recipe.is_private %}
+            <button class="btn btn-outline-secondary btn-sm submit-public" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
+        {% endif %}
+    {% endif %}
     <div id="share-buttons" class="text-center">
       <!-- Facebook -->
       <a href="http://www.facebook.com/sharer.php?u={{request.build_absolute_uri}}" target="_blank">
@@ -53,6 +50,7 @@
         <!-- Javascript creates count -->
       </div>
     </div>
+
     <p class="text-center">Time:
       {% if current_recipe.time != None %}
         {{current_recipe.time}} minutes
@@ -62,14 +60,17 @@
         {{current_recipe.get_difficulty_display}}
       {% endif %}
     </p>
+    <hr />
+
     {% if current_recipe.summary != None %}
       <h2>{{current_recipe.summary}}</h2>
     {% endif %}
     <hr />
     {% if ingredients %}
-      <div class="ingredients-list">
+      <div class="ingredients-list text-center">
         {% for ingredient in ingredients %}
           <div>
+            <i class="fas fa-caret-right fa-sm"></i>
             {% if ingredient.amount != None %}
               {{ingredient.amount}}
             {% endif %}
