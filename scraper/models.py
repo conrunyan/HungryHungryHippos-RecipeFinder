@@ -19,6 +19,8 @@ class ScrapeResult(models.Model):
     error = models.CharField(max_length=300, null=True, blank=True)
     # Stack trace of error
     error_trace = models.TextField(null=True, blank=True)
+    # Url to saved recipe page if successful
+    saved_url = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         """Display important information to the result."""
