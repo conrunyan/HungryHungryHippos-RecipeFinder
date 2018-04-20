@@ -4,7 +4,7 @@
 }
 
 .content img {
-  width: 70%;
+  width: 45%;
   max-width: 500px;
   display: block;
   margin: 20px auto 20px auto;
@@ -31,10 +31,16 @@
 
 .ingredients-list {
   text-align: center;
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
+  column-count: 2;
+  width: 65%;
+  min-width: 200px;
+  margin: 0 auto;
 }
 
 .ingredients-list div {
-  display: block;
+  display: inline-block;
   margin: 5px auto 5px auto;
   text-align: left;
   width: 10%;
