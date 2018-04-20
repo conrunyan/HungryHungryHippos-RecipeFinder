@@ -1,5 +1,12 @@
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
 .marquee {
-  height: 50px;
+  height: 30px;
   width: 100%;
 
   overflow: hidden;
@@ -9,12 +16,12 @@
 .marquee div {
   display: block;
   width: 400%;
-  height: 50px;
+  height: 30px;
 
   position: absolute;
   overflow: hidden;
 
-  animation: marquee 30s linear infinite;
+  animation: marquee 60s linear infinite;
 }
 
 .marquee div:hover {
@@ -24,7 +31,8 @@
 .marquee img {
   display: inline;
   float: left;
-  height: 50px;
+  height: 30px;
+  background-color: #FFF;
 }
 
 .marquee img:hover {
