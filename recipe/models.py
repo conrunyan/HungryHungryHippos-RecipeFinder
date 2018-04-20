@@ -198,7 +198,7 @@ class Recipe(models.Model):
     # Short summary of the recipe (to be used on preview when searching)
     summary = models.CharField(max_length=280, null=True, blank=True)
     user = models.ForeignKey(
-        User, null=True, on_delete=models.SET_NULL, editable=False)
+        User, null=True, on_delete=models.SET_NULL)
     DIFFICULTY_CHOICES = (
         ('', '--Difficulty--'),
         ('E', 'Easy'),
@@ -216,7 +216,7 @@ class Recipe(models.Model):
     # The detailed instructions to make the recipe
     instructions = models.TextField()
     # The date this recipe object was created
-    creation_date = models.DateField(auto_now_add=True, editable=False)
+    creation_date = models.DateField(auto_now_add=True)
     # The ingredient set of ingredients that is required for this recipe
     ingredients = models.ManyToManyField(Ingredient,
                                          through='RecipeIngredient')

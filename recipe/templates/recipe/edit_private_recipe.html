@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.3/chosen.css">
+{% endblock %}
+
 {% block content %}
 
 <h1 class="text-center m-5">Edit Private Recipe</h1>
@@ -38,7 +43,7 @@
             {% for ingredient_field in ingredient_form %}
                 <!-- Ingredient form field errors -->
                 {% for ingredient_error in ingredient_field.errors %}
-                    <span class="form-group has-errors text-danger">{{ingredient_error|escape}}</span>
+                    <p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
                 {% endfor %}
 
                 <!-- Ingredient field -->
@@ -58,12 +63,26 @@
 {% endblock %}
 
 {% block footer %}
-    <script>
-        $(document).on('click', '#cancel', function(){
-            return confirm('Any unsaved changes will be discarded.');
-        })
-        $(document).on('click', '#delete', function(){
-            return confirm('This item will not be recoverable.\nAre you sure you still want to delete this?');
-        })
-    </script>
+  <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.3/chosen.jquery.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      // Select all single select
+      choose = $(".drop-down-ingredient-search");
+      // Activate Chosen library
+      choose.chosen();
+      // Hacks to make menus show up above other elements. It has some issues...
+      choose.parent().css('overflow', 'visible');
+      choose.closest('.form-row').css('overflow', 'visible');
+    });
+  </script>
+  <script>
+      $(document).on('click', '#cancel', function(){
+          return confirm('Any unsaved changes will be discarded.');
+      })
+      $(document).on('click', '#delete', function(){
+          return confirm('This item will not be recoverable.\nAre you sure you still want to delete this?');
+      })
+  </script>
 {% endblock %}
