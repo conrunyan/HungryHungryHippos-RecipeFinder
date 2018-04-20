@@ -73,6 +73,7 @@
       <div class="ingredients-list text-center">
         {% for ingredient in ingredients %}
           <div>
+            <i class="fas fa-caret-right fa-sm"></i>
             {% if ingredient.amount != None %}
               {{ingredient.amount}}
             {% endif %}

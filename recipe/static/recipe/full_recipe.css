@@ -47,6 +47,10 @@
   min-width: 200px;
 }
 
+.ingredients-list i {
+  margin-right: 10px;
+}
+
 .spacing {
   margin-left: 30px;
   margin-right: 30px;
