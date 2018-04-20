@@ -4,6 +4,7 @@
   margin: auto;
   margin-bottom: 30px;
   min-width: 200px;
+  position: relative;
 }
 
 .ingredient-field {
@@ -20,4 +21,22 @@
 
 .drop-down-ingredient-search {
   vertical-align: middle;
+}
+
+.cancel-delete {
+  position: absolute;
+  right: 10px;
+}
+
+#cancel {
+  background-color: #ffd180;
+  color: #263238;
+  border: none;
+}
+
+#delete {
+  background-color: #ff8a80;
+  color: #263238;
+  margin-left: 20px;
+  margin-right: 20px;
 }
