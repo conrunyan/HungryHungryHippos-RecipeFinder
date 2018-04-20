@@ -13,6 +13,14 @@ footer {
   position: relative;
 }
 
+.marquee-top {
+  width: 100%;
+  height: 30px;
+
+/* Generated with https://larsenwork.com/easing-gradients/ */
+  background: linear-gradient(to bottom, hsla(0, 0%, 100%, 0) 0%, hsla(0, 0%, 100%, 0.012) 7.7%, hsla(0, 0%, 100%, 0.044) 14.8%, hsla(0, 0%, 100%, 0.09) 21%, hsla(0, 0%, 100%, 0.146) 26.5%, hsla(0, 0%, 100%, 0.206) 31.4%, hsla(0, 0%, 100%, 0.269) 35.9%, hsla(0, 0%, 100%, 0.333) 40.1%, hsla(0, 0%, 100%, 0.401) 44.2%, hsla(0, 0%, 100%, 0.467) 48.1%, hsla(0, 0%, 100%, 0.534) 52%, hsla(0, 0%, 100%, 0.603) 56%, hsla(0, 0%, 100%, 0.67) 60.1%, hsla(0, 0%, 100%, 0.734) 64.3%, hsla(0, 0%, 100%, 0.797) 68.8%, hsla(0, 0%, 100%, 0.857) 73.7%, hsla(0, 0%, 100%, 0.911) 79.2%, hsla(0, 0%, 100%, 0.957) 85.4%, hsla(0, 0%, 100%, 0.989) 92.5%, hsl(0, 0%, 100%) 100%);
+}
+
 .marquee div {
   display: block;
   width: 400%;
