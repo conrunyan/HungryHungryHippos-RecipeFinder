@@ -3,7 +3,6 @@ body {
   display: -webkit-box;
   display: flex;
   padding-bottom: 40px;
-  background-color: #f5f5f5;
 }
 
 .form-signin {
