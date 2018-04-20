@@ -125,18 +125,25 @@ class IngredientUtils():
                 if len(cur_ing_recs) > 0:
                     # get recipe percentages
                     for rec in cur_ing_recs:
-                        tmp_perc = rec.get_perc_ingredients(ingredients)
-                        # filter recipe (skip if private and not the user's)
-                        filtered_rec = self._filter_private_recs(rec)
-                        if filtered_rec is not None:
-                            # add to recipe percent buckets.
-                            rec_to_save = list(Recipe.objects.filter(id=filtered_rec.id).values())
-                            if tmp_perc in recipe_dict:
-                                # remove duplicates
-                                if rec_to_save not in recipe_dict[tmp_perc]:
+                        rec_id = rec.id
+                        #print('Recipe:', rec.title, 'RecID:', rec_id)
+                        if rec_id in used_recs:
+                            pass
+                        else:
+                            # save rec_id
+                            used_recs.append(rec_id)
+                            tmp_perc = rec.get_perc_ingredients(ingredients)
+                            # filter recipe (skip if private and not the user's)
+                            filtered_rec = self._filter_private_recs(rec)
+                            if filtered_rec is not None:
+                                # add to recipe percent buckets.
+                                rec_to_save = list(Recipe.objects.filter(id=filtered_rec.id).values())
+                                # add percent to recipe branch
+                                rec_to_save[0]['percentage'] = tmp_perc
+                                if tmp_perc in recipe_dict:
                                     recipe_dict[tmp_perc].append(rec_to_save)
-                            else:
-                                recipe_dict[tmp_perc] = [rec_to_save]
+                                else:
+                                    recipe_dict[tmp_perc] = [rec_to_save]
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
                continue
