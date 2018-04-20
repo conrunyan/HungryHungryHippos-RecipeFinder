@@ -54,7 +54,7 @@ class TestAllRecipes(TestCase):
     def test_ingredients(self):
         """Test the ingredients of the recipe."""
         INGREDIENTS = ['butter', 'minced garlic', 'soy sauce', 'black pepper',
-            'dried parsley', 'boneless chicken thighs', 'dried parsley']
+            'dried parsley', 'boneless chicken thighs', 'dried parsley', 'coarse-grained mustard']
 
         scraper_ingredients = [x['ingredient'] for x in self.scraper.ingredients()]
 
@@ -62,7 +62,7 @@ class TestAllRecipes(TestCase):
 
     def test_units(self):
         """Test the units of the ingredients."""
-        UNITS = ['cup', 'tablespoons', 'tablespoons', 'teaspoon', 'tablespoon', '', '']
+        UNITS = ['cup', 'tablespoons', 'tablespoons', 'teaspoon', 'tablespoon', '', '', 'tablespoons']
 
         scraper_units = [x['unit'] for x in self.scraper.ingredients()]
 
@@ -70,7 +70,7 @@ class TestAllRecipes(TestCase):
 
     def test_amounts(self):
         """Test the amounts of the ingredients."""
-        AMOUNTS = ['1/2', '3', '3', '1/4', '1', '6', '']
+        AMOUNTS = ['1/2', '3', '3', '1/4', '1', '6', '', '2']
 
         scraper_amounts = [x['amount'] for x in self.scraper.ingredients()]
 

@@ -91,11 +91,15 @@ class AllRecipes(AbstractScraper):
             'stalk', 'stalks', 'clove', 'cloves', 'packet', 'packets', 'can', 'cans', 'bunch', 'bunches',
             'loaf', 'loaves', 'package', 'packages', 'jar', 'jars', 'drop', 'drops']
 
+        PARTIAL_INGREDIENT = ['skinless']
+
         ingredient_objs = []
         # Regular expression for extracting the unit
         reg_unit = re.compile(r'([0-9]*( ?[0-9]+/[0-9]+)?)? *(?P<unit>\w+)')
-        # Regular expression for after the unit has been removed
-        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>[\w \-\']+)')
+        # Regular expression for after the unit has been removed (ignores things after commas)
+        reg = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>[\w \-\'®™]+)')
+        # Regular expression for after the unit has been removed (takes entire line)
+        reg_full = re.compile(r'^(?P<amount>[0-9]*( ?[0-9]+/[0-9]+)?)? *(\(.+\))? *(?P<ingredient>.+)')
         for item in ingredients_raw_text:
             raw_item = item
             unit_match = reg_unit.match(item)
@@ -114,6 +118,14 @@ class AllRecipes(AbstractScraper):
 
             amount = match.group('amount')
             ingredient = match.group('ingredient')
+
+            # Match full line if the ingredient probably has a comma in it (like skinless, boneless chicken)
+            if ingredient in PARTIAL_INGREDIENT:
+                match = reg_full.match(item)
+                if not match:
+                    raise IngredientParsingError(raw_item)
+
+                ingredient = match.group('ingredient')
 
             if not amount:
                 amount = ''
