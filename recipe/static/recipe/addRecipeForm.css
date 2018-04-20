@@ -1,0 +1,23 @@
+.content {
+  font-family: "Raleway";
+  width: 65%;
+  margin: auto;
+  margin-bottom: 30px;
+  min-width: 200px;
+}
+
+.ingredient-field {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  vertical-align: middle;
+}
+
+.ingredient-input {
+  width: auto;
+}
+
+.drop-down-ingredient-search {
+  vertical-align: middle;
+}
