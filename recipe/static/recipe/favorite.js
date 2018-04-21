@@ -5,6 +5,7 @@ $(document).ready(function() {
   let FAVORITE = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png";
   let favorited = IS_FAVORITE;
 
+  updateColSize();
   updateImage($("#favorite"))
 
   $("#favorite").click(function() {
@@ -69,5 +70,14 @@ $(document).ready(function() {
       }
     }
     return cookieValue;
+  }
+
+  function updateColSize() {
+    let width = $(window).width();
+    if (width < 400) {
+      $(".ingredients-list").css("-webkit-column-count", "1");
+      $(".ingredients-list").css("-moz-column-count", "1");
+      $(".ingredients-list").css("column-count", "1");
+    }
   }
 });

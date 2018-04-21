@@ -59,8 +59,8 @@ class RecipeIngredientForm(forms.ModelForm):
         model = RecipeIngredient
         fields = ('ingredient', 'amount', 'unit')
         widgets = {
-            'amount': forms.TextInput(attrs={'placeholder': 'Amount (ex: 2 1/2)'}),
-            'unit':   forms.TextInput(attrs={'placeholder': 'Unit (ex: Cups)'}),
+            'amount': forms.TextInput(attrs={'placeholder': 'Amount (ex: 2 1/2)', 'class': 'form-control ingredient-input'}),
+            'unit':   forms.TextInput(attrs={'placeholder': 'Unit (ex: Cups)', 'class': 'form-control ingredient-input'}),
         }
 
     def is_valid(self):
