@@ -131,6 +131,8 @@ class IngredientUtils():
                         if filtered_rec is not None:
                             # add to recipe percent buckets.
                             rec_to_save = list(Recipe.objects.filter(id=filtered_rec.id).values())
+                            # add percent to recipe branch
+                            rec_to_save[0]['percentage'] = tmp_perc
                             if tmp_perc in recipe_dict:
                                 # remove duplicates
                                 if rec_to_save not in recipe_dict[tmp_perc]:
