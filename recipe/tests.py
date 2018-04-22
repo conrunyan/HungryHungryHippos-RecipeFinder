@@ -741,17 +741,17 @@ class TestRecipeIngredientForm(TestCase):
         self.ingredient = Ingredient.objects.create(group=group, name="Ing 1")
 
     def test_init(self):
-        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'amount': '3', 'unit': 'cups'})
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'amount': '3', 'unit': 'cups'})
         self.assertTrue(recipeIngredientForm.is_valid())
 
     def test_init_without_unit(self):
-        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'amount': '3'})
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'amount': '3'})
         self.assertTrue(recipeIngredientForm.is_valid())
 
     def test_init_without_amount(self):
-        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': self.ingredient, 'unit': 'cups'})
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'unit': 'cups'})
         self.assertFalse(recipeIngredientForm.is_valid())
 
     def test_init_without_ingredient(self):
         recipeIngredientForm = RecipeIngredientForm(data={'amount': '3', 'unit': 'cups'})
-        self.assertTrue(recipeIngredientForm.is_valid())
+        self.assertFalse(recipeIngredientForm.is_valid())
