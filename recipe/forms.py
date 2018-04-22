@@ -8,6 +8,13 @@ import re
 
 
 class RecipeForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = True
+
     class Meta:
         model = Recipe
         fields = ('title', 'summary', 'difficulty',
