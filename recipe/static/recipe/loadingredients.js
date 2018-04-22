@@ -6,7 +6,7 @@ function addRecipesToPage(recipes, start_idx, end_idx, listIngLength, filters){
 
     // fix end index if it is greater than array size
     if(end_idx >= recipes.length){
-        end_idx = recipes.length - 1;
+        end_idx = recipes.length ;
     }
 
     if(recipes.length === 0 && listIngLength !== 0) {
