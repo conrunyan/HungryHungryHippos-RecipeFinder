@@ -147,7 +147,6 @@ class IngredientUtils():
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
                continue
-
         return recipe_dict
 
     def _get_recipe_range(self, recipe_list, start, end):
@@ -156,7 +155,7 @@ class IngredientUtils():
         NOTE: Currently set to sort by "title". Can be changed to
         whatever we want the recipes to be sorted by.
         """
-        return recipe_list.order_by('title')[start:end]
+        return recipe_list[start:end]
 
     def _dict_to_qs(self, dict):
         """Converts dictionary of recipes into a sorted list"""

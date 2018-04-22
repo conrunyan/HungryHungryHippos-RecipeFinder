@@ -1,6 +1,7 @@
 """Tests the recipe backend and client."""
 
 import json
+import pdb
 
 from django.test import TestCase
 from django.db.utils import IntegrityError
@@ -197,7 +198,7 @@ class IngredientSearchTest(TestCase):
         ing2 = Ingredient.objects.create(group=group, name="Ing 2")
         ing3 = Ingredient.objects.create(group=group, name="Ing 3")
         # Create fake recipe to populate RecipeIngredient table.
-        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake", is_private=False)
         r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
         r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
         r1.save()
@@ -231,33 +232,41 @@ class IngredientSearchTest(TestCase):
 
     def test_make_qs_list(self):
 
-        group = Group.objects.create(name="TestGroup")
-        ing1 = Ingredient.objects.create(group=group, name="Ing 1")
-        ing2 = Ingredient.objects.create(group=group, name="Ing 2")
-        ing3 = Ingredient.objects.create(group=group, name="Ing 3")
+        group1 = Group.objects.create(name="TestGroup1")
+        group2 = Group.objects.create(name="TestGroup2")
+        group3 = Group.objects.create(name="TestGroup3")
+        ing1 = Ingredient.objects.create(group=group1, name="Ing 1")
+        ing2 = Ingredient.objects.create(group=group2, name="Ing 2")
+        ing3 = Ingredient.objects.create(group=group3, name="Ing 3")
+        ing1.save()
+        ing2.save()
+        ing3.save()
         # Create fake recipe to populate RecipeIngredient table.
-        recipe_one = Recipe.objects.create(title="Fake", instructions="fake")
+        recipe_one = Recipe.objects.create(title="Fake", instructions="fake", is_private=False)
         r1 = RecipeIngredient(recipe=recipe_one, ingredient=ing1, amount=1)
         r2 = RecipeIngredient(recipe=recipe_one, ingredient=ing2, amount=3)
         r1.save()
         r2.save()
+        recipe_one.save()
         # Create real recipe to test against.
-        recipe_two = Recipe.objects.create(title="Recipe", instructions="real")
+        recipe_two = Recipe.objects.create(title="Recipe", instructions="real", is_private=False)
         r3 = RecipeIngredient(recipe=recipe_two, ingredient=ing1, amount=3)
         r3.save()
+        recipe_two.save()
         # Create real recipe3 to test against.
-        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real")
+        recipe_three = Recipe.objects.create(title="Recipe2", instructions="real", is_private=False)
         r4 = RecipeIngredient(recipe=recipe_three, ingredient=ing1, amount=3)
         r5 = RecipeIngredient(recipe=recipe_three, ingredient=ing2, amount=1)
         r6 = RecipeIngredient(recipe=recipe_three, ingredient=ing3, amount=3)
         r4.save()
         r5.save()
         r6.save()
+        recipe_three.save()
 
         ing_utils = IngredientUtils()
-
         inglst = ["Ing 1", "Ing 2", "Ing 3"]
         qlst = ing_utils._make_qs_list(inglst)
+        qlst = ing_utils._dict_to_qs(qlst)
         self.assertEqual(len(qlst), 3)
 
     def test_get_recipe_range(self):
@@ -288,7 +297,7 @@ class IngredientSearchTest(TestCase):
         # make recipe list
         inglst = ["Ing 1", "Ing 2"]
         ing_qs = ing_utils._make_qs_list(inglst)
-        recs = ing_utils._ingredient_intersect(ing_qs)
+        recs = ing_utils._dict_to_qs(ing_qs)
 
         # get recipe slice
         sliced_recs = ing_utils._get_recipe_range(recs, 0, 2)
