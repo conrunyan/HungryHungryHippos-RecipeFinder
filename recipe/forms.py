@@ -23,26 +23,6 @@ class RecipeForm(forms.ModelForm):
             'instructions': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Instructions'}),
         }
 
-    def clean_time(self):
-        time = self.cleaned_data['time']
-        time_re = re.compile(r'(\d*):?(\d*)')
-        hourmin = time_re.match(time)
-
-        hours = 0
-        mins = 0
-        if hourmin.group(1) != "":
-            hours = int(hourmin.group(1))
-        if hourmin.group(2) != "":
-            mins = int(hourmin.group(2))
-        time = hours * 60 + mins
-        if(time == 0):
-            vaild = False
-            self.add_error(
-                'time', 'You must enter a valid non-zero time! (Hours:Minutes)')
-        return time
-
-
-
     def clean_instructions(self):
         """Clean instructions by escaping unsafe tags with a whitelist."""
         TAG_WHITELIST = ['b', 'strong', 'i', 'em', 'ul', 'ol', 'li', 'br', 'p', 'hr', 'blockquote']
