@@ -12,6 +12,7 @@ let cur_recipes;
 let cur_button;
 let g_filterLength = 0;
 let g_filters = {};
+let remove_button = false;
 
 function getNext10Recs(found_recipes, ingLength, filters) {
     // check if incrementing another 10 recipes will exceed the bounds of
@@ -21,7 +22,13 @@ function getNext10Recs(found_recipes, ingLength, filters) {
     let start_idx = indices[START];
     let end_idx = indices[END];
     // call Kayson's function
+    if (start_idx >= num_recs || end_idx >= num_recs)
+    {
+        remove_button = true;
+    }
     addRecipesToPage(found_recipes, start_idx, end_idx, ingLength, filters);
+    // show or hide button based on recipe status
+    addRemoveButton()
 };
 
 function getNextIndices() {
@@ -42,7 +49,7 @@ function getNextIndices() {
     }
     // else if the ending index is greater than rec_nums, return the position of
         //rec_nums-1 as the ending index, and rec_start_idx as the staring index
-    else if (rec_end_idx > num_recs)
+    else if (rec_end_idx >= num_recs)
     {
         next_end_idx = num_recs -1;
         next_indices[START] = rec_start_idx ;
@@ -57,8 +64,6 @@ function getNextIndices() {
     // store used indices in the rec_start_idx and rec_end_idx values
     rec_start_idx = next_indices[START];
     rec_end_idx = next_indices[END];
-    // show or hide button based on recipe status
-    addRemoveButton();
     return next_indices;
 };
 
@@ -66,7 +71,7 @@ function addRemoveButton() {
     // if number of recipes is less than 10, or the last recipe displayed was the
     // last recipe in the list, don't display the button
 
-    if (num_recs < 10 || rec_end_idx == num_recs - 1)
+    if (num_recs < 10 || remove_button == true)//rec_end_idx == num_recs - 1)
     {
         cur_button.style = "display: none";
     }
