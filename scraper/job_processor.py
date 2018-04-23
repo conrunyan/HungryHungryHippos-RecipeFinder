@@ -99,12 +99,14 @@ class ScraperThread(Thread):
     def process_url(self, url):
         """Scrape and save a url and its scraping results."""
         try:
-            scrape_and_save(url, self.user)
-            self.add_result(url, True)
+            saved_url = scrape_and_save(url, self.user)
+            self.add_result(url, True, saved_url=saved_url)
+        except RecipeParsingError as e:
+            self.add_result(url, False, exception=e, trace=traceback.format_exc(), saved_url=e.saved_url)
         except Exception as e:
             self.add_result(url, False, exception=e, trace=traceback.format_exc())
 
-    def add_result(self, url, successful, exception=None, trace=None):
+    def add_result(self, url, successful, exception=None, trace=None, saved_url=None):
         """Add a result of a scraping job."""
         error_type = None
         error = None
@@ -116,4 +118,5 @@ class ScraperThread(Thread):
             error_trace = trace
 
         ScrapeResult.objects.create(job_id=self.job_id, source_url=url,
-            successful=successful, error_type=error_type, error=error, error_trace=error_trace)
+            successful=successful, error_type=error_type, error=error,
+            error_trace=error_trace, saved_url=saved_url)

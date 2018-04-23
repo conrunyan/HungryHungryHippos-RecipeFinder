@@ -32,7 +32,7 @@ def scrape(request):
     if not form_errors:
         try:
             start = int(start)
-            end = start + int(count)
+            end = start + int(count) - 1
         except Exception as e:
             form_errors.append(e)
 

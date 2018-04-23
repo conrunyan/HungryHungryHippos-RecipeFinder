@@ -194,6 +194,8 @@ def edit_private_recipe(request, id):
             form.save()
             formset.save()
             return redirect('recipe:recipe_full_view', id)
+        else:
+            form.add_error('', 'Form is invalid')
 
     else:
         form = RecipeForm(instance=recipe)
