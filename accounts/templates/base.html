@@ -28,15 +28,12 @@
           <!--TODO: Use JavaScript to reset what is active-->
           {% if user.is_authenticated %}
           <!--User view-->
-            <li class="nav-item">
-              <span class="nav-link">{{ user.get_username }}</span>
+            <li class="nav-item navbar-brand">
+              <span>{{ user.get_username }}</span>
             </li>
             <li class="nav-item">
               <!--TODO: replace # with correct links once they are up and running-->
               <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Settings</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'favorites' %}">Favorites</a>
