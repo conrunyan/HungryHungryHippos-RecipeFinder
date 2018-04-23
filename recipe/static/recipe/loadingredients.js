@@ -6,7 +6,7 @@ function addRecipesToPage(recipes, start_idx, end_idx, listIngLength, filters){
 
     // fix end index if it is greater than array size
     if(end_idx >= recipes.length){
-        end_idx = recipes.length - 1;
+        end_idx = recipes.length ;
     }
 
     if(recipes.length === 0 && listIngLength !== 0) {
@@ -51,7 +51,7 @@ function addRecipesToPage(recipes, start_idx, end_idx, listIngLength, filters){
 
         //add h3 tag to div
         let h3 = document.createElement('h3');
-        h3.textContent = recipe.title;
+        h3.textContent = recipe.title + " - (" + recipe.percentage + "% match)";
         div.appendChild(h3);
 
         //add p tag to div

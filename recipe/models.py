@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Q, QuerySet, Avg
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from itertools import chain
 
 class Group(models.Model):
     """This represents a food category.
@@ -43,6 +43,13 @@ class Ingredient(models.Model):
         """Return a QuerySet of associated Recipes."""
         return self.recipe_set.values()
 
+    def get_recipe_ids(self):
+        """Returns a list of associated Recipe IDs"""
+        my_recs = list(self.get_recipes())
+        # get just the ids from each record
+        rec_ids = [rec['id'] for rec in my_recs]
+        return rec_ids
+
 
 class IngredientUtils():
     """Class of ingredient helper functions.
@@ -66,59 +73,81 @@ class IngredientUtils():
         """
 
         recipe_qs = self._make_qs_list(ingredients)
+        recipe_list = self._dict_to_qs(recipe_qs)
         # if ingredients were found...
-        if len(recipe_qs) > 0:
-            recipes = self._ingredient_intersect(recipe_qs)
-            # print('Returning:', recipes)
-            recipes = self._filter_private_recs(recipes)
-            sliced_recipes = self._get_recipe_range(recipes, start, end)
-            return sliced_recipes
+        if len(recipe_list) > 0:
+            # slice recipe list
+            recipe_list = recipe_list[start:end]
         # return empty queryset
         else:
             emp_qs = Recipe.objects.none()
+            recipe_list = list(emp_qs.values())
             # print('Returning:', emp_qs)
-            return emp_qs
+        return recipe_list
 
     def _ingredient_intersect(self, ing_qs_list):
         """Returns a QuerySet of recipes shared between ingredients"""
 
-        return QuerySet.intersection(*ing_qs_list)
+        #return QuerySet.intersection(*ing_qs_list)
+        return QuerySet.union(*ing_qs_list)
 
-    def _filter_private_recs(self, recipe_qs):
+    def _filter_private_recs(self, recipe):
         """Returns public recipes and the user's private recipes (if applicable)"""
-        private_q = Q(is_private=False)
-        usr_id_q = Q(user_id=self.user_id)
-        # get public recipes or those that belong to the user
-        return recipe_qs.filter(private_q | usr_id_q)
+        #private_q = Q(is_private=False)
+        #usr_id_q = Q(user_id=self.user_id)
+        ## get public recipes or those that belong to the user
+        if not recipe.is_private or recipe.user_id == self.user_id:
+            return recipe
+        else:
+            return None
 
     def _make_qs_list(self, ingredients):
-        """Returns a QuerySet of recipes given a list of ingredient names"
+        """Returns a Dictionary of QuerySets of recipes given a list of ingredient names"
 
         Given a list of Ingredients, this function will search for recipes
-        linked to each ingredient, then perform a set intersection.
-        and return a list of QuerySets containing only shared Recipes between
-        the various Ingredients.
+        linked to each ingredient, then sorts them.
+        Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
+        Buckets are classified by a percentage of ingredients the recipes contain:
+            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe, 
+            all ingredients, except sausage, are passed in the ingredients list. This recipe would be placed in the 4/5 (80%) bucket
         """
 
-        recipe_qs = []
+        recipe_dict = {}
+        used_recs = [] # list of rec ids that were actually used
         # loop over ingredients, finding recipes associated with
-        # each ingredient, then storing them in a list of QuerySets
+        # each ingredient, then sorting them by percent of ingredients
         for ing in ingredients:
             try:
-                cur_ing_qs = Ingredient.objects.get(name=ing)
+                cur_ing = Ingredient.objects.get(name=ing)
+                rec_ids = cur_ing.get_recipe_ids()
+                cur_ing_recs = Recipe.objects.filter(id__in=(rec_ids))
             # if ingredient found, get recipes
-                if cur_ing_qs:
-                    tmp_ing = cur_ing_qs
-                    # get recipe query set, given ingredients
-                    tmp_rec = tmp_ing.get_recipes()
-                    # filter out any private recipes that don't belong to the user
-                    tmp_rec = self._filter_private_recs(tmp_rec)
-                    recipe_qs.append(tmp_rec)
+                if len(cur_ing_recs) > 0:
+                    # get recipe percentages
+                    for rec in cur_ing_recs:
+                        rec_id = rec.id
+                        #print('Recipe:', rec.title, 'RecID:', rec_id)
+                        if rec_id in used_recs:
+                            pass
+                        else:
+                            # save rec_id
+                            used_recs.append(rec_id)
+                            tmp_perc = rec.get_perc_ingredients(ingredients)
+                            # filter recipe (skip if private and not the user's)
+                            filtered_rec = self._filter_private_recs(rec)
+                            if filtered_rec is not None:
+                                # add to recipe percent buckets.
+                                rec_to_save = list(Recipe.objects.filter(id=filtered_rec.id).values())
+                                # add percent to recipe branch
+                                rec_to_save[0]['percentage'] = tmp_perc
+                                if tmp_perc in recipe_dict:
+                                    recipe_dict[tmp_perc].append(rec_to_save)
+                                else:
+                                    recipe_dict[tmp_perc] = [rec_to_save]
             # else, ingredient does not exist in the database
             except (Ingredient.DoesNotExist):
-                continue
-        # return query set of recipes
-        return recipe_qs
+               continue
+        return recipe_dict
 
     def _get_recipe_range(self, recipe_list, start, end):
         """Returns a slice of a Recipe QuerySet
@@ -126,7 +155,22 @@ class IngredientUtils():
         NOTE: Currently set to sort by "title". Can be changed to
         whatever we want the recipes to be sorted by.
         """
-        return recipe_list.order_by('title')[start:end]
+        return recipe_list[start:end]
+
+    def _dict_to_qs(self, dict):
+        """Converts dictionary of recipes into a sorted list"""
+        keys = sorted(dict.keys())
+        keys.sort(reverse=True)
+        out_lst = []
+        
+        # for each list of QS's, append it to the out_lst of recipes
+        # from greatest to least
+        for key in keys:
+            out_lst += dict[key]
+        # Found this nifty tool on StackOverflow :)
+        new_qs = list(chain(*out_lst))
+        return new_qs
+
 
 
 class Appliance(models.Model):
@@ -208,6 +252,30 @@ class Recipe(models.Model):
     def get_rating_count(self):
         """Return the number of ratings for the recipe."""
         return self.userrating_set.all().count()
+
+    def get_perc_ingredients(self, usr_ingredients):
+        """Returns a percentage (i.e. 80 for 80%) ingredients needed.
+
+        Determines the percentage of needed ingredients (what the recipe calls for)
+        based on the ingredients specified by the user.
+        """
+
+        INGR_NAME_POS = 2
+        # convert recipe ingredients to a list of names
+        pre_ingr_list = list(self.ingredients.values_list())
+        ingr_list = [ing[INGR_NAME_POS] for ing in pre_ingr_list]
+        
+        # convert user ingredient list and recipe ingredient lists to sets, then perform
+        # a bitwise AND on these sets (will only return the ingredients they share)
+        cur_rec_ings = set(ingr_list)
+        usr_rec_ings = set(usr_ingredients)
+        shared_ings = cur_rec_ings & usr_rec_ings
+        # get number of ingredients shared, and required by recipe
+        num_shared = len(shared_ings)
+        num_rec_ings = len(ingr_list)
+        # return the ratio of number of ingredients passed to number of ingredients called for
+        # NOTE: Truncates the decimals
+        return int((num_shared/num_rec_ings) * 100)
 
 
 class RecipeIngredient(models.Model):

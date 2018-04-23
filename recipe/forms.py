@@ -28,6 +28,42 @@ class RecipeForm(forms.ModelForm):
             'instructions': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Instructions'}),
         }
 
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        time_re = re.compile(r'(\d*):?(\d*)')
+        hourmin = time_re.match(time)
+
+        hours = 0
+        mins = 0
+        if hourmin.group(1) != "":
+            hours = int(hourmin.group(1))
+        if hourmin.group(2) != "":
+            mins = int(hourmin.group(2))
+        time = hours * 60 + mins
+        if(time == 0):
+            vaild = False
+            self.add_error(
+                'time', 'You must enter a valid non-zero time! (Hours:Minutes)')
+#            ValidationError(_('Invalid value'), code='invalid')
+
+        return time
+
+    def clean_instructions(self):
+        """Clean instructions by escaping unsafe tags with a whitelist."""
+        TAG_WHITELIST = ['b', 'strong', 'i', 'em', 'ul', 'ol', 'li', 'br', 'p', 'hr', 'blockquote']
+
+        # Replace all < with &lt; in case the full match fails for a tag
+        instructions = self.cleaned_data['instructions'].replace("<", "&lt;")
+        # Fix safe tags so they're rendered as html
+        for tag in TAG_WHITELIST:
+            instructions = re.sub(r'&lt;(?=/?[ \t]*{0})'.format(tag), '<', instructions)
+
+        return instructions
+
+    def is_valid(self):
+        valid = super(RecipeForm, self).is_valid()
+
+        return valid
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.ModelChoiceField(widget=forms.Select(attrs={

@@ -57,10 +57,8 @@ def get_recipes(request):
         save_ingredients_to_user(request.user, ingredients_to_search_by, request.session)
         usr_id = request.user.id
     # send ingredients to search algorithm
-    found_recipes = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
-    # convert queryset to JSON!!!
-    values = list(found_recipes.values())
-
+    values = IngredientUtils(usr_id).find_recipes(ingredients_to_search_by)
+    # convert queryset to JSON!!! (Now made serializable in the find_recipes call)
     for recipe in values:
         recipe['appliances'] = list(Appliance.objects.filter(recipe=recipe['id']).values('name'))
 
@@ -198,6 +196,8 @@ def edit_private_recipe(request, id):
             form.save()
             formset.save()
             return redirect('recipe:recipe_full_view', id)
+        else:
+            form.add_error('', 'Form is invalid')
 
     else:
         form = RecipeForm(instance=recipe)
