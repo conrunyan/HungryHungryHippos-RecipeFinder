@@ -77,14 +77,16 @@ def recipe_full_view(request, id):
         if (favorites.count() != 0):
             isFavorite = 1
 
-    if (request.method == 'POST' and request.user.is_authenticated()):
+    if (request.method == 'POST'):
+        if(request.user.is_authenticated() == False or (current_recipe.is_private and request.user != current_recipe.user)):
+            raise PermissionDenied
         comment_form = CommentForm(request.POST)
-        comment = comment_form.save(commit=False)
-        comment.recipe = current_recipe
-        comment.user = request.user
-        comment.save()
-        return HttpResponseRedirect('#')
-
+        if(comment_form.is_valid()):
+            comment = comment_form.save(commit=False)
+            comment.recipe = current_recipe
+            comment.user = request.user
+            comment.save()
+            return HttpResponseRedirect('#')
 
     comment_form = '' #blank if not logged on
     comments = Comment.objects.filter(recipe=current_recipe).order_by('-creation_date')
