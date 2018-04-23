@@ -13,6 +13,7 @@ from accounts.models import PersistentIngredient
 from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientFormSet, CommentForm
 from .ingredient_functions import save_ingredients_to_user, get_ingredient_objs_of_user, get_ingredient_names
 from .models import Group, Recipe, RecipeIngredient, IngredientUtils, Ingredient, Comment, UserRating, Appliance, Favorite
+from emailauth.models import EmailAuth
 
 
 def index(request):
@@ -159,6 +160,9 @@ def favorite(request, id):
 @login_required
 def add_private_recipe(request):
     """Create a view with a form for adding a recipe."""
+    if not (EmailAuth.objects.get(usr_id=request.user).is_authenticated):
+        return HttpResponse(render(request, 'recipe/please_authenticate.html', {}))
+
     if(request.method == 'POST'):
         form = RecipeForm(request.POST)
         formset = RecipeIngredientFormSet(request.POST)
