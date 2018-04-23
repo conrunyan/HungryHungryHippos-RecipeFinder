@@ -11,7 +11,7 @@
   {% csrf_token %}
   <div class="form-group">
     <label for="sample-url">Sample url to scrape:</label>
-    <input type="url" class="form-control" name="sample-url" placeholder="http://www.allrecipes.com" aria-describedby="sample-url-help" required />
+    <input type="url" class="form-control" name="sample-url" placeholder="http://www.allrecipes.com" aria-describedby="sample-url-help" value="http://www.allrecipes.com" required />
     <small id="sample-url-help" class="form-text text-muted">Only the hostname is grabbed to determine the scraper and website. (Make sure you include the protocol)</small>
   </div>
   <div class="form-row">

@@ -133,6 +133,13 @@ $(document).ready(function() {
     html += '<a href="{0}">{0}</a>'.format(result.source_url);
     html += '</div>';
 
+    if(result.saved_url) {
+      html += '<div>';
+      html += '<h5>Saved Url</h5>';
+      html += '<a href="{0}">{0}</a>'.format(result.saved_url);
+      html += '</div>';
+    }
+
     if(result.error_trace) {
       html += '<div class="mt-3">';
       html += '<h5>Error Trace</h5>';
@@ -145,6 +152,8 @@ $(document).ready(function() {
       html += '</code>';
       html += '</div>';
     }
+
+    console.log(result)
 
     html += '</td>';
     return html;

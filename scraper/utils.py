@@ -1,5 +1,6 @@
 """Provides utility functions for scraping."""
 
+from django.shortcuts import reverse
 from recipe.models import Ingredient, Recipe, Appliance, Group, RecipeIngredient
 from .errors import UnknownWebsiteError, RecipeParsingError
 from urllib.error import URLError
@@ -34,15 +35,17 @@ def scrape_to_json(url):
     return results
 
 def save(json, user):
-    """Save a json recipe to the database."""
+    """Save a json recipe to the database. Returns the url to the new recipe if successful."""
     global _save_lock
 
     if json['valid'] != 'True':
         raise RecipeParsingError('Error in parsing site: {}'.format(json['error']))
 
     source_url = json['source_url']
-    if Recipe.objects.filter(source_url__contains=source_url):
-        raise RecipeParsingError('This url has already been parsed')
+    old_recipe = Recipe.objects.filter(source_url__contains=source_url)
+    if old_recipe:
+        saved_url = reverse('recipe:recipe_full_view', kwargs={'id': old_recipe[0].id})
+        raise RecipeParsingError('This url has already been parsed', saved_url=saved_url)
 
     title = json['title']
     summary = json['summary']
@@ -68,7 +71,7 @@ def save(json, user):
     _add_ingredient_objects(ingredients, recipe)
     _save_lock.release()
 
-    return 'Recipe saved'
+    return reverse('recipe:recipe_full_view', kwargs={'id': recipe.id})
 
 def scrape_and_save(url, user):
     """Scrape a recipe from a url and then save it to the database."""
