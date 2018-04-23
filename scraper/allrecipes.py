@@ -135,3 +135,15 @@ class AllRecipes(AbstractScraper):
                 appliances.append(appliance)
 
         return appliances
+
+    def difficulty(self):
+        """This makes a default difficulty for a recipe based off of the number of ingredients"""
+        numIng = len(self.soup.find_all(attrs={'class': 'recipe-ingred_txt', 'itemprop': 'ingredients'}))
+        if(numIng < 5):
+            #if there are less than 5 ingredients, assume it's easy difficulty.
+            return 'E'
+        if(numIng < 10):
+            #if there are 5-9 ingredients, assume it's medium difficulty.
+            return 'M'
+        #if there are 10 or more ingredients, assume it's hard difficulty.
+        return 'D'
