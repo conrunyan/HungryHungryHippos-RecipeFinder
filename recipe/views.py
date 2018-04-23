@@ -90,6 +90,10 @@ def recipe_full_view(request, id):
 
     comment_form = '' #blank if not logged on
     comments = Comment.objects.filter(recipe=current_recipe).order_by('-creation_date')
+    for cur_comment in comments:
+        if (cur_comment.is_hidden):
+            cur_comment.content = "The contents of this comment are hidden."
+
     if request.user.is_authenticated():
         comment_form = CommentForm()
     ingredients = RecipeIngredient.objects.filter(recipe=current_recipe)

@@ -108,7 +108,7 @@ class IngredientUtils():
         linked to each ingredient, then sorts them.
         Each recipe is sorted into a bucket based on how many ingredients it contains from the ing_list.
         Buckets are classified by a percentage of ingredients the recipes contain:
-            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe, 
+            -i.e. ['flour', 'sauce', 'cheese', 'water'] are passed as ingredients. Looking at the "Sausage Pizza" recipe,
             all ingredients, except sausage, are passed in the ingredients list. This recipe would be placed in the 4/5 (80%) bucket
         """
 
@@ -162,7 +162,7 @@ class IngredientUtils():
         keys = sorted(dict.keys())
         keys.sort(reverse=True)
         out_lst = []
-        
+
         # for each list of QS's, append it to the out_lst of recipes
         # from greatest to least
         for key in keys:
@@ -264,7 +264,7 @@ class Recipe(models.Model):
         # convert recipe ingredients to a list of names
         pre_ingr_list = list(self.ingredients.values_list())
         ingr_list = [ing[INGR_NAME_POS] for ing in pre_ingr_list]
-        
+
         # convert user ingredient list and recipe ingredient lists to sets, then perform
         # a bitwise AND on these sets (will only return the ingredients they share)
         cur_rec_ings = set(ingr_list)
@@ -309,6 +309,8 @@ class Comment(models.Model):
     content = models.CharField(max_length=500)
     # The time the comment was created
     creation_date = models.DateTimeField(default=timezone.now)
+    # Admins can hide comments from being displayed
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         """Return a string to identify the object in the admin app."""
