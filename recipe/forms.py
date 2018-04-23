@@ -39,9 +39,9 @@ class RecipeForm(forms.ModelForm):
             vaild = False
             self.add_error(
                 'time', 'You must enter a valid non-zero time! (Hours:Minutes)')
-#            ValidationError(_('Invalid value'), code='invalid')
-
         return time
+
+
 
     def clean_instructions(self):
         """Clean instructions by escaping unsafe tags with a whitelist."""
@@ -53,6 +53,8 @@ class RecipeForm(forms.ModelForm):
         for tag in TAG_WHITELIST:
             instructions = re.sub(r'&lt;(?=/?[ \t]*{0})'.format(tag), '<', instructions)
 
+        #change new lines to break tags so whitespace is preserved in instructions
+        instructions = instructions.replace('\n', '<br>')
         return instructions
 
     def is_valid(self):
