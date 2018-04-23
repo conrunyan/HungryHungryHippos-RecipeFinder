@@ -1,54 +1,79 @@
 {% extends 'base.html' %}
 
+{% block head %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'recipe/addRecipeForm.css' %}" />
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.3/chosen.css">
+{% endblock %}
+
 {% block content %}
+<div class="content">
+  <h1 class="text-center m-5">Add Private Recipe</h1>
 
-<h1 class="text-center m-5">Add Private Recipe</h1>
+
+  {% for error in form.non_field_errors %}
+  	<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+  {% endfor %}
+
+  {% for field in form %}
+  	{% for error in field.errors %}
+  		<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
+  	{% endfor %}
+  {% endfor %}
+
+  <form method="post" class="form-signin">
+  	{% csrf_token %}
+
+  	<!-- Add Recipe form -->
+  	{% for field in form %}
+  		<p>
+  			{{ field }}
+  		</p>
+  	{% endfor %}
+
+  	<!-- Ingredient forms -->
+  	{{ formset.management_form }}
+  	{% for ingredient_form in formset %}
+  		<!-- Ingredient form errors -->
+  		{% for ingredient_error in ingredient_form.non_field_errors %}
+  			<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
+  		{% endfor %}
+
+  		<!-- Ingredient form field -->
+  		<div class="ingredient-field form-group">
+  			{% for ingredient_field in ingredient_form %}
+  				<!-- Ingredient form field errors -->
+  				{% for ingredient_error in ingredient_field.errors %}
+  					<p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
+  				{% endfor %}
+
+  				<!-- Ingredient field -->
+  				<span>
+  					{{ ingredient_field }}
+  				</span>
+  			{% endfor %}
+  		</div>
+  	{% endfor %}
+  	<button type="submit" class="btn btn-dark btn-lg mt-5">Submit</button>
+  </form>
+</div>
+{% endblock %}
 
 
-{% for error in form.non_field_errors %}
-	<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
-{% endfor %}
-
-{% for field in form %}
-	{% for error in field.errors %}
-		<div class="form-group has-errors text-danger text-center">{{error|escape}}</div>
-	{% endfor %}
-{% endfor %}
-
-<form method="post" class="form-signin">
-	{% csrf_token %}
-
-	<!-- Add Recipe form -->
-	{% for field in form %}
-		<p>
-			{{ field }}
-		</p>
-	{% endfor %}
-
-	<!-- Ingredient forms -->
-	{{ formset.management_form }}
-	{% for ingredient_form in formset %}
-		<!-- Ingredient form errors -->
-		{% for ingredient_error in ingredient_form.non_field_errors %}
-			<div class="form-group has-errors text-danger text-center">{{ingredient_error|escape}}</div>
-		{% endfor %}
-
-		<!-- Ingredient form field -->
-		<div>
-			{% for ingredient_field in ingredient_form %}
-				<!-- Ingredient form field errors -->
-				{% for ingredient_error in ingredient_field.errors %}
-					<span class="form-group has-errors text-danger">{{ingredient_error|escape}}</span>
-				{% endfor %}
-
-				<!-- Ingredient field -->
-				<span>
-					{{ ingredient_field }}
-				</span>
-			{% endfor %}
-		</div>
-	{% endfor %}
-	<button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit</button>
-</form>
-
+{% block footer %}
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.3/chosen.jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  // Select all single select
+  choose = $(".drop-down-ingredient-search");
+  // Activate Chosen library
+  choose.chosen();
+  // Hacks to make menus show up above other elements. It has some issues...
+  choose.parent().css('overflow', 'visible');
+  choose.closest('.form-row').css('overflow', 'visible');
+});
+</script>
 {% endblock %}

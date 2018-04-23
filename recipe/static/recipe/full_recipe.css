@@ -1,9 +1,10 @@
 .content {
   font-family: "Raleway";
+  margin-bottom: 50px;
 }
 
 .content img {
-  width: 70%;
+  width: 45%;
   max-width: 500px;
   display: block;
   margin: 20px auto 20px auto;
@@ -14,6 +15,7 @@
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
+  margin-left: 30px;
 }
 
 .content h2 {
@@ -30,14 +32,24 @@
 
 .ingredients-list {
   text-align: center;
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
+  column-count: 2;
+  width: 65%;
+  min-width: 200px;
+  margin: 0 auto;
 }
 
 .ingredients-list div {
-  display: block;
+  display: inline-block;
   margin: 5px auto 5px auto;
   text-align: left;
   width: 10%;
   min-width: 200px;
+}
+
+.ingredients-list i {
+  margin-right: 10px;
 }
 
 .spacing {
@@ -66,10 +78,48 @@ hr {
   color: #263238;
 }
 
+.fa-edit {
+  color: #263238;
+  vertical-align: baseline;
+  padding: 20px;
+}
+
+.fa-edit:hover {
+  color: #00acc1;
+}
+
 #share-buttons img {
 width: 35px;
 padding: 5px;
 border: 0;
 box-shadow: 0;
 display: inline;
+}
+
+#favorite {
+  width: 45px;
+  height: 45px;
+  display: block;
+}
+
+.submit-public {
+  margin:0 auto;
+  display:block;
+}
+
+.comment-content {
+  width: 40%;
+  min-width: 200px;
+}
+
+.single-comment {
+  margin-bottom: 40px;
+}
+
+.single-comment h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.single-comment h5 {
+  font-size: .75rem;
 }

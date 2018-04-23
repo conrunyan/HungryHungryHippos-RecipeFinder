@@ -31,7 +31,7 @@ class RecipeForm(forms.ModelForm):
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.ModelChoiceField(widget=forms.Select(attrs={
-                                        'placeholder': 'Ingredient'}),
+                                        'placeholder': 'Ingredient', 'class':'drop-down-ingredient-search'}),
                                         empty_label='--Ingredient--',
                                         queryset=Ingredient.objects)
 
@@ -39,8 +39,8 @@ class RecipeIngredientForm(forms.ModelForm):
         model = RecipeIngredient
         fields = ('ingredient', 'amount', 'unit')
         widgets = {
-            'amount': forms.TextInput(attrs={'placeholder': 'Amount (ex: 2 1/2)'}),
-            'unit':   forms.TextInput(attrs={'placeholder': 'Unit (ex: Cups)'}),
+            'amount': forms.TextInput(attrs={'placeholder': 'Amount (ex: 2 1/2)', 'class': 'form-control ingredient-input'}),
+            'unit':   forms.TextInput(attrs={'placeholder': 'Unit (ex: Cups)', 'class': 'form-control ingredient-input'}),
         }
 
     def is_valid(self):

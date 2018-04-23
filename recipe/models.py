@@ -160,7 +160,7 @@ class Recipe(models.Model):
     # Short summary of the recipe (to be used on preview when searching)
     summary = models.CharField(max_length=280, null=True, blank=True)
     user = models.ForeignKey(
-        User, null=True, on_delete=models.SET_NULL, editable=False)
+        User, null=True, on_delete=models.SET_NULL)
     DIFFICULTY_CHOICES = (
         ('', '--Difficulty--'),
         ('E', 'Easy'),
@@ -178,7 +178,7 @@ class Recipe(models.Model):
     # The detailed instructions to make the recipe
     instructions = models.TextField()
     # The date this recipe object was created
-    creation_date = models.DateField(auto_now_add=True, editable=False)
+    creation_date = models.DateField(auto_now_add=True)
     # The ingredient set of ingredients that is required for this recipe
     ingredients = models.ManyToManyField(Ingredient,
                                          through='RecipeIngredient')
@@ -260,3 +260,16 @@ class UserRating(models.Model):
     def __str__(self):
         """Construct a string representation of this rating link."""
         return '{0} ({1}) : {2}'.format(self.recipe, self.user, self.value)
+
+
+class Favorite(models.Model):
+    """Holds a user's favorite recipes"""
+
+    def __str__(self):
+        """Return a string representing the user and the recipe"""
+        return 'Recipe: {0} -- User: {1}'.format(self.recipe, self.user)
+
+    # Recipe that the user is favoriting
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    # User that has the favorite
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

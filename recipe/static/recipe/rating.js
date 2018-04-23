@@ -65,7 +65,7 @@ $(document).ready(function() {
     }
 
     if(count !== null)
-      $('#rating-count').html('(' + count + ')');
+      $('#rating-count').html(count + ' ratings');
   };
 
   function createFullStar(value, shouldBeGold) {

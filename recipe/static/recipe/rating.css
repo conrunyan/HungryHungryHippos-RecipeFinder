@@ -3,11 +3,11 @@
 }
 
 #rating-stars img {
-  width: 50px;
+  width: 30px;
   margin: 0;
   display: inline;
 }
 
 #rating-count {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }

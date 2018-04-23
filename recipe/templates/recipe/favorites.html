@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'recipe/recipe_summary.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="content">
+  <h1>My Favorite Recipes</h1>
+  {% if favorites %}
+    {% for fav in favorites %}
+      <hr />
+      <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' fav.recipe.id %}">
+        <img alt="recipe image" src="{{fav.recipe.image_url}}"/>
+        <div>
+          <h3>{{fav.recipe.title}}</h3>
+          <p>{{fav.recipe.summary}}</p>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <p>You do not have any favorite recipes.</p>
+  {% endif %}
+</div>
+{% endblock %}

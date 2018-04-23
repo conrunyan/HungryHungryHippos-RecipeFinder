@@ -9,21 +9,25 @@
 {% block content %}
 {% if current_recipe %}
   <div class="content">
-    {% if current_recipe.user.id == user.id %}
-
-        <a class="btn btn-dark btn-sm" href="{% url 'recipe:edit_private_recipe' current_recipe.id %}">Edit</a>
-        {# Check if recipe is private #}
-        {% if current_recipe.is_private %}
-            <button class="btn btn-dark btn-sm" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
-        {% endif %}
-    {% endif %}
-    <img src="{{current_recipe.image_url}}" />
-    <h1>{{current_recipe.title}}</h1>
+    <img alt="recipe image" src="{{current_recipe.image_url}}" />
+    <h1>{{current_recipe.title}}
+      {% if current_recipe.user.id == user.id %}
+        <a href="{% url 'recipe:edit_private_recipe' current_recipe.id %}"><i class="fas fa-edit fa-xs"></i></a>
+      {% endif %}
+    </h1>
     <div class="text-center">
       {% if current_recipe.source_url %}
         <a class="source-url" href="{{current_recipe.source_url}}">{{ current_recipe.source_url | truncatechars:50 }}</a>
       {% endif %}
     </div>
+    {% if user.is_authenticated %}
+      <img id="favorite" src="" class="img-fluid update-image"/>
+    {% endif %}
+    {% if current_recipe.user.id == user.id %}
+        {% if current_recipe.is_private %}
+            <button class="btn btn-outline-secondary btn-sm submit-public" onclick="submitPublic('{% url 'recipe:submit_for_public' current_recipe.id %}')" href="{% url 'recipe:submit_for_public' current_recipe.id %}">Submit for Public</button>
+        {% endif %}
+    {% endif %}
     <div id="share-buttons" class="text-center">
       <!-- Facebook -->
       <a href="http://www.facebook.com/sharer.php?u={{request.build_absolute_uri}}" target="_blank">
@@ -50,14 +54,36 @@
         <!-- Javascript creates count -->
       </div>
     </div>
-    <p class="text-center">Time: {{current_recipe.time}} minutes <span class="spacing"></span> Difficulty: {{current_recipe.get_difficulty_display}}</p>
-    <h2>{{current_recipe.summary}}</h2>
+
+    <p class="text-center">Time:
+      {% if current_recipe.time != None %}
+        {{current_recipe.time}} minutes
+      {% endif %}
+      <span class="spacing"></span> Difficulty:
+      {% if current_recipe.get_difficulty_display != None %}
+        {{current_recipe.get_difficulty_display}}
+      {% endif %}
+    </p>
+    <hr />
+
+    {% if current_recipe.summary != None %}
+      <h2>{{current_recipe.summary}}</h2>
+    {% endif %}
     <hr />
     {% if ingredients %}
-      <div class="ingredients-list">
+      <div class="ingredients-list text-center">
         {% for ingredient in ingredients %}
           <div>
-            {{ingredient.amount}} {{ingredient.unit}} {{ingredient.ingredient}}
+            <i class="fas fa-caret-right fa-sm"></i>
+            {% if ingredient.amount != None %}
+              {{ingredient.amount}}
+            {% endif %}
+            {% if ingredient.unit != None %}
+              {{ingredient.unit}}
+            {% endif %}
+            {% if ingredient.ingredient != None %}
+              {{ingredient.ingredient}}
+            {% endif %}
           </div>
         {% endfor %}
       </div>
@@ -69,37 +95,47 @@
   </div>
 
   <!-- Comment Form -->
-  {% if user.is_authenticated %}
-  <form method="post" class="form-signin">
-    {% csrf_token %}
-    {{comment_form.content}}
-    <button type="submit" class="btn btn-dark btn-block btn-lg mt-5">Submit Comment</button>
-  </form>
-  {% else %}
-    <h3> Please log in to post a comment. </h3>
-  {% endif %}
+  <div class="content">
+    <hr />
+    {% if user.is_authenticated %}
+      <form method="post" class="form-signin">
+        <h1 class="text-left">Comment</h1>
+        {% csrf_token %}
+        <div class="comment-content">
+          {{comment_form.content}}
+        </div>
+        <button type="submit" class="btn btn-dark btn-md mt-5">Submit Comment</button>
+      </form>
+    {% else %}
+      <h3> Please log in to post a comment. </h3>
+    {% endif %}
 
 
-  <!-- Comments -->
-  <h2> Comments </h2>
-  {% for comment in comments %}
-    <div>
-      {{comment.content}}
-    </div>
-  {% endfor %}
+    <!-- Comments -->
+    <hr />
+    {% for comment in comments %}
+      <div class="single-comment">
+        <h4>{{comment.user}}</h4>
+        <h5>{{comment.creation_date|date}}</h5>
+        {{comment.content}}
+      </div>
+    {% endfor %}
 
-{% else %}
-  <p>Could not load selected recipe.</p>
-{% endif %}
+    {% else %}
+      <p>Could not load selected recipe.</p>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block footer %}
 {% load staticfiles %}
 <script>
   const URL_RATE = "{% url 'recipe:rate' current_recipe.id %}";
+  const URL_FAV = "{% url 'recipe:favorite' current_recipe.id %}";
   const IMG_STAR_FULL = "{% static 'recipe/images/star-full.png' %}";
   const IMG_STAR_FULL_GRAY = "{% static 'recipe/images/star-full-gray.png' %}";
   const IMG_STAR_EMPTY = "{% static 'recipe/images/star-empty.png' %}";
+  const IS_FAVORITE = {{ isFavorite }};
   {% if user.is_authenticated %}
   const IS_AUTHENTICATED = true;
   {% else %}
@@ -107,5 +143,6 @@
   {% endif %}
 </script>
 <script src="{% static 'recipe/rating.js' %}"></script>
+<script src="{% static 'recipe/favorite.js' %}"></script>
 <script src="{% static 'recipe/submit_confirm.js' %}"></script>
 {% endblock %}

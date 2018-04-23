@@ -21,7 +21,7 @@
     <div class="top-three">
       {% for recipe in users_recipes %}
       <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' recipe.id %}">
-        <img src="{{recipe.image_url}}"/>
+        <img alt="recipe image" src="{{recipe.image_url}}"/>
         <div>
           <h3>{{recipe.title}}</h3>
           <p>{{recipe.summary}}</p>
@@ -33,6 +33,23 @@
       <hr class="big-hr" />
     </div>
   {% endif %}
-  <!--TODO: implement an if statement for favorite recipes. Model it after the My Recipes one -->
+  {% if users_favorites %}
+    <h1>My Favorites</h1>
+    <hr />
+    <div class="top-three">
+      {% for fav in users_favorites %}
+      <a class="recipe-summary" href="{% url 'recipe:recipe_full_view' fav.recipe.id %}">
+        <img alt="recipe image" src="{{fav.recipe.image_url}}"/>
+        <div>
+          <h3>{{fav.recipe.title}}</h3>
+          <p>{{fav.recipe.summary}}</p>
+        </div>
+      </a>
+        <hr />
+      {% endfor %}
+      <a class="see-more center-block" href="{% url 'favorites' %}"><p>Click to see more</p></a>
+      <hr class="big-hr" />
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
