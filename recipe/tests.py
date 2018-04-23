@@ -634,7 +634,7 @@ class TestFullViewAddComment(TestCase):
     def test_successful_comment(self):
         self.client.force_login(self.user)
         response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
@@ -657,7 +657,7 @@ class TestFullViewAddComment(TestCase):
     def test_private_recipe_with_same_user(self):
         self.client.force_login(self.user)
         response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
         self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
@@ -692,7 +692,7 @@ class TestRecipeForm(TestCase):
     def test_init_hard_difficulty(self):
         recipeForm = RecipeForm(data={'title': "A Recipe",
                                       'summary': "It's delicious!",
-                                      'difficulty': "H",
+                                      'difficulty': "D",
                                       'time': 10,
                                       'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
                                       'instructions': "Make all of the things!"})
@@ -747,15 +747,6 @@ class TestRecipeForm(TestCase):
                                       'instructions': "Make all of the things!"})
         self.assertFalse(recipeForm.is_valid())
 
-    def test_init_invalid_image_url(self):
-        recipeForm = RecipeForm(data={'title': "A Recipe",
-                                      'summary': "It's delicious!",
-                                      'difficulty': "E",
-                                      'time': 10,
-                                      'image_url': "https://google.com",
-                                      'instructions': "Make all of the things!"})
-        self.assertFalse(recipeForm.is_valid())
-
     def test_init_without_instructions(self):
         recipeForm = RecipeForm(data={'title': "A Recipe",
                                       'summary': "It's delicious!",
@@ -781,7 +772,11 @@ class TestRecipeIngredientForm(TestCase):
 
     def test_init_without_amount(self):
         recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'unit': 'cups'})
-        self.assertFalse(recipeIngredientForm.is_valid())
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_amount_or_unit(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1})
+        self.assertTrue(recipeIngredientForm.is_valid())
 
     def test_init_without_ingredient(self):
         recipeIngredientForm = RecipeIngredientForm(data={'amount': '3', 'unit': 'cups'})
