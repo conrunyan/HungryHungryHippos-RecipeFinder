@@ -43,6 +43,18 @@ class RecipeForm(forms.ModelForm):
 
         return time
 
+    def clean_instructions(self):
+        """Clean instructions by escaping unsafe tags with a whitelist."""
+        TAG_WHITELIST = ['b', 'strong', 'i', 'em', 'ul', 'ol', 'li', 'br', 'p', 'hr', 'blockquote']
+
+        # Replace all < with &lt; in case the full match fails for a tag
+        instructions = self.cleaned_data['instructions'].replace("<", "&lt;")
+        # Fix safe tags so they're rendered as html
+        for tag in TAG_WHITELIST:
+            instructions = re.sub(r'&lt;(?=/?[ \t]*{0})'.format(tag), '<', instructions)
+
+        return instructions
+
     def is_valid(self):
         valid = super(RecipeForm, self).is_valid()
 
