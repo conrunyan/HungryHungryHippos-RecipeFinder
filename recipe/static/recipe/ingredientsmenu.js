@@ -156,6 +156,7 @@ $(document).ready(function() {
   function checkPersistentIngredients(ingredients) {
     for(var i = 0; i < ingredients.length; i++) {
       var ingredient = ingredients[i];
+      ingredient = ingredient.replace(/'/g, "\\'")
       var e = $("input[type='checkbox'][value='" + ingredient + "']");
       if(e) {
         e.prop('checked', true);
