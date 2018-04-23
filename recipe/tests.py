@@ -10,7 +10,8 @@ from django.test import Client
 from accounts.models import PersistentIngredient
 from django.contrib.auth.models import User
 
-from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating, Favorite
+from .models import Recipe, Ingredient, RecipeIngredient, Group, Appliance, IngredientUtils, UserRating, Comment, Favorite
+from .forms import CommentForm, RecipeForm, RecipeIngredientForm
 
 class RecipeModelTest(TestCase):
     """Tests the recipe model and methods."""
@@ -621,3 +622,175 @@ class RecipeRating(TestCase):
         self.assertEquals(result['valid'], 'True')
         self.assertEquals(result['average'], 3)
         self.assertEquals(result['count'], 1)
+
+class TestCommentForm(TestCase):
+    """Tests the comment form"""
+
+    def test_init(self):
+        commentForm = CommentForm(data={'content': "This is a comment!"})
+        self.assertTrue(commentForm.is_valid())
+
+    def test_init_without_content(self):
+        commentForm = CommentForm(data={})
+        self.assertFalse(commentForm.is_valid())
+
+class TestFullViewAddComment(TestCase):
+
+    def setUp(self):
+        """Create client to make requests."""
+        self.user = User.objects.create_user("test_user")
+        self.content = "This is a comment!"
+        self.client = Client()
+        self.recipe = Recipe.objects.create(title="Recipe", instructions="real", user=self.user, is_private=False)
+        self.private_recipe = Recipe.objects.create(title="Recipe", instructions="real", user=self.user)
+
+    def test_successful_comment(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
+
+    def test_user_not_logged_in(self):
+        response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please log in to post a comment.")
+
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 403)
+
+    def test_no_context(self):
+        self.client.force_login(self.user)
+        comment_form = CommentForm(data={'content':self.content})
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Comment.objects.all().exists())
+
+    def test_private_recipe_with_same_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
+        self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
+
+    def test_private_recipe_with_different_user(self):
+        self.client.force_login(User.objects.create_user('hacker_man'))
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.private_recipe.id}), data={'content':self.content})
+        self.assertFalse(Comment.objects.all().exists())
+        self.assertEqual(response.status_code, 403)
+
+class TestRecipeForm(TestCase):
+    """Tests the add Recipe Form."""
+
+    def test_init_easy_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_medium_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "M",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_hard_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "D",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertTrue(recipeForm.is_valid())
+
+    def test_init_invalid_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "Z",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_title(self):
+        recipeForm = RecipeForm(data={'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_summary(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_difficulty(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_time(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg",
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_image_url(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'instructions': "Make all of the things!"})
+        self.assertFalse(recipeForm.is_valid())
+
+    def test_init_without_instructions(self):
+        recipeForm = RecipeForm(data={'title': "A Recipe",
+                                      'summary': "It's delicious!",
+                                      'difficulty': "E",
+                                      'time': 10,
+                                      'image_url': "https://images.media-allrecipes.com/userphotos/600x600/439002.jpg"})
+        self.assertFalse(recipeForm.is_valid())
+
+class TestRecipeIngredientForm(TestCase):
+    """Tests the add Recipe Form."""
+
+    def setUp(self):
+        group = Group.objects.create(name="TestGroup")
+        self.ingredient = Ingredient.objects.create(group=group, name="Ing 1")
+
+    def test_init(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'amount': '3', 'unit': 'cups'})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_unit(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'amount': '3'})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_amount(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1, 'unit': 'cups'})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_amount_or_unit(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'ingredient': 1})
+        self.assertTrue(recipeIngredientForm.is_valid())
+
+    def test_init_without_ingredient(self):
+        recipeIngredientForm = RecipeIngredientForm(data={'amount': '3', 'unit': 'cups'})
+        self.assertFalse(recipeIngredientForm.is_valid())

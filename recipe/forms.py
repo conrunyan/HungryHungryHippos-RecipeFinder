@@ -8,8 +8,12 @@ import re
 
 
 class RecipeForm(forms.ModelForm):
-    time = forms.CharField(widget=forms.TextInput(attrs={
-                           'class': 'form-control', 'placeholder': 'Time (Hours:Minutes)'}))
+
+    def __init__(self, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = True
 
     class Meta:
         model = Recipe
@@ -19,6 +23,7 @@ class RecipeForm(forms.ModelForm):
             'title':        forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Recipe Name'}),
             'summary':      forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description'}),
             'difficulty':   forms.Select(attrs={'class': 'form-control', 'placeholder': 'Difficulty'}),
+            'time':         forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Time (Minutes)'}),
             'image_url':    forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Image URL'}),
             'instructions': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Instructions'}),
         }
@@ -59,7 +64,6 @@ class RecipeForm(forms.ModelForm):
         valid = super(RecipeForm, self).is_valid()
 
         return valid
-
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.ModelChoiceField(widget=forms.Select(attrs={
