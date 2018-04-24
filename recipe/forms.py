@@ -36,7 +36,7 @@ class RecipeForm(forms.ModelForm):
         instructions = self.cleaned_data['instructions'].replace("<", "&lt;")
         # Fix safe tags so they're rendered as html
         for tag in TAG_WHITELIST:
-            instructions = re.sub(r'&lt;(?=/?[ \t]*{0})'.format(tag), '<', instructions)
+            instructions = re.sub(r'&lt;(?=/?[ \t]*{0}[ \t]*>)'.format(tag), '<', instructions)
 
         #change new lines to break tags so whitespace is preserved in instructions
         instructions = instructions.replace('\n', '<br>')
