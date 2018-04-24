@@ -15,8 +15,8 @@
   </div>
 
   <div id="list-ingredients">
-    {% if group_dict %}
-      {% for group, ingredients in group_dict.items %}
+    {% if sorted_group_dict %}
+      {% for group, ingredients in sorted_group_dict %}
         <div class="list-group">
           <div class="row" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse-{{ group }}">
             <div class="col-xs-2 mr-1">
