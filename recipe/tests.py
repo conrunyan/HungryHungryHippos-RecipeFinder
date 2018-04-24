@@ -217,7 +217,7 @@ class IngredientSearchTest(TestCase):
         r5.save()
         r6.save()
 
-        expected_size = 3 
+        expected_size = 3
         ing_utils = IngredientUtils()
 
         # save ingredient QS's in a list
@@ -634,7 +634,7 @@ class TestCommentForm(TestCase):
         commentForm = CommentForm(data={})
         self.assertFalse(commentForm.is_valid())
 
-class TestFullViewAddComment(TestCase):
+class TestFullViewComments(TestCase):
 
     def setUp(self):
         """Create client to make requests."""
@@ -669,17 +669,23 @@ class TestFullViewAddComment(TestCase):
 
     def test_private_recipe_with_same_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}), data={'content':self.content})
+        response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.private_recipe.id}), data={'content':self.content})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Comment.objects.get(recipe=self.recipe).user, self.user)
-        self.assertEqual(Comment.objects.get(recipe=self.recipe).content, self.content)
-        self.assertEqual(Comment.objects.get(recipe=self.recipe).recipe, self.recipe)
+        self.assertEqual(Comment.objects.get(recipe=self.private_recipe).user, self.user)
+        self.assertEqual(Comment.objects.get(recipe=self.private_recipe).content, self.content)
+        self.assertEqual(Comment.objects.get(recipe=self.private_recipe).recipe, self.private_recipe)
 
     def test_private_recipe_with_different_user(self):
         self.client.force_login(User.objects.create_user('hacker_man'))
         response = self.client.post(reverse('recipe:recipe_full_view', kwargs={'id':self.private_recipe.id}), data={'content':self.content})
         self.assertFalse(Comment.objects.all().exists())
         self.assertEqual(response.status_code, 403)
+
+    def test_hidden_comment(self):
+        hidden_comment = Comment.objects.create(recipe=self.recipe, user=self.user, content=self.content, is_hidden=True)
+        response = self.client.get(reverse('recipe:recipe_full_view', kwargs={'id':self.recipe.id}))
+        self.assertContains(response, "The contents of this comment are hidden.")
+        self.assertNotContains(response, self.content)
 
 class TestRecipeForm(TestCase):
     """Tests the add Recipe Form."""

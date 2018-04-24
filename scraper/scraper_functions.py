@@ -41,6 +41,7 @@ def _to_json(scraper):
     results['host_name'] = scraper.host_name()
     results['title'] = scraper.title()
     results['summary'] = scraper.summary()
+    results['difficulty'] = scraper.difficulty()
     results['instructions'] = scraper.instructions()
     results['image_url'] = scraper.image_url()
     results['time'] = scraper.time()

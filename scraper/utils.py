@@ -53,6 +53,7 @@ def save(json, user):
     if Recipe.objects.filter(title__iexact=title,summary=summary):
         raise RecipeParsingError('A recipe very similar to this has already been parsed: {0}'.format(title))
 
+    difficulty = json['difficulty']
     instructions = htmlify_list(json['instructions'])
     image_url = json['image_url']
     time = json['time']
@@ -64,7 +65,7 @@ def save(json, user):
     appliances = json['appliances']
 
     _save_lock.acquire()
-    recipe = Recipe.objects.create(title=title, summary=summary, instructions=instructions,
+    recipe = Recipe.objects.create(title=title, summary=summary, difficulty=difficulty, instructions=instructions,
         image_url=image_url, time=time, source_url=source_url, user=user, is_private=False)
 
     recipe.appliances.add(*_get_appliance_objects(appliances))
