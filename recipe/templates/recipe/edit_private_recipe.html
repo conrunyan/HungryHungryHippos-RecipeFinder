@@ -42,18 +42,20 @@
           {% endfor %}
 
           <!-- Ingredient form field -->
-          <div class="ingredient-field form-group">
-              {% for ingredient_field in ingredient_form %}
-                  <!-- Ingredient form field errors -->
-                  {% for ingredient_error in ingredient_field.errors %}
-                      <p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
-                  {% endfor %}
-
-                  <!-- Ingredient field -->
-                  <span>
-                      {{ ingredient_field }}
-                  </span>
+          <div class="form-group">
+            <!-- Ingredient form field errors -->
+            {% for ingredient_field in ingredient_form %}
+              {% for ingredient_error in ingredient_field.errors %}
+                <p class="form-group has-errors text-danger">{{ingredient_error|escape}}</p>
               {% endfor %}
+            {% endfor %}
+
+            <div class="ingredient-field">
+              {% for ingredient_field in ingredient_form %}
+                  <!-- Ingredient field -->
+                  {{ ingredient_field }}
+              {% endfor %}
+            </div>
           </div>
       {% endfor %}
       <div style="display:flex" class="save-cancel-delete row">
