@@ -23,6 +23,8 @@ def index(request):
         ing_list = list(group.ingredient_set.all().order_by("name"))
         group_dict[group.name] = ing_list
 
+    sorted_group_dict = sorted(group_dict.items())
+
     ingredientsAreSelected = False
     ingredients = Ingredient.objects.order_by("name")
 
@@ -36,7 +38,7 @@ def index(request):
     # time = ["0-30 min", "31-60 min", "1+ hr"]
     time = [30, 60, 120]
 
-    context = {"groups": groups, "group_dict": group_dict, "ingredientsAreSelected": ingredientsAreSelected,
+    context = {"groups": groups, "group_dict": group_dict, "ingredientsAreSelected": ingredientsAreSelected, "sorted_group_dict": sorted_group_dict,
                "persistent_ingredients": persistent_ingredients, "ingredients_list": ingredients, "appliances": appliances, "difficulties": difficulties, "time": time}
     return HttpResponse(render(request, 'recipe/index.html', context))
 
@@ -240,3 +242,4 @@ def submit_for_public(request, id):
         return redirect('recipe:recipe_full_view', id)
     context = {'current_recipe': recipe.id,}
     return HttpResponse(render(request, 'recipe/submit_for_public.html', context))
+
