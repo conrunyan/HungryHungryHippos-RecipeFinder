@@ -160,7 +160,13 @@ def favorite(request, id):
 @login_required
 def add_private_recipe(request):
     """Create a view with a form for adding a recipe."""
-    if not (EmailAuth.objects.get(usr_id=request.user).is_authenticated):
+    try:
+        user_auth = EmailAuth.objects.get(usr_id=request.user)
+    except Exception as e:
+        print(str(e))
+        user_auth = EmailAuth()
+
+    if not user_auth.is_authenticated:
         return HttpResponse(render(request, 'recipe/please_authenticate.html', {}))
 
     if(request.method == 'POST'):
